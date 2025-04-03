@@ -1,0 +1,409 @@
+<div class="container-fluid mt-4">
+  <div class="row">
+    <!-- Columna de la izquierda: Lista de Productos (ajustada a col-md-7) -->
+    <div class="col-md-7">
+      <h2 class="text-center my-4">Lista de Productos</h2>
+      <!-- Barra de búsqueda -->
+      <div class="row mb-4">
+        <div class="col-md-3">
+          <label for="categoriaSelect" class="form-label"
+            >Seleccionar Categoría</label
+          >
+          <select
+            id="categoriaSelect"
+            class="form-control"
+            [(ngModel)]="searchCategoria"
+            (change)="filteredProductos()"
+          >
+            <option value="">Seleccionar Categoría</option>
+            <option
+              *ngFor="let categoria of categorias"
+              [value]="categoria.nombre_categoria"
+            >
+              {{ categoria.nombre_categoria }}
+            </option>
+          </select>
+        </div>
+
+        <div class="col-md-3">
+          <label for="nombreInput" class="form-label">Buscar por Nombre</label>
+          <input
+            id="nombreInput"
+            type="text"
+            class="form-control"
+            placeholder="Buscar por nombre"
+            [(ngModel)]="searchNombreProducto"
+          />
+        </div>
+
+        <div class="col-md-3">
+          <label for="codigoInput" class="form-label">Buscar por Código</label>
+          <input
+            id="codigoInput"
+            type="text"
+            class="form-control"
+            placeholder="Buscar por Código"
+            [(ngModel)]="searchCodigoProducto"
+          />
+        </div>
+
+        <div class="text-center col-md-3">
+          <div class="d-grid gap-2">
+            <button
+              class="btn btn-danger d-flex align-items-center btn-lg py-1"
+              (click)="clearQuantities()"
+            >
+              <i class="fas fa-trash-alt fs-1 me-2"></i>
+              Limpiar Cantidades
+            </button>
+          </div>
+        </div>
+      </div>
+
+      <!-- Lista de productos en formato de tarjetas (cards) -->
+      <div class="row">
+        <div
+          *ngFor="let producto of filteredProductos()"
+          class="col-sm-12 col-md-4 mb-4"
+        >
+          <div class="card h-100">
+            <img
+              *ngIf="producto.imagen_productos"
+              [src]="producto.imagen_productos"
+              class="card-img-top"
+              alt="{{ producto.nombre_producto }}"
+              (click)="openModal(producto.imagen_productos)"
+            />
+            <div class="card h-100">
+              <div class="card-header">
+                <h5 class="mb-0">{{ producto.nombre_producto }}</h5>
+              </div>
+              <div class="card-body">
+                <p class="card-text">
+                  <strong>Descripción:</strong> {{ producto.descripcion }}
+                </p>
+
+                <div class="row">
+                  <div class="col-12 col-md-6 text-start">
+                    <p class="card-text mb-0">
+                      <strong>Código:</strong> {{ producto.codigo_producto }}
+                    </p>
+                    <p class="card-text">
+                      <strong>Stock:</strong> {{ producto.stock }}
+                    </p>
+                  </div>
+                  <div class="col-12 col-md-6 text-start">
+                    <p class="card-text mb-0 fs-4">
+                      <strong>Precio U:</strong> Bs
+                      {{ producto.precio_unitario }}
+                    </p>
+                    <p *ngIf="mostrarPrecioMayor" class="card-text mb-0 fs-4">
+                      <strong>Precio M:</strong> Bs {{ producto.precio_mayor }}
+                    </p>
+                  </div>
+                </div>
+              </div>
+            </div>
+            <div
+              class="card-footer text-center d-flex justify-content-center align-items-center"
+            >
+              <!-- Campo para ingresar la cantidad -->
+              <div class="input-group mb-2 m-3" style="width: 150px">
+                <input
+                  type="number"
+                  class="form-control sin-flechas"
+                  placeholder="Cantidad"
+                  min="1"
+                  [max]="producto.stock"
+                  [(ngModel)]="cantidadPorProducto[producto.id]"
+                  (ngModelChange)="
+                    actualizarCantidad(
+                      getDetalleVenta(producto.id),
+                      cantidadPorProducto[producto.id],
+                      isCategoriaConBotonUnidad(producto) ? 'mayor' : 'unidad'
+                    )
+                  "
+                />
+              </div>
+              <!-- Botón Unidad Agregar al Carrito -->
+              <button
+                class="btn btn-success"
+                [disabled]="!isCantidadValida(producto.id, 'unidad')"
+                (click)="
+                  aagregarAlCarrito(
+                    producto,
+                    cantidadPorProducto[producto.id],
+                    'unidad'
+                  )
+                "
+              >
+                <i class="fas fa-shopping-cart mr-2"></i>Unidad
+              </button>
+
+              <!-- Botón Mayor, visible solo para ciertas categorías -->
+              <button
+                class="btn btn-warning"
+                *ngIf="isCategoriaConBotonUnidad(producto)"
+                [disabled]="!isCantidadValida(producto.id, 'mayor')"
+                (click)="
+                  aagregarAlCarrito(
+                    producto,
+                    cantidadPorProducto[producto.id],
+                    'mayor'
+                  )
+                "
+              >
+                <i class="fas fa-shopping-cart mr-2"></i>Mayor
+              </button>
+            </div>
+          </div>
+        </div>
+      </div>
+      <!-- Paginación -->
+      <div class="row">
+        <div class="col text-center">
+          <button
+            class="btn btn-secondary me-2"
+            (click)="previousPage()"
+            [disabled]="page === 1"
+          >
+            Anterior
+          </button>
+          <span>Página {{ page }}</span>
+          <button
+            class="btn btn-secondary ms-2"
+            (click)="nextPage()"
+            [disabled]="filteredProductos().length < pageSize"
+          >
+            Siguiente
+          </button>
+        </div>
+      </div>
+    </div>
+
+    <!-- Columna de la derecha: Registrar Venta -->
+    <div class="col-md-5">
+      <div class="card mb-4" style="position: sticky; top: 150px">
+        <div class="text-center card-header custom-bg-blue-200">
+          <h4>Registrar Venta</h4>
+        </div>
+        <div class="card-body">
+          <form [formGroup]="ventaForm" (ngSubmit)="registrarVenta()">
+            <div class="row mb-3">
+              <div class="col-md-4">
+                <label for="usuario" class="form-label">Usuario</label>
+                <input
+                  type="text"
+                  id="usuario"
+                  class="form-control"
+                  [value]="nombre_usuario + ' ' + apellido"
+                  readonly
+                />
+                <input
+                  type="hidden"
+                  formControlName="usuario_id"
+                  [value]="usuario_id"
+                />
+                <!-- Campo oculto para el ID -->
+                <div
+                  *ngIf="
+                    ventaForm.get('usuario')?.invalid &&
+                    ventaForm.get('usuario')?.touched
+                  "
+                  class="text-danger"
+                >
+                  El usuario es requerido.
+                </div>
+              </div>
+
+              <div class="col-md-4">
+                <label for="estado" class="form-label">Estado</label>
+                <select
+                  id="estado"
+                  class="form-select"
+                  formControlName="estado"
+                  required
+                >
+                  <option value="Completada">Completada</option>
+                  <option value="Pendiente">Pendiente</option>
+                  <option value="Cancelada">Cancelada</option>
+                </select>
+              </div>
+
+              <div class="col-md-4">
+                <label for="total" class="form-label">Total</label>
+                <input
+                  type="text"
+                  id="total"
+                  class="form-control"
+                  [value]="formatNumber(totalVenta)"
+                  readonly
+                />
+              </div>
+            </div>
+
+            <div class="d-flex justify-content-between align-items-center">
+              <button
+                type="submit"
+                class="btn btn-success me-2"
+                [disabled]="ventaForm.invalid || detalleVenta.length === 0"
+              >
+                Registrar Venta
+              </button>
+            </div>
+          </form>
+        </div>
+        <!-- Tabla para mostrar los detalles de la venta -->
+        <div id="detalles-venta">
+          <div class="d-flex justify-content-between align-items-center">
+            <img
+              src="https://files.fm/thumb_show.php?i=qwwh69nz6h"
+              alt="Logo"
+              class="img-fluid"
+              style="height: 80px"
+            />
+          </div>
+          <div class="d-flex justify-content-center">
+            <h4 class="text-center">Detalles de la Venta</h4>
+          </div>
+
+          <div class="card-body">
+            <table class="table table-bordered">
+              <thead>
+                <tr>
+                  <th>Codigo</th>
+                  <th>Producto</th>
+                  <th>Cant.</th>
+                  <th>Precio</th>
+                  <th>Tipo de Venta</th>
+                  <th>Total</th>
+                  <th class="accion">Acción</th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr *ngFor="let item of detalleVenta">
+                  <td class="text-start">
+                    {{ item.producto.codigo_producto }}
+                  </td>
+                  <td class="text-start">
+                    {{ item.producto.nombre_producto }}
+                  </td>
+                  <td>{{ item.cantidad }}</td>
+                  <td>Bs {{ item.precio | number : "1.2-2" }}</td>
+                  <td>{{ item.tipo_venta }}</td>
+                  <td>Bs {{ item.subtotal | number : "1.2-2" }}</td>
+
+                  <td class="accion">
+                    <!-- Esta columna se eliminará en el PDF -->
+                    <button
+                      class="btn btn-danger btn-sm"
+                      (click)="eliminarProducto(item)"
+                    >
+                      Eliminar
+                    </button>
+                  </td>
+                </tr>
+                <!-- Nueva fila para mostrar el total -->
+                <tr>
+                  <td colspan="5" class="text-end"><strong>Total:</strong></td>
+                  <td>Bs {{ totalVenta | number : "1.2-2" }}</td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+        </div>
+        <div
+          class="card-footer d-flex justify-content-between align-items-center"
+        >
+          <button
+            id="btn-generar-pdf"
+            class="btn btn-info me-2"
+            (click)="generarPDF('descargar')"
+          >
+            Descargar PDF
+          </button>
+          <button
+            id="btn-generar-pdf"
+            class="btn btn-secondary me-2"
+            (click)="generarPDF('abrir_nueva')"
+          >
+            Abrir en nueva ventana
+          </button>
+          <button
+            id="btn-generar-pdf"
+            class="btn btn-primary me-2"
+            (click)="generarPDF('abrir_misma')"
+          >
+            Abrir en misma ventana
+          </button>
+          <button
+            id="btn-generar-pdf"
+            class="btn btn-success me-2"
+            (click)="generarPDF('imprimir')"
+          >
+            Imprimir PDF
+          </button>
+        </div>
+
+        <div class="card mt-4">
+          <div class="card-header custom-bg-blue-200">
+            <h4 class="text-center">Cambio</h4>
+          </div>
+          <div class="card-body">
+            <div class="row mb-3 align-items-center">
+              <!-- Monto pagado -->
+              <div class="col-md-4">
+                <div class="row align-items-center">
+                  <div class="col-md-6">
+                    <label for="montoPagado"
+                      ><strong>Monto pagado:</strong></label
+                    >
+                  </div>
+                  <div class="col-md-6">
+                    <input
+                      type="text"
+                      id="montoPagado"
+                      [(ngModel)]="montoPagado"
+                      class="form-control"
+                      (input)="calcularCambio()"
+                      placeholder="Ingrese monto"
+                    />
+                  </div>
+                </div>
+              </div>
+
+              <!-- Total a pagar -->
+              <div class="col-md-4 text-center">
+                <strong>Total a pagar:</strong><br />
+                Bs {{ totalVenta | number : "1.2-2" }}
+              </div>
+
+              <!-- Cambio -->
+              <div class="col-md-4 text-center">
+                <strong>Cambio:</strong><br />
+                Bs {{ cambio | number : "1.2-2" }}
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Modal para mostrar la imagen en tamaño completo -->
+        <div
+          class="modal"
+          tabindex="-1"
+          [class.show]="modalVisible"
+          *ngIf="modalVisible"
+          (click)="closeModal()"
+        >
+          <div class="modal-dialog modal-lg">
+            <div class="modal-content">
+              <div class="modal-body">
+                <img [src]="imageToShow" class="img-fluid" />
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>

@@ -1,0 +1,383 @@
+<header
+  class="navbar navbar-expand-lg navbar-light bg-light fixed-top shadow"
+  id="navbar"
+>
+  <div class="container-fluid">
+    <a class="navbar-brand" href="#">
+      <img
+        src="https://localimg.s3.us-east-2.amazonaws.com/logoEmpresa/logo.png"
+        width="150"
+        height="70"
+        class="d-inline-block align-top"
+        alt="Logo"
+      />
+    </a>
+    <button
+      class="navbar-toggler"
+      type="button"
+      data-bs-toggle="collapse"
+      data-bs-target="#navbarNav"
+      aria-controls="navbarNav"
+      aria-expanded="false"
+      aria-label="Toggle navigation"
+    >
+      <span class="navbar-toggler-icon"></span>
+    </button>
+    <div class="collapse navbar-collapse" id="navbarNav">
+      <ul class="navbar-nav ms-auto">
+        <li class="nav-item">
+          <a class="btn btn-light fs-5" href="#contacto">
+            <strong>Contactos</strong>
+          </a>
+        </li>
+        <li class="nav-item">
+          <a class="btn btn-light fs-5" (click)="navigateToProductos()">
+            <strong>Productos</strong>
+          </a>
+        </li>
+        <li class="nav-item">
+          <a class="btn btn-light fs-5" (click)="navigateToLogin()">
+            <i class="fas fa-user"></i>
+            <strong> Iniciar Sesión</strong>
+          </a>
+        </li>
+      </ul>
+    </div>
+  </div>
+</header>
+
+<main class="container-fluid main-background">
+  <div class="text-center-titulo mt-5">
+    <h2 data-heading="¡Free market!" contenteditable spellcheck="false">
+      ¡Free market!
+      <span class="animation" aria-hidden="true">¡Free market!</span>
+    </h2>
+  </div>
+</main>
+
+<section class="container-fluid my-5">
+  <div class="container-fluid" id="productos">
+    <div class="mt-4 w-100 d-flex justify-content-center">
+      <h3>Productos por Categoría</h3>
+    </div>
+
+    <div class="row">
+      <div *ngFor="let categoria of categorias" class="col-md-3">
+        <h4 class="text-center">{{ categoria.nombre_categoria }}</h4>
+        <div class="row">
+          <div
+            class="col-12"
+            *ngIf="productosPorCategoria[categoria.nombre_categoria]"
+          >
+            <div class="card mb-3 custom-card">
+              <img
+                [src]="
+                  productosPorCategoria[categoria.nombre_categoria]
+                    .imagen_productos
+                "
+                class="card-img-top custom-img"
+                alt="{{
+                  productosPorCategoria[categoria.nombre_categoria]
+                    .nombre_producto
+                }}"
+              />
+              <div class="card-body">
+                <h5 class="card-title">
+                  {{
+                    productosPorCategoria[categoria.nombre_categoria]
+                      .nombre_producto
+                  }}
+                </h5>
+                <p class="card-text">
+                  {{
+                    productosPorCategoria[categoria.nombre_categoria]
+                      .descripcion
+                  }}
+                </p>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div
+    class="d-flex align-items-center justify-content-center"
+    style="margin-top: 50px; gap: 20px"
+  >
+    <img
+      src="https://localimg.s3.us-east-2.amazonaws.com/logoEmpresa/perfil.png"
+      alt="Perfil del Propietario"
+      class="rounded-circle"
+      width="400"
+      height="500"
+    />
+    <p
+      class="text-dark"
+      style="max-width: 600px; text-align: justify; font-size: 1.5rem"
+    >
+      En Freemarket, somos tu tienda virtual de confianza, donde la variedad y
+      la calidad se encuentran al alcance de un clic. Con más de 10 años en el
+      mercado, ofrecemos una amplia gama de productos, desde tecnología de
+      vanguardia hasta artículos de uso diario, todos disponibles para ser
+      personalizados según tus necesidades. Nuestro compromiso es brindarte una
+      experiencia de compra excepcional, con envíos a nivel nacional y atención
+      al cliente dedicada. Descubre un mundo de posibilidades y haz tus pedidos
+      con la certeza de que en Freemarket, ¡tu satisfacción es nuestra
+      prioridad!
+    </p>
+  </div>
+
+  <div class="row mt-4">
+    <div class="col-md-6" id="mision">
+      <div class="card mb-3">
+        <div class="row g-0">
+          <div class="col-md-4">
+            <img
+              src="https://storage.googleapis.com/a1aa/image/RLj7lIXnGoahJ1cfWud6fjrTmwojJTdrAlJRBBVZIFrgIfinA.jpg"
+              class="img-fluid rounded-start"
+              alt="Misión"
+              style="width: 100%; height: 210px; object-fit: cover"
+            />
+          </div>
+          <div class="col-md-8">
+            <div class="card-body">
+              <h5 class="card-title text-monospace text-center">Misión</h5>
+              <p class="card-text" style="text-align: justify">
+                En Freemarket, nuestra misión es ofrecer a nuestros clientes una
+                experiencia de compra excepcional, con una amplia variedad de
+                productos de calidad. Nos comprometemos a satisfacer sus
+                necesidades mediante un servicio personalizado y un enfoque en
+                la sostenibilidad.
+              </p>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="col-md-6" id="vision">
+      <div class="card mb-3">
+        <div class="row g-0">
+          <div class="col-md-4">
+            <img
+              src="https://storage.googleapis.com/a1aa/image/kUZq7G2AIi65KZKYhsnJOjdQeIYfr02Cldl8xy58h0eaQeFPB.jpg"
+              class="img-fluid rounded-start"
+              alt="Visión"
+              style="width: 100%; height: 210px; object-fit: cover"
+            />
+          </div>
+          <div class="col-md-8">
+            <div class="card-body">
+              <h5 class="card-title text-monospace text-center">Visión</h5>
+              <p class="card-text" style="text-align: justify">
+                Ser la tienda virtual de referencia, reconocida por nuestra
+                diversidad de productos, atención al cliente excepcional y
+                compromiso con la sostenibilidad. Aspiramos a transformar la
+                forma en que las personas compran en línea, creando un espacio
+                de calidad y confianza.
+              </p>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- Footer -->
+<footer class="footer-section bg-light text-dark">
+  <div class="container-fluid">
+    <div class="footer-content pt-5 pb-5">
+      <div class="row">
+        <!-- Logo y Descripción -->
+        <div class="col-xl-3 col-lg-3 mb-3">
+          <div class="footer-widget">
+            <div class="footer-logo">
+              <a href="index.html">
+                <img
+                  src="https://localimg.s3.us-east-2.amazonaws.com/logoEmpresa/logo.png"
+                  class="img-fluid"
+                  alt="logo"
+                />
+              </a>
+            </div>
+            <div class="footer-text jus" style="text-align: justify">
+              <p>
+                En Freemarket, tu tienda virtual de confianza, ofrecemos calidad
+                y variedad. Con más de 10 años de experiencia, garantizamos una
+                compra excepcional y un servicio al cliente dedicado, siempre
+                enfocados en la ética y la sostenibilidad.
+              </p>
+            </div>
+          </div>
+        </div>
+
+        <!-- Redes Sociales -->
+        <div class="col-xl-3 col-lg-3 col-md-6 mb-3 text-center">
+          <div class="footer-widget">
+            <div class="footer-widget-heading">
+              <h3>Síguenos</h3>
+            </div>
+            <section class="footer-social-icon mb-4">
+              <a
+                class="btn btn-primary btn-floating m-1"
+                style="background-color: #1791e8"
+                href="#!"
+                role="button"
+                aria-label="Facebook"
+              >
+                <i class="fab fa-facebook-f fa-2x"></i>
+              </a>
+              <a
+                class="btn btn-primary btn-floating m-1"
+                style="background-color: #1d9bf0"
+                href="#!"
+                role="button"
+                aria-label="Twitter"
+              >
+                <i class="fab fa-twitter fa-2x"></i>
+              </a>
+              <a
+                class="btn btn-primary btn-floating m-1"
+                style="background-color: #dd4b39"
+                href="#!"
+                role="button"
+                aria-label="Google"
+              >
+                <i class="fab fa-google fa-2x"></i>
+              </a>
+              <a
+                class="btn btn-primary btn-floating m-1"
+                style="
+                  background: linear-gradient(45deg, #f58529, #dd2a7b, #8134af);
+                "
+                href="#!"
+                role="button"
+                aria-label="Instagram"
+              >
+                <i class="fab fa-instagram fa-2x"></i>
+              </a>
+              <a
+                class="btn btn-primary btn-floating m-1"
+                style="background-color: #0082ca"
+                href="#!"
+                role="button"
+                aria-label="LinkedIn"
+              >
+                <i class="fab fa-linkedin-in fa-2x"></i>
+              </a>
+              <a
+                class="btn btn-primary btn-floating m-1"
+                style="background-color: #333333"
+                href="#!"
+                role="button"
+                aria-label="GitHub"
+              >
+                <i class="fab fa-github fa-2x"></i>
+              </a>
+              <a
+                class="btn btn-primary btn-floating m-1"
+                style="background-color: #25d366"
+                href="#!"
+                role="button"
+                aria-label="WhatsApp"
+              >
+                <i class="fab fa-whatsapp fa-2x"></i>
+              </a>
+              <a
+                class="btn btn-primary btn-floating m-1"
+                style="background-color: #000000"
+                href="#!"
+                role="button"
+                aria-label="TikTok"
+              >
+                <i class="fab fa-tiktok fa-2x"></i>
+              </a>
+              <a
+                class="btn btn-primary btn-floating m-1"
+                style="background-color: #5165f6"
+                href="#!"
+                role="button"
+                aria-label="Discord"
+              >
+                <i class="fab fa-discord fa-2x"></i>
+              </a>
+            </section>
+          </div>
+        </div>
+
+        <!-- Información de Contacto -->
+        <div class="col-xl-3 col-lg-3 col-md-6 mb-3" id="contacto">
+          <div class="footer-widget">
+            <div class="footer-widget-heading">
+              <h3>Contáctanos</h3>
+            </div>
+            <div class="contact-info">
+              <div class="single-cta d-flex align-items-center mb-3">
+                <i
+                  class="bi bi-envelope-fill text-primary me-2"
+                  style="font-size: 1.5rem"
+                ></i>
+                <!-- Ejemplo de cómo mostrar el correo electrónico -->
+                <div>
+                  <h4>Escríbenos</h4>
+                  <span>benitoandrescalle035&#64;gmail.com</span>
+                </div>
+              </div>
+              <div class="single-cta d-flex align-items-center mb-3">
+                <i
+                  class="bi bi-telephone-fill text-success me-2"
+                  style="font-size: 1.5rem"
+                ></i>
+                <div class="cta-text">
+                  <h4>Llámame</h4>
+                  <span>+591 72937437</span>
+                </div>
+              </div>
+              <div class="single-cta d-flex align-items-center">
+                <i
+                  class="bi bi-geo-alt-fill text-danger me-2"
+                  style="font-size: 1.5rem"
+                ></i>
+                <div class="cta-text">
+                  <h4>Encuéntranos</h4>
+                  <span>1010 Avenida, SW 54321, Chandigarh</span>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+        <!-- Mapa de Ubicación -->
+        <div class="col-xl-3 col-lg-3 mb-3">
+          <div class="footer-widget">
+            <div class="footer-widget-heading">
+              <h3>Nuestra Ubicación</h3>
+            </div>
+            <div class="map-container">
+              <iframe
+                src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d635.9553212006339!2d-67.03540545407371!3d-15.14618889537657!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x93dfe7ba3963fe3b%3A0xd0b0ff015e9c6a00!2sYucumo!5e1!3m2!1ses-419!2sbo!4v1731749227930!5m2!1ses-419!2sbo"
+                width="100%"
+                height="300"
+                style="border: 0"
+                allowfullscreen=""
+                loading="lazy"
+                referrerpolicy="no-referrer-when-downgrade"
+              ></iframe>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="copyright-area bg-light text-light py-3 text-black">
+      <div class="container text-center">
+        <p>
+          Copyright &copy; 2024, Todos los derechos reservados
+          <a href="https://codepen.io/anupkumar92/" class="text-light">Anup</a>
+        </p>
+      </div>
+    </div>
+  </div>
+</footer>

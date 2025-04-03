@@ -1,0 +1,63 @@
+<div class="container">
+  <h2 class="text-center">Editar Categoría</h2>
+  <form [formGroup]="editarForm" (ngSubmit)="onSubmit()">
+    <!-- Nombre de la categoría -->
+    <div class="mb-3">
+      <label for="nombre_categoria" class="form-label"
+        >Nombre de la Categoría</label
+      >
+      <input
+        type="text"
+        id="nombre_categoria"
+        formControlName="nombre_categoria"
+        class="form-control"
+        placeholder="Ingrese el nombre de la categoría"
+      />
+      <div
+        *ngIf="
+          editarForm.get('nombre_categoria')?.invalid &&
+          editarForm.get('nombre_categoria')?.touched
+        "
+        class="text-danger"
+      >
+        El nombre de la categoría es obligatorio.
+      </div>
+    </div>
+
+    <!-- Descripción de la categoría -->
+    <div class="mb-3">
+      <label for="descripcion" class="form-label">Descripción</label>
+      <textarea
+        id="descripcion"
+        formControlName="descripcion"
+        class="form-control"
+        placeholder="Ingrese la descripción de la categoría"
+      ></textarea>
+      <div
+        *ngIf="
+          editarForm.get('descripcion')?.invalid &&
+          editarForm.get('descripcion')?.touched
+        "
+        class="text-danger"
+      >
+        La descripción es obligatoria.
+      </div>
+    </div>
+    <!-- Botón de submit -->
+    <button type="submit" class="btn btn-primary">Actualizar Categoría</button>
+  </form>
+
+  <!-- Modal de Éxito -->
+  <app-ok
+    *ngIf="mensajeModal"
+    [mensaje]="mensajeModal"
+    (close)="manejarOk()"
+  ></app-ok>
+
+  <!-- Modal de Error -->
+  <app-error
+    *ngIf="errorModal"
+    [mensaje]="errorModal"
+    (close)="manejarError()"
+  ></app-error>
+</div>

@@ -1,0 +1,69 @@
+<div class="container">
+  <h2 class="text-center">Registrar Nueva Categoría</h2>
+
+  <!-- Formulario de Categoría -->
+  <form [formGroup]="categoriasForm" (ngSubmit)="register()">
+    <div class="mb-3">
+      <label for="nombreCategoria" class="form-label"
+        >Nombre de la Categoría</label
+      >
+      <input
+        id="nombreCategoria"
+        type="text"
+        class="form-control"
+        formControlName="nombreCategoria"
+        placeholder="Nombre de la categoría"
+      />
+      <div
+        *ngIf="
+          categoriasForm.get('nombreCategoria')?.invalid &&
+          categoriasForm.get('nombreCategoria')?.touched
+        "
+        class="text-danger"
+      >
+        El nombre de la categoría es obligatorio.
+      </div>
+    </div>
+
+    <div class="mb-3">
+      <label for="descripcion" class="form-label">Descripción</label>
+      <textarea
+        id="descripcion"
+        class="form-control"
+        formControlName="descripcion"
+        placeholder="Descripción de la categoría"
+      ></textarea>
+      <div
+        *ngIf="
+          categoriasForm.get('descripcion')?.invalid &&
+          categoriasForm.get('descripcion')?.touched
+        "
+        class="text-danger"
+      >
+        La descripción es obligatoria.
+      </div>
+    </div>
+
+    <button
+      type="submit"
+      class="btn btn-primary"
+      [disabled]="categoriasForm.invalid"
+    >
+      Registrar
+    </button>
+  </form>
+
+  <!-- Modal de Éxito -->
+  <app-ok
+    *ngIf="mensajeModal"
+    [mensaje]="mensajeModal"
+    (close)="manejarOk()"
+  ></app-ok>
+
+  <!-- Modal de Error -->
+  <app-error
+    *ngIf="errorModal"
+    [mensaje]="errorModal"
+    (close)="manejarError()"
+  ></app-error>
+</div>

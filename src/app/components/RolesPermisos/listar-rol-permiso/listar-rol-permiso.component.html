@@ -1,0 +1,81 @@
+<div class="container">
+  <h2 class="text-center">Lista de Roles y Permisos</h2>
+
+  <!-- Campo de búsqueda -->
+  <div class="row mb-4">
+    <div class="col-md-10 text-start">
+      <label for="nombreInput" class="form-label">Buscar por Nombre</label>
+      <input
+        type="text"
+        class="form-control"
+        placeholder="Buscar por nombre de rol"
+        [(ngModel)]="searchNombreRol"
+      />
+    </div>
+    <div class="text-center col-md-2">
+      <div class="d-grid gap-4">
+        <button
+          class="btn btn-success d-flex align-items-center btn-lg py-1"
+          (click)="registrarRolePermiso()"
+        >
+          <i class="bi bi-journal-plus fs-1 me-2"></i>
+          Registrar Rol Permiso
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <div *ngIf="!rolePermisos.length && !loading" class="text-center">
+    No hay roles y permisos disponibles.
+  </div>
+
+  <div *ngIf="loading" class="text-center">Cargando...</div>
+
+  <table class="table table-striped table-bordered" *ngIf="!loading">
+    <thead>
+      <tr>
+        <th class="text-center">Nombre de Rol</th>
+        <th class="text-center">Permiso</th>
+        <th class="text-center">Acciones</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr *ngFor="let rolePermiso of filteredRolePermisos()">
+        <td class="text-start">{{ rolePermiso.rol.nombre_rol }}</td>
+        <td class="text-start">{{ rolePermiso.permiso.nombre_permiso }}</td>
+        <td class="text-center">
+          <button
+            class="btn btn-primary me-2"
+            (click)="editarRolePermiso(rolePermiso.id)"
+          >
+            <i class="bi bi-pencil-square me-1"></i>
+            <!-- Icono de lápiz para editar -->
+            Editar
+          </button>
+        </td>
+      </tr>
+    </tbody>
+  </table>
+
+  <!-- Paginación -->
+  <div
+    class="d-flex justify-content-between align-items-center mt-3"
+    *ngIf="rolePermisos.length > 0"
+  >
+    <button
+      class="btn btn-secondary"
+      (click)="previousPage()"
+      [disabled]="page === 1"
+    >
+      Anterior
+    </button>
+    <span>Página {{ page }}</span>
+    <button
+      class="btn btn-secondary"
+      (click)="nextPage()"
+      [disabled]="page * pageSize >= rolePermisos.length"
+    >
+      Siguiente
+    </button>
+  </div>
+</div>

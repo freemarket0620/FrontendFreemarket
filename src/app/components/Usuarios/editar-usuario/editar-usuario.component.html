@@ -1,0 +1,214 @@
+<div class="container" style="padding-bottom: 50px">
+  <h2>Editar Usuario</h2>
+  <form [formGroup]="editarForm" (ngSubmit)="onSubmit()">
+    <div class="form-group d-flex flex-column align-items-start">
+      <label for="nombre_usuario">Nombre Usuarios</label>
+      <input
+        type="text"
+        id="nombre_usuario"
+        formControlName="nombre_usuario"
+        class="form-control"
+        (focus)="validarNombre($event)"
+        (keypress)="validarNombre($event)"
+        [ngClass]="{
+          'is-invalid':
+            editarForm.get('nombre_usuario')?.invalid &&
+            editarForm.get('nombre_usuario')?.touched
+        }"
+      />
+      <div *ngIf="mensajeNombre" class="invalid-feedback">
+        {{ mensajeNombre }}
+        <!-- Mostrar mensaje de error -->
+      </div>
+    </div>
+    <!-- Campo Apellido -->
+    <div class="form-group d-flex flex-column align-items-start">
+      <label for="apellido">Apellido</label>
+      <input
+        type="text"
+        id="apellido"
+        formControlName="apellido"
+        class="form-control"
+        [ngClass]="{
+          'is-invalid':
+            editarForm.get('apellido')?.invalid &&
+            editarForm.get('apellido')?.touched
+        }"
+      />
+      <div
+        *ngIf="
+          editarForm.get('apellido')?.invalid &&
+          editarForm.get('apellido')?.touched
+        "
+        class="invalid-feedback"
+      >
+        El apellido es requerido.
+      </div>
+    </div>
+    <!-- Campo Fecha de Nacimiento -->
+    <div class="form-group d-flex flex-column align-items-start">
+      <label for="fecha_nacimiento">Fecha de Nacimiento</label>
+      <input
+        type="date"
+        id="fecha_nacimiento"
+        formControlName="fecha_nacimiento"
+        class="form-control"
+        [ngClass]="{
+          'is-invalid':
+            editarForm.get('fecha_nacimiento')?.invalid &&
+            editarForm.get('fecha_nacimiento')?.touched
+        }"
+      />
+      <div
+        *ngIf="
+          editarForm.get('fecha_nacimiento')?.invalid &&
+          editarForm.get('fecha_nacimiento')?.touched
+        "
+        class="invalid-feedback"
+      >
+        La fecha de nacimiento es requerida.
+      </div>
+    </div>
+    <!-- Campo Teléfono -->
+    <div class="form-group d-flex flex-column align-items-start">
+      <label for="telefono">Teléfono</label>
+      <input
+        type="text"
+        id="telefono"
+        formControlName="telefono"
+        class="form-control"
+        [ngClass]="{
+          'is-invalid':
+            editarForm.get('telefono')?.invalid &&
+            editarForm.get('telefono')?.touched
+        }"
+      />
+      <div
+        *ngIf="
+          editarForm.get('telefono')?.invalid &&
+          editarForm.get('telefono')?.touched
+        "
+        class="invalid-feedback"
+      >
+        El teléfono es requerido.
+      </div>
+    </div>
+    <!-- Campo Correo -->
+    <div class="form-group d-flex flex-column align-items-start">
+      <label for="correo">Correo</label>
+      <input
+        type="email"
+        id="correo"
+        formControlName="correo"
+        class="form-control"
+        [ngClass]="{
+          'is-invalid':
+            editarForm.get('correo')?.invalid &&
+            editarForm.get('correo')?.touched
+        }"
+      />
+      <div
+        *ngIf="
+          editarForm.get('correo')?.invalid && editarForm.get('correo')?.touched
+        "
+        class="invalid-feedback"
+      >
+        El correo es requerido y debe ser válido.
+      </div>
+    </div>
+    <!-- Campo C.I. -->
+    <div class="form-group d-flex flex-column align-items-start">
+      <label for="ci">C.I.</label>
+      <input
+        type="text"
+        id="ci"
+        formControlName="ci"
+        class="form-control"
+        [ngClass]="{
+          'is-invalid':
+            editarForm.get('ci')?.invalid && editarForm.get('ci')?.touched
+        }"
+      />
+      <div
+        *ngIf="editarForm.get('ci')?.invalid && editarForm.get('ci')?.touched"
+        class="invalid-feedback"
+      >
+        El C.I. es requerido.
+      </div>
+    </div>
+
+    <!-- Campo Departamento C.I. -->
+    <div class="form-group d-flex flex-column align-items-start">
+      <label for="ci_departamento">Departamento C.I.</label>
+      <select
+        id="ci_departamento"
+        formControlName="ci_departamento"
+        class="form-control"
+        [ngClass]="{
+          'is-invalid':
+            editarForm.get('ci_departamento')?.invalid &&
+            editarForm.get('ci_departamento')?.touched
+        }"
+      >
+        <option value="">Seleccione un departamento</option>
+        <option value="LP">La Paz</option>
+        <option value="CB">Cochabamba</option>
+        <option value="SC">Santa Cruz</option>
+        <option value="BN">Beni</option>
+        <option value="PD">Pando</option>
+        <option value="TJ">Tarija</option>
+        <option value="CH">Chuquisaca</option>
+        <option value="OR">Oruro</option>
+        <option value="PT">Potosí</option>
+      </select>
+      <div
+        *ngIf="
+          editarForm.get('ci_departamento')?.invalid &&
+          editarForm.get('ci_departamento')?.touched
+        "
+        class="invalid-feedback"
+      >
+        El departamento C.I. es requerido.
+      </div>
+    </div>
+
+    <!-- Campo Imagen -->
+    <div class="form-group d-flex flex-column align-items-center">
+      <label for="imagen_url">Imagen</label>
+      <input
+        type="file"
+        id="imagen_url"
+        (change)="onImageChange($event)"
+        class="form-control"
+      />
+      <div *ngIf="imagenPreview" class="mt-2">
+        <img
+          [src]="imagenPreview"
+          alt="Vista Previa"
+          class="img-fluid"
+          style="max-width: 200px; max-height: 200px"
+        />
+      </div>
+    </div>
+    <button
+      type="submit"
+      class="btn btn-primary"
+      [disabled]="editarForm.invalid"
+    >
+      Actualizar Usuario
+    </button>
+  </form>
+  <!-- Modal de Éxito -->
+  <app-ok
+    *ngIf="mensajeModal"
+    [mensaje]="mensajeModal"
+    (close)="manejarOk()"
+  ></app-ok>
+
+  <!-- Modal de Error -->
+  <app-error
+    *ngIf="errorModal"
+    [mensaje]="errorModal"
+    (close)="manejarError()"
+  ></app-error>
+</div>

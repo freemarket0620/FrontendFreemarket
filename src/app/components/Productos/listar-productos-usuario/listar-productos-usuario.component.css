@@ -1,0 +1,162 @@
+/* Estilos Generales */
+.card {
+  margin-bottom: 20px; /* Espacio entre las tarjetas */
+  transition: transform 0.2s;
+}
+
+.card:hover {
+  transform: scale(1.05);
+}
+
+.card-title {
+  font-family: "Arial", sans-serif; /* Cambia la fuente según tu preferencia */
+  font-weight: bold;
+  font-size: 1.55rem;
+}
+
+.card-text {
+  font-size: 1.9rem; /* Tamaño de fuente más pequeño para el texto */
+}
+
+.card-img-top {
+  height: 200px; /* Ajusta la altura deseada para las imágenes */
+  width: 50%; /* Asegúrate de que la imagen ocupe todo el ancho del contenedor */
+  object-fit: contain; /* Mantiene la relación de aspecto sin recortar la imagen */
+  display: block; /* Asegúrate de que se trate como un bloque */
+  margin-left: auto; /* Centra la imagen a la izquierda */
+  margin-right: auto; /* Centra la imagen a la derecha */
+}
+
+/* Estilos para el modal */
+.modal {
+  display: none;
+  position: fixed;
+  z-index: 1050;
+  left: 0;
+  top: 0;
+  width: 100%;
+  height: 100%;
+  overflow: auto;
+  background-color: rgba(0, 0, 0, 0.7);
+  justify-content: center;
+  align-items: center;
+}
+
+.modal.show {
+  display: flex;
+}
+
+.modal-dialog {
+  max-width: 90%;
+  max-height: 80%;
+}
+
+.modal-body img {
+  max-width: 100%;
+  max-height: 100%;
+  margin: auto;
+  display: block;
+}
+
+/* Estilos para inputs sin flechas */
+.sin-flechas {
+  -moz-appearance: textfield;
+}
+
+.sin-flechas::-webkit-outer-spin-button,
+.sin-flechas::-webkit-inner-spin-button {
+  -webkit-appearance: none;
+  margin: 0;
+}
+
+/* Estilos para fondos personalizados */
+.custom-bg-blue-200 {
+  background-color: #90caf9; /* Color azul */
+  color: black; /* Asegúrate de que el texto sea legible */
+}
+
+.custom-bg-orange-400 {
+  background-color: #ff9800; /* Color naranja */
+  color: white; /* Texto blanco */
+}
+
+/* Estilos para la sección de búsquedas y filtrados */
+.search-container {
+  margin-bottom: 20px; /* Espacio entre la barra de búsqueda y el contenido */
+}
+
+.search-container .form-label {
+  font-weight: bold; /* Resaltar las etiquetas */
+}
+
+.search-container .form-control {
+  border-radius: 5px; /* Bordes redondeados para los inputs */
+}
+
+/* Estilos para los botones */
+.btn {
+  border-radius: 5px; /* Bordes redondeados para los botones */
+}
+
+/* Estilos para el contenedor del carrito */
+#detalles-venta {
+  margin-top: 20px; /* Espacio superior para el carrito */
+}
+
+/* Estilos para la tabla del carrito */
+.table {
+  margin-bottom: 0; /* Eliminar margen inferior de la tabla */
+}
+
+/* Estilos para el botón de paginación */
+.btn-secondary {
+  margin: 0 5px; /* Espacio entre los botones de paginación */
+}
+
+/* Estilos de sombra y bordes */
+.shadow-sm {
+  box-shadow: 0 1px 2px rgba(0, 0, 0, 0.1);
+}
+
+.border-light {
+  border-color: rgba(0, 0, 0, 0.125) !important;
+}
+
+/* Estilo para rotación */
+.rotate-left {
+  transform: rotateY(180deg);
+}
+
+/* nueva seccionde pdf */
+.card-header {
+  position: relative;
+  padding: 15px;
+}
+
+.card-header img {
+  position: absolute;
+  top: 10px; /* Ajusta según sea necesario */
+  left: 15px; /* Ajusta según sea necesario */
+}
+
+.table th,
+.table td {
+  text-align: center; /* Centra el texto en las celdas de la tabla */
+}
+
+.card-body {
+  padding: 20px; /* Espaciado adicional en el cuerpo de la tarjeta */
+}
+
+.table-bordered {
+  border: 1px solid #000000; /* Color del borde de la tabla */
+}
+
+.table-bordered th,
+.table-bordered td {
+  border: 1px solid #000000; /* Color del borde de las celdas */
+}
+
+.table-striped tbody tr:nth-of-type(odd) {
+  background-color: transparent; /* Asegúrate de que no haya fondo en las filas */
+}

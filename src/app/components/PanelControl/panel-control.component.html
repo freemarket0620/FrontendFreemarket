@@ -1,0 +1,398 @@
+<aside
+  class="sidebar position-fixed top-0 left-0 overflow-auto h-100"
+  [ngClass]="{ 'sidebar-hidden': !isSidebarOpen }"
+>
+  <div class="p-3 text-center content p-0 bounce-content">
+    <img
+      *ngIf="imagenUrl"
+      [src]="imagenUrl"
+      alt="Foto de usuario"
+      class="rounded-circle img-fluid mb-3"
+      style="width: 150px; height: 150px"
+    />
+    <p>Nombre: {{ nombre_usuario }} {{ apellido }}</p>
+    <div *ngIf="roles.length > 0">
+      <p *ngFor="let rol of roles">Rol: {{ rol }}</p>
+    </div>
+    <hr />
+
+    <ul class="list-group">
+      <!-- Menú desplegable para la gestión de usuarios -->
+      <li
+        class="list-group-item list-group-item-action d-flex align-items-center"
+        (click)="toggleSubmenu('usuarios')"
+      >
+        <div class="col-5 text-center pe-3">
+          <i class="bi bi-person fs-2 text-primary"></i>
+        </div>
+        <div class="col-8 text-start">
+          <span>Gestión de Usuarios</span>
+        </div>
+      </li>
+      <ul *ngIf="isSubmenuOpen('usuarios')" class="list-group ps-3">
+        <li
+          *ngIf="puedeVer('registrarUsuarios')"
+          class="list-group-item list-group-item-action d-flex align-items-center"
+          (click)="mostrarComponente('VerUsuario')"
+        >
+          <div class="col-5 text-center pe-3">
+            <i class="bi bi-person-plus fs-2 text-primary"></i>
+          </div>
+          <div class="col-8 text-start">
+            <span>Usuarios</span>
+          </div>
+        </li>
+
+        <li
+          *ngIf="puedeVer('registrarRoles')"
+          class="list-group-item list-group-item-action d-flex align-items-center"
+          (click)="mostrarComponente('VerRoles')"
+        >
+          <div class="col-5 text-center pe-3">
+            <i class="bi bi-people fs-2 text-primary"></i>
+          </div>
+          <div class="col-10 text-start">
+            <span>Roles</span>
+          </div>
+        </li>
+        <li
+          *ngIf="puedeVer('registrarPermisos')"
+          class="list-group-item list-group-item-action d-flex align-items-center"
+          (click)="mostrarComponente('VerPermisos')"
+        >
+          <div class="col-5 text-center pe-3">
+            <i class="bi bi-lock fs-2 text-primary"></i>
+          </div>
+          <div class="col-10 text-start">
+            <span>Permisos</span>
+          </div>
+        </li>
+        <li
+          *ngIf="puedeVer('registrarUsuarioRoles')"
+          class="list-group-item list-group-item-action d-flex align-items-center"
+          (click)="mostrarComponente('VerUsuarioRoles')"
+        >
+          <div class="col-5 text-center pe-3">
+            <i class="bi bi-person-check fs-2 text-primary"></i>
+          </div>
+          <div class="col-10 text-start">
+            <span>Usuario Roles</span>
+          </div>
+        </li>
+        <li
+          *ngIf="puedeVer('registrarRolesPermisos')"
+          class="list-group-item list-group-item-action d-flex align-items-center"
+          (click)="mostrarComponente('VerRolesPermisos')"
+        >
+          <div class="col-5 text-center pe-3">
+            <i class="bi bi-person-lock fs-2 text-primary"></i>
+          </div>
+          <div class="col-10 text-start">
+            <span>Roles Permisos</span>
+          </div>
+        </li>
+      </ul>
+      <!-- fin de desplegable -->
+
+      <!-- secion de ventas y productos  -->
+      <li
+        class="list-group-item list-group-item-action d-flex align-items-center"
+        (click)="toggleSubmenu('VentasProductos')"
+      >
+        <div class="col-5 text-center pe-3">
+          <i class="bi bi-shop fs-2 text-warning"></i>
+        </div>
+        <div class="col-8 text-start">
+          <span>Productos y Ventas</span>
+        </div>
+      </li>
+      <ul *ngIf="isSubmenuOpen('VentasProductos')" class="list-group ps-3">
+        <li
+          *ngIf="puedeVer('registrarCategorias')"
+          class="list-group-item list-group-item-action d-flex align-items-center"
+          (click)="mostrarComponente('VerCategorias')"
+        >
+          <div class="col-5 text-center pe-3">
+            <i class="bi bi-tags fs-2 text-warning"></i>
+          </div>
+          <div class="col-10 text-start">
+            <span>Categorías</span>
+          </div>
+        </li>
+        <li
+          *ngIf="puedeVer('registrarProductos')"
+          class="list-group-item list-group-item-action d-flex align-items-center"
+          (click)="mostrarComponente('VerProductos')"
+        >
+          <div class="col-5 text-center pe-3">
+            <i class="bi bi-shop fs-2 text-warning"></i>
+          </div>
+          <div class="col-10 text-start">
+            <span>Productos</span>
+          </div>
+        </li>
+        <li
+          *ngIf="puedeVer('registrarVenta')"
+          class="list-group-item list-group-item-action d-flex align-items-center"
+          (click)="mostrarComponente('VerVenta')"
+        >
+          <div class="col-5 text-center pe-3">
+            <i class="bi bi-cart-check fs-2 text-warning"></i>
+          </div>
+          <div class="col-10 text-start">
+            <span>Venta</span>
+          </div>
+        </li>
+        <li
+          *ngIf="puedeVer('registrarDetalleVenta')"
+          class="list-group-item list-group-item-action d-flex align-items-center"
+          (click)="mostrarComponente('VerDetalleVenta')"
+        >
+          <div class="col-5 text-center pe-3">
+            <i class="bi bi-journal-bookmark fs-2 text-warning"></i>
+          </div>
+          <div class="col-10 text-start">
+            <span>Detalle Venta</span>
+          </div>
+        </li>
+        <li
+          *ngIf="puedeVer('registrarVenta-DetalleVenta-Empleado')"
+          class="list-group-item list-group-item-action d-flex align-items-center"
+          (click)="mostrarComponente('VerVenta-DetalleVenta')"
+        >
+          <div class="col-5 text-center pe-3">
+            <i class="bi bi-cart4 fs-2 text-warning"></i>
+          </div>
+          <div class="col-10 text-start">
+            <span>Realizar Venta</span>
+          </div>
+        </li>
+        <li
+          *ngIf="puedeVer('registrarVenta-DetalleVenta-Empleado')"
+          class="list-group-item list-group-item-action d-flex align-items-center"
+          (click)="mostrarComponente('Targetas')"
+        >
+          <div class="col-5 text-center pe-3">
+            <i class="bi bi-cart4 fs-2 text-warning"></i>
+          </div>
+          <div class="col-10 text-start">
+            <span>Targetas</span>
+          </div>
+        </li>
+      </ul>
+
+      <li
+        *ngIf="puedeVer('')"
+        class="list-group-item list-group-item-action d-flex align-items-center"
+        (click)="mostrarComponente(''); handleItemClick()"
+      >
+        <div class="col-5 text-center pe-3">
+          <i class="bi bi-bar-chart fs-2 text-danger"></i>
+        </div>
+        <div class="col-10 text-start">
+          <span>Reportes</span>
+        </div>
+      </li>
+    </ul>
+  </div>
+</aside>
+
+<!-- Overlay para pantallas pequeñas -->
+<div
+  class="overlay"
+  (click)="toggleSidebar()"
+  [ngClass]="{ show: isSidebarOpen && windowWidth < 768 }"
+></div>
+
+<!-- Contenido principal -->
+<section id="wrapper" [ngClass]="{ shrink: isSidebarOpen }">
+  <nav class="navbar navbar-expand-md" style="background-color: #e7e7e7">
+    <div class="container-fluid mx-2">
+      <i
+        [ngClass]="iconClass + ' ml-2'"
+        (click)="toggleSidebar()"
+        style="cursor: pointer; font-size: 2.5rem; padding: 5px"
+      ></i>
+      <div class="ml-auto d-flex align-items-center">
+        <div class="dropdown">
+          <button
+            class="btn btn-secondary dropdown-toggle"
+            type="button"
+            id="dropdownMenuButton"
+            data-bs-toggle="dropdown"
+            aria-expanded="false"
+          >
+            {{ nombre_usuario }} {{ apellido }}
+          </button>
+          <ul
+            class="dropdown-menu dropdown-menu-end"
+            aria-labelledby="dropdownMenuButton"
+          >
+            <li>
+              <div
+                class="dropdown-item d-flex align-items-center"
+                (click)="mostrarComponente('VerPerfil')"
+              >
+                <i class="fas fa-eye me-2"></i>
+                <span>Ver Perfil</span>
+              </div>
+            </li>
+            <li>
+              <div class="dropdown-divider"></div>
+              <!-- Línea divisoria -->
+            </li>
+            <li>
+              <div
+                class="dropdown-item text-danger"
+                (click)="onSelectChange('cerrarSesion')"
+              >
+                <i class="fas fa-sign-out-alt me-2"></i>
+                <span>Cerrar Sesión</span>
+              </div>
+            </li>
+          </ul>
+        </div>
+      </div>
+    </div>
+  </nav>
+
+  <div
+    class="content d-flex justify-content-center align-items-center"
+    style="min-height: calc(100vh - 70px)"
+  >
+    <div class="text-center" style="margin-top: 10px; width: 100%">
+      <!-- Button to return to Dashboard -->
+      <button
+        id="btn-dashboard"
+        class="btn btn-success"
+        style="position: absolute; right: 10px"
+        (click)="mostrarComponente('app-dashboard'); handleItemClick()"
+      >
+        <i class="fas fa-home fs-1 me-2"></i>
+      </button>
+      <ng-container [ngSwitch]="componenteActual">
+        <app-dashboard *ngSwitchDefault />
+
+        <app-listar-usuario
+          *ngSwitchCase="'VerUsuario'"
+          (registrar)="mostrarComponente('registrarUsuarios')"
+          (editar)="mostrarComponente('EditarUsuario', $event)"
+        />
+        <app-registrar-usuario
+          *ngSwitchCase="'registrarUsuarios'"
+          (listarUsuario)="mostrarComponente('VerUsuario')"
+        />
+        <app-editar-usuario
+          *ngSwitchCase="'EditarUsuario'"
+          [usuarioId]="idParaEditar"
+          (listarUsuarioEditado)="mostrarComponente('VerUsuario')"
+        />
+        <!-- secccion de roles  -->
+        <app-listar-rol
+          *ngSwitchCase="'VerRoles'"
+          (registrarRoles)="mostrarComponente('registrarRoles')"
+          (editarRoles)="mostrarComponente('EditarRoles', $event)"
+        />
+        <app-registrar-rol
+          *ngSwitchCase="'registrarRoles'"
+          (listarRoles)="mostrarComponente('VerRoles')"
+        />
+        <app-editar-rol
+          *ngSwitchCase="'EditarRoles'"
+          [roleId]="idParaEditar"
+          (listarRoleEditado)="mostrarComponente('VerRoles')"
+        />
+
+        <!-- seccion de permisos  -->
+        <app-listar-permiso
+          *ngSwitchCase="'VerPermisos'"
+          (registrarPermisos)="mostrarComponente('registrarPermisos')"
+          (editarPermisos)="mostrarComponente('EditarPermisos', $event)"
+        />
+        <app-registrar-permiso
+          *ngSwitchCase="'registrarPermisos'"
+          (listarPermisos)="mostrarComponente('VerPermisos')"
+        />
+        <app-editar-permiso
+          *ngSwitchCase="'EditarPermisos'"
+          [permisoId]="idParaEditar"
+          (listarPermisoEditado)="mostrarComponente('VerPermisos')"
+        />
+        <!-- seccion de  usuario roles -->
+        <app-listar-usuario-rol
+          *ngSwitchCase="'VerUsuarioRoles'"
+          (registrarUsuarioRol)="mostrarComponente('registrarUsuarioRoles')"
+          (editarUsuarioRol)="mostrarComponente('EditarUsuarioRoles', $event)"
+        />
+        <app-registrar-usuario-rol
+          *ngSwitchCase="'registrarUsuarioRoles'"
+          (listarUsuarioRoles)="mostrarComponente('VerUsuarioRoles')"
+        />
+        <app-editar-usuario-rol
+          *ngSwitchCase="'EditarUsuarioRoles'"
+          [usuarioRolId]="idParaEditar"
+          (listarUsuarioRolEditado)="mostrarComponente('VerUsuarioRoles')"
+        />
+        <!-- seccion de roles permisos-->
+        <app-listar-rol-permiso
+          *ngSwitchCase="'VerRolesPermisos'"
+          (registrarRolePermisos)="mostrarComponente('registrarRolesPermisos')"
+          (editarRolePermisos)="
+            mostrarComponente('EditarRolesPermisos', $event)
+          "
+        />
+        <app-registrar-rol-permiso
+          *ngSwitchCase="'registrarRolesPermisos'"
+          (listarRolPermisos)="mostrarComponente('VerRolesPermisos')"
+        />
+        <app-editar-rol-permiso
+          *ngSwitchCase="'EditarRolesPermisos'"
+          [rolPermisoId]="idParaEditar"
+          (listarRolPermisoEditado)="mostrarComponente('VerRolesPermisos')"
+        />
+        <!-- seccion de categorias -->
+        <app-listar-categoria
+          *ngSwitchCase="'VerCategorias'"
+          (registrarCategoria)="mostrarComponente('registrarCategorias')"
+          (editarCategoria)="mostrarComponente('EditarCategorias', $event)"
+        />
+        <app-registrar-categoria
+          *ngSwitchCase="'registrarCategorias'"
+          (listarCategorias)="mostrarComponente('VerCategorias')"
+        />
+        <app-editar-categoria
+          *ngSwitchCase="'EditarCategorias'"
+          [categoriaId]="idParaEditar"
+          (listarCategoriaEditada)="mostrarComponente('VerCategorias')"
+        />
+        <!-- seccion de productos  -->
+        <app-listar-producto
+          *ngSwitchCase="'VerProductos'"
+          (registrarProductos)="mostrarComponente('registrarProductos')"
+          (editarProductos)="mostrarComponente('EditarProductos', $event)"
+        />
+        <app-registrar-producto
+          *ngSwitchCase="'registrarProductos'"
+          (listarProductos)="mostrarComponente('VerProductos')"
+        />
+        <app-editar-producto
+          *ngSwitchCase="'EditarProductos'"
+          [productoId]="idParaEditar"
+          (listarProductoEditado)="mostrarComponente('VerProductos')"
+        />
+        
+        <!-- estas la seecionde  ventas  -->
+        <app-listar-venta *ngSwitchCase="'VerVenta'" />
+
+        <!-- seccion de detalles vetnas   -->
+        <app-listar-detalle-venta *ngSwitchCase="'VerDetalleVenta'" />
+        <app-listar-productos-empleado
+          *ngSwitchCase="'VerVenta-DetalleVenta'"
+        />
+        <app-targetas *ngSwitchCase="'Targetas'" />
+        <!-- Sección para ver el perfil -->
+        <app-perfil *ngSwitchCase="'VerPerfil'" />
+      </ng-container>
+    </div>
+  </div>
+</section>

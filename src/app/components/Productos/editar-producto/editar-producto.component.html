@@ -1,0 +1,262 @@
+<div class="container mt-4">
+  <h2 class="text-center">Editar Producto</h2>
+
+  <form
+    [formGroup]="form"
+    (ngSubmit)="onSubmit()"
+    enctype="multipart/form-data"
+  >
+    <div class="row">
+      <div class="col-md-8">
+        <!-- Datos del producto -->
+        <div class="form-group row mb-3">
+          <div class="col-sm-6">
+            <label for="nombre_producto" class="form-label"
+              >Nombre del Producto *</label
+            >
+            <input
+              type="text"
+              id="nombre_producto"
+              formControlName="nombre_producto"
+              class="form-control"
+              [ngClass]="{
+                'is-invalid':
+                  form.get('nombre_producto')?.invalid &&
+                  form.get('nombre_producto')?.touched
+              }"
+            />
+            <div
+              *ngIf="
+                form.get('nombre_producto')?.invalid &&
+                form.get('nombre_producto')?.touched
+              "
+              class="invalid-feedback"
+            >
+              Nombre del producto es requerido
+            </div>
+          </div>
+          <div class="col-sm-6">
+            <label for="codigo_producto" class="form-label">Código *</label>
+            <input
+              type="text"
+              id="codigo_producto"
+              formControlName="codigo_producto"
+              class="form-control"
+              [ngClass]="{
+                'is-invalid':
+                  form.get('codigo_producto')?.invalid &&
+                  form.get('codigo_producto')?.touched
+              }"
+            />
+            <div
+              *ngIf="
+                form.get('codigo_producto')?.invalid &&
+                form.get('codigo_producto')?.touched
+              "
+              class="invalid-feedback"
+            >
+              Código del producto es requerido
+            </div>
+          </div>
+        </div>
+
+        <div class="form-group row mb-3">
+          <div class="col-sm-4">
+            <label for="precio_compra" class="form-label"
+              >Precio Compra *</label
+            >
+            <input
+              type="number"
+              step="0.01"
+              id="precio_compra"
+              formControlName="precio_compra"
+              class="form-control"
+              [ngClass]="{
+                'is-invalid':
+                  form.get('precio_compra')?.invalid &&
+                  form.get('precio_compra')?.touched
+              }"
+            />
+            <div
+              *ngIf="
+                form.get('precio_compra')?.invalid &&
+                form.get('precio_compra')?.touched
+              "
+              class="invalid-feedback"
+            >
+              Precio debe ser mayor o igual a 0
+            </div>
+          </div>
+          <div class="col-sm-4">
+            <label for="precio_unitario" class="form-label"
+              >Precio Unitario *</label
+            >
+            <input
+              type="number"
+              step="0.01"
+              id="precio_unitario"
+              formControlName="precio_unitario"
+              class="form-control"
+              [ngClass]="{
+                'is-invalid':
+                  form.get('precio_unitario')?.invalid &&
+                  form.get('precio_unitario')?.touched
+              }"
+            />
+            <div
+              *ngIf="
+                form.get('precio_unitario')?.invalid &&
+                form.get('precio_unitario')?.touched
+              "
+              class="invalid-feedback"
+            >
+              Precio debe ser mayor o igual a 0
+            </div>
+          </div>
+          <div class="col-sm-4">
+            <label for="precio_mayor" class="form-label">Precio Mayor *</label>
+            <input
+              type="number"
+              step="0.01"
+              id="precio_mayor"
+              formControlName="precio_mayor"
+              class="form-control"
+              [ngClass]="{
+                'is-invalid':
+                  form.get('precio_mayor')?.invalid &&
+                  form.get('precio_mayor')?.touched
+              }"
+            />
+            <div
+              *ngIf="
+                form.get('precio_mayor')?.invalid &&
+                form.get('precio_mayor')?.touched
+              "
+              class="invalid-feedback"
+            >
+              Precio debe ser mayor o igual a 0
+            </div>
+          </div>
+        </div>
+
+        <div class="form-group row mb-3">
+          <div class="col-sm-6">
+            <label for="stock" class="form-label">Stock *</label>
+            <input
+              type="number"
+              id="stock"
+              formControlName="stock"
+              class="form-control"
+              [ngClass]="{
+                'is-invalid':
+                  form.get('stock')?.invalid && form.get('stock')?.touched
+              }"
+            />
+            <div
+              *ngIf="form.get('stock')?.invalid && form.get('stock')?.touched"
+              class="invalid-feedback"
+            >
+              Stock debe ser mayor o igual a 0
+            </div>
+          </div>
+          <div class="col-sm-6">
+            <label for="categoria" class="form-label">Categoría *</label>
+            <select
+              id="categoria"
+              formControlName="categoria"
+              class="form-select"
+              [ngClass]="{
+                'is-invalid':
+                  form.get('categoria')?.invalid &&
+                  form.get('categoria')?.touched
+              }"
+            >
+              <option value="" disabled>Seleccione categoría</option>
+              <option *ngFor="let cat of categorias" [value]="cat.id">
+                {{ cat.nombre_categoria }}
+              </option>
+            </select>
+            <div
+              *ngIf="
+                form.get('categoria')?.invalid && form.get('categoria')?.touched
+              "
+              class="invalid-feedback"
+            >
+              Debe seleccionar una categoría
+            </div>
+          </div>
+        </div>
+
+        <div class="form-group mb-3">
+          <label for="descripcion" class="form-label">Descripción</label>
+          <textarea
+            id="descripcion"
+            formControlName="descripcion"
+            class="form-control"
+            rows="3"
+          ></textarea>
+        </div>
+
+        <button
+          type="submit"
+          class="btn btn-primary me-2"
+          [disabled]="form.invalid"
+        >
+          <i class="bi bi-save me-1"></i> Guardar Cambios
+        </button>
+        <button
+          type="button"
+          class="btn btn-secondary"
+          (click)="listarProductoEditado.emit()"
+        >
+          <i class="bi bi-x-circle me-1"></i> Cancelar
+        </button>
+      </div>
+
+      <!-- Sección de imagen -->
+      <div class="col-md-4">
+        <div class="card">
+          <div class="card-header bg-light">
+            <h5 class="card-title mb-0">Imagen del Producto</h5>
+          </div>
+          <div class="card-body text-center">
+            <div class="mb-3">
+              <label for="imagenProducto" class="form-label"
+                >Cambiar imagen</label
+              >
+              <input
+                type="file"
+                id="imagenProducto"
+                class="form-control"
+                accept="image/*"
+                (change)="onImageChange($event)"
+              />
+            </div>
+            <div class="image-preview-container">
+              <img
+                [src]="imagenPreview || 'assets/images/placeholder-product.png'"
+                alt="Vista previa de imagen"
+                class="img-thumbnail img-preview"
+              />
+              <div *ngIf="!imagenPreview" class="no-image-text text-muted">
+                No hay imagen seleccionada
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </form>
+
+  <!-- Modales de feedback -->
+  <app-ok
+    *ngIf="mensajeModal"
+    [mensaje]="mensajeModal"
+    (close)="manejarOk()"
+  ></app-ok>
+  <app-error
+    *ngIf="errorModal"
+    [mensaje]="errorModal"
+    (close)="manejarError()"
+  ></app-error>
+</div>

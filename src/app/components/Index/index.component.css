@@ -1,0 +1,247 @@
+/* ############################ */
+/* Estilo para el header */
+/* ############################ */
+#navbar {
+  background-color: #20c997; /* Color verde agua */
+  transition: background-color 0.3s ease;
+}
+
+/* Cambiar el color de fondo al hacer scroll */
+.navbar.scrolled {
+  background-color: rgba(32, 201, 151, 0.9); /* Color verde agua con opacidad */
+}
+
+/* Estilo para los enlaces */
+.nav-link {
+  transition: color 0.3s ease;
+}
+
+.nav-link:hover {
+  color: #20c997; /* Color amarillo al pasar el mouse */
+}
+
+/* Estilo para el botón */
+.btn-light {
+  background-color: #ffffff; /* Fondo blanco */
+  color: #20c997; /* Color verde agua */
+  border: 2px solid #20c997; /* Borde verde agua */
+  transition: background-color 0.3s ease, color 0.3s ease;
+}
+
+.btn-light:hover {
+  background-color: #20c997; /* Fondo verde agua al pasar el mouse */
+  color: #ffffff; /* Texto blanco al pasar el mouse */
+}
+
+/* ############################ */
+/* seccion titulo */
+/* ############################ */
+.text-center-titulo {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  height: 100vh;
+  padding-top: 100px;
+  position: relative;
+}
+.main-background {
+  background: linear-gradient(135deg, rgba(0, 0, 0, 0.8), rgba(0, 0, 0, 0.5)),
+    url("https://images.pexels.com/photos/6214138/pexels-photo-6214138.jpeg?auto=compress&cs=tinysrgb&w=1260&h=750&dpr=1")
+      no-repeat center center fixed;
+  background-size: cover;
+  min-height: 100vh; /* Asegúrate de que cubra toda la altura de la ventana */
+
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  color: white; /* Cambia el color del texto para que sea legible sobre el fondo */
+  text-align: center;
+  position: relative;
+}
+
+h2 {
+  transform: translate(0, -40%);
+  font-size: calc(12vw + 0.4rem); /* Aumentado en un 10% */
+  font-family: "Frozen", serif;
+  background-image: url("https://assets.codepen.io/209981/ice.jpg");
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-size: contain;
+  position: relative;
+  -webkit-text-stroke: 1px #4f90ab;
+
+  /* Ajuste de las sombras */
+  filter: drop-shadow(0 0 2px rgba(255, 255, 255, 0.5))
+    drop-shadow(0 0 2px rgba(41, 131, 172, 0.5))
+    drop-shadow(0 0 30px rgba(125, 204, 239, 0.5))
+    drop-shadow(0 0 30px rgba(58, 122, 155, 0.5));
+
+  pointer-events: none; /* Desactiva la interacción */
+  text-decoration: none; /* Elimina el subrayado */
+}
+
+h2:focus {
+  outline: none; /* Elimina el borde de enfoque */
+}
+
+.animation {
+  position: absolute;
+  left: 0;
+  background: linear-gradient(
+    45deg,
+    rgba(255, 255, 255, 0) 45%,
+    rgba(255, 255, 255, 0.8) 50%,
+    rgba(255, 255, 255, 0) 55%,
+    rgba(255, 255, 255, 0) 100%
+  );
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  animation: shine 7s infinite;
+  background-size: 200%;
+}
+
+@keyframes shine {
+  0% {
+    background-position: -120%;
+  }
+  10% {
+    background-position: 120%;
+  }
+  100% {
+    background-position: 120%;
+  }
+}
+
+@font-face {
+  font-family: "Frozen";
+  src: url("https://s3-us-west-2.amazonaws.com/s.cdpn.io/209981/Ice%20kingdom%20-%20Bold%20-%20Por%20Kustren.woff");
+}
+
+/* ############################ */
+/* seccion de footer */
+/* ############################ */
+
+.footer-social-icon {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  position: relative;
+  width: 300px;
+  height: 300px;
+  border-radius: 50%;
+  overflow: hidden;
+  margin: 0 auto;
+}
+
+.footer-social-icon a {
+  position: absolute;
+  width: 60px;
+  height: 60px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 50%;
+  transition: transform 0.3s ease, box-shadow 0.3s ease;
+  overflow: hidden;
+  background-color: #ccc; /* Por si no tienen color inicial */
+}
+
+/* Efecto hover: escalar íconos */
+.footer-social-icon a:hover {
+  transform: scale(2); /* Escala más notable */
+  box-shadow: 0 10px 25px rgba(0, 0, 0, 0.6); /* Sombra más intensa */
+  z-index: 10; /* Asegura que el ícono esté por encima de los demás */
+}
+
+/* Posición de los íconos en un círculo */
+.footer-social-icon a:nth-child(1) {
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%) translate(0, -100px);
+}
+
+.footer-social-icon a:nth-child(2) {
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%) translate(70px, -70px);
+}
+
+.footer-social-icon a:nth-child(3) {
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%) translate(100px, 0);
+}
+
+.footer-social-icon a:nth-child(4) {
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%) translate(70px, 70px);
+}
+
+.footer-social-icon a:nth-child(5) {
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%) translate(0, 100px);
+}
+
+.footer-social-icon a:nth-child(6) {
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%) translate(-70px, 70px);
+}
+
+.footer-social-icon a:nth-child(7) {
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%) translate(-100px, 0);
+}
+
+.footer-social-icon a:nth-child(8) {
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%) translate(-70px, -70px);
+}
+
+/* Ícono central (Discord) */
+.footer-social-icon a:nth-child(9) {
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  width: 80px;
+  height: 80px;
+  background-color: #f0f0f0;
+  border-radius: 50%;
+}
+
+.full-width-container-vistas {
+  width: 100%;
+  padding: 0; /* Elimina el padding si es necesario */
+  margin: 0; /* Elimina el margin si es necesario */
+}
+
+.nav-link.active {
+  color: red !important; /* Cambia el color del texto a rojo */
+}
+
+/* ############################ */
+/* seccion de cards iamgnes de productos  */
+/* ############################ */
+
+/* Estilos para las tarjetas */
+.custom-card {
+  width: 100%; /* Asegura que la tarjeta ocupe todo el ancho disponible */
+  height: 500px; /* Establece una altura fija para las tarjetas */
+  margin: 10px; /* Espacio alrededor de cada tarjeta */
+  display: flex; /* Utiliza flexbox para centrar el contenido */
+  flex-direction: column; /* Asegura que los elementos dentro de la tarjeta se apilen verticalmente */
+  align-items: center; /* Centra horizontalmente el contenido */
+}
+
+/* Estilos para las imágenes */
+.custom-img {
+  width: 400px; /* Ancho fijo para la imagen */
+  height: 400px; /* Altura fija para que sea cuadrada */
+  object-fit: cover; /* Asegura que la imagen mantenga su proporción y se recorte si es necesario */
+  margin: 10px 0; /* Espacio vertical alrededor de la imagen */
+}

@@ -1,0 +1,370 @@
+<div class="container-fluid mt-4">
+  <div class="row">
+    <!-- Columna de la izquierda: Lista de Productos -->
+    <div class="col-md-12">
+      <h2 class="text-center my-4">Lista de Productos</h2>
+      <!-- Barra de búsqueda -->
+      <div class="row mb-4">
+        <div class="col-md-3">
+          <label for="categoriaSelect" class="form-label"
+            >Seleccionar Categoría</label
+          >
+          <select
+            id="categoriaSelect"
+            class="form-control"
+            [(ngModel)]="searchCategoria"
+            (change)="filteredProductos()"
+          >
+            <option value="">Seleccionar Categoría</option>
+            <option
+              *ngFor="let categoria of categorias"
+              [value]="categoria.nombre_categoria"
+            >
+              {{ categoria.nombre_categoria }}
+            </option>
+          </select>
+        </div>
+
+        <div class="col-md-3">
+          <label for="nombreInput" class="form-label">Buscar por Nombre</label>
+          <input
+            id="nombreInput"
+            type="text"
+            class="form-control"
+            placeholder="Buscar por nombre"
+            [(ngModel)]="searchNombreProducto"
+          />
+        </div>
+
+        <div class="col-md-3">
+          <label for="codigoInput" class="form-label">Buscar por Código</label>
+          <input
+            id="codigoInput"
+            type="text"
+            class="form-control"
+            placeholder="Buscar por Código"
+            [(ngModel)]="searchCodigoProducto"
+          />
+        </div>
+        <div class="text-center col-md-1">
+          <div class="d-grid gap-2">
+            <button
+              class="btn btn-success d-flex align-items-center btn-lg py-1"
+              (click)="registrarProducto()"
+            >
+              <i class="bi bi-journal-plus fs-1 me-2"></i>
+              Registrar Producto
+            </button>
+          </div>
+        </div>
+      </div>
+
+      <!-- Lista de productos en formato de tarjetas (cards) -->
+      <div class="row">
+        <div
+          *ngFor="let producto of filteredProductos()"
+          class="col-sm-12 col-md-2 mb-4"
+        >
+          <div
+            class="card h-100"
+            [ngClass]="
+              producto.estado_equipo ? 'bg-light-green' : 'bg-light-red'
+            "
+          >
+            <div
+              class="image-container"
+              style="
+                height: 200px;
+                overflow: hidden;
+                position: relative;
+                background: #f8f9fa;
+              "
+            >
+              <img
+                [src]="getImageUrl(producto.imagen_productos)"
+                class="card-img-top h-100 w-100"
+                alt="{{ producto.nombre_producto }}"
+                (click)="openModal(getImageUrl(producto.imagen_productos))"
+                (error)="onImageError($event)"
+                style="object-fit: cover; position: absolute; top: 0; left: 0"
+              />
+            </div>
+            <div class="card-body">
+              <h5 class="card-title">{{ producto.nombre_producto }}</h5>
+              <ul class="list-unstyled text-start">
+                <li><strong>ID:</strong> {{ producto.id }}</li>
+                <li><strong>Código:</strong> {{ producto.codigo_producto }}</li>
+                <li>
+                  <strong>Descripción:</strong> {{ producto.descripcion }}
+                </li>
+                <li>
+                  <strong>Categoría:</strong>
+                  {{ producto.categoria.nombre_categoria }}
+                </li>
+                <li>
+                  <strong>Precio de Compra:</strong> Bs
+                  {{ producto.precio_compra }}
+                </li>
+                <li>
+                  <strong>Precio Unitario:</strong> Bs
+                  {{ producto.precio_unitario }}
+                </li>
+                <li>
+                  <strong>Precio Mayor:</strong> Bs {{ producto.precio_mayor }}
+                </li>
+                <li><strong>Stock:</strong> {{ producto.stock }}</li>
+                <li>
+                  <strong>Fecha de Creación:</strong>
+                  {{ producto.fecha_creacion | date : "shortDate" }}
+                </li>
+                <li>
+                  <strong>Fecha de Actualización:</strong>
+                  {{ producto.fecha_actualizacion | date : "shortDate" }}
+                </li>
+              </ul>
+            </div>
+            <div class="card-footer text-center">
+              <div
+                class="d-flex flex-column flex-md-row justify-content-center"
+              >
+                <button
+                  class="btn btn-primary mb-2 mb-md-0 me-md-2 d-flex align-items-center btn-sm"
+                  (click)="editarProducto(producto.id)"
+                >
+                  <i class="bi bi-pencil-square fs-5 me-1"></i>
+                  <!-- Cambiar fs-4 a fs-5 para un icono más pequeño -->
+                  Editar
+                </button>
+                <button
+                  class="btn mb-2 mb-md-0 d-flex align-items-center btn-sm"
+                  [ngClass]="
+                    producto.estado_equipo ? 'btn-danger' : 'btn-success'
+                  "
+                  (click)="toggleProductoActivado(producto)"
+                >
+                  <i
+                    [ngClass]="
+                      producto.estado_equipo
+                        ? 'fas fa-toggle-off'
+                        : 'fas fa-toggle-on'
+                    "
+                    class="fs-5 me-1"
+                  ></i>
+                  {{ producto.estado_equipo ? "Desactivar" : "Activar" }}
+                </button>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Paginación -->
+      <div class="row">
+        <div class="col text-center">
+          <button
+            class="btn btn-secondary me-2"
+            (click)="previousPage()"
+            [disabled]="page === 1"
+          >
+            Anterior
+          </button>
+          <span>Página {{ page }}</span>
+          <button
+            class="btn btn-secondary ms-2"
+            (click)="nextPage()"
+            [disabled]="filteredProductos().length < pageSize"
+          >
+            Siguiente
+          </button>
+        </div>
+      </div>
+
+      <!-- Modal para mostrar la imagen en tamaño completo -->
+      <div
+        class="modal"
+        tabindex="-1"
+        [class.show]="modalVisible"
+        *ngIf="modalVisible"
+        (click)="closeModal()"
+      >
+        <div class="modal-dialog modal-lg">
+          <div class="modal-content">
+            <div class="modal-body">
+              <img [src]="imageToShow" class="img-fluid" />
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+import { Component, EventEmitter, OnInit, Output } from '@angular/core';
+import { Categoria, Producto } from '../../../Models/models';
+import { ServicesService } from '../../../Services/services.service';
+import { CommonModule } from '@angular/common';
+import {
+  FormBuilder,
+  FormGroup,
+  FormsModule,
+  ReactiveFormsModule,
+} from '@angular/forms';
+import { RouterModule } from '@angular/router';
+
+@Component({
+  selector: 'app-listar-producto',
+  standalone: true,
+  imports: [CommonModule, ReactiveFormsModule, FormsModule, RouterModule],
+  templateUrl: './listar-producto.component.html',
+  styleUrls: ['./listar-producto.component.css'],
+})
+export class ListarProductoComponent implements OnInit {
+  productos: Producto[] = [];
+  categorias: Categoria[] = [];
+  searchNombreProducto: string = '';
+  searchCategoria: string = '';
+  searchCodigoProducto: string = '';
+  page: number = 1;
+  pageSize: number = 6;
+
+  @Output() editarProductos = new EventEmitter<number>();
+  @Output() registrarProductos = new EventEmitter<void>();
+
+  constructor(private productoService: ServicesService) {}
+
+  ngOnInit(): void {
+    this.getProductos();
+    this.getCategorias();
+  }
+
+  getProductos() {
+    this.productoService.getProductos().subscribe({
+      next: (data) => {
+        this.productos = data;
+        console.log('Datos de productos recibidos:', this.productos);
+
+        // Verificar las URLs de las imágenes
+        this.productos.forEach((p) => {
+          console.log(`Producto ID: ${p.id}`, {
+            nombre: p.nombre_producto,
+            imagen: p.imagen_productos,
+            tieneImagen: !!p.imagen_productos,
+          });
+        });
+      },
+      error: (err) => {
+        console.error('Error al obtener productos:', err);
+      },
+    });
+  }
+
+  getCategorias() {
+    this.productoService.getCategorias().subscribe({
+      next: (data) => {
+        this.categorias = data;
+      },
+      error: (err) => {
+        console.error('Error al obtener categorías:', err);
+      },
+    });
+  }
+  editarProducto(id: number) {
+    this.editarProductos.emit(id);
+  }
+
+  registrarProducto() {
+    this.registrarProductos.emit();
+  }
+
+  filteredProductos(): Producto[] {
+    let filtered = this.productos;
+    if (this.searchCategoria) {
+      filtered = filtered.filter((producto) =>
+        producto.categoria.nombre_categoria
+          .toLowerCase()
+          .includes(this.searchCategoria.toLowerCase())
+      );
+    }
+    if (this.searchNombreProducto) {
+      filtered = filtered.filter((producto) =>
+        producto.nombre_producto
+          .toLowerCase()
+          .includes(this.searchNombreProducto.toLowerCase())
+      );
+    }
+    // Filtrar por código de producto
+    if (this.searchCodigoProducto) {
+      filtered = filtered.filter((producto) =>
+        producto.codigo_producto
+          .toLowerCase()
+          .includes(this.searchCodigoProducto.toLowerCase())
+      );
+    }
+
+    return filtered.slice(
+      (this.page - 1) * this.pageSize,
+      this.page * this.pageSize
+    );
+  }
+
+  nextPage() {
+    this.page++;
+  }
+
+  previousPage() {
+    if (this.page > 1) {
+      this.page--;
+    }
+  }
+  modalVisible: boolean = false;
+  imageToShow: string = '';
+  openModal(imageUrl: string) {
+    this.imageToShow = imageUrl;
+    this.modalVisible = true;
+  }
+  closeModal() {
+    this.modalVisible = false;
+  }
+  toggleProductoActivado(producto: Producto) {
+    producto.estado_equipo = !producto.estado_equipo;
+    this.productoService
+      .actualizarEstadoProducto(producto.id, producto.estado_equipo)
+      .subscribe(
+        (response) => {
+          console.log(
+            `Producto ${producto.estado_equipo} actualizado exitosamente.`
+          );
+        },
+        (error) => {
+          console.error('Error al actualizar el estado del equipo:', error);
+          producto.estado_equipo = !producto.estado_equipo;
+        }
+      );
+  }
+  getImageUrl(rawUrl: string): string {
+    if (!rawUrl) return this.getPlaceholder();
+
+    // Extrae solo la parte relevante de la URL
+    const cloudinaryRegex = /(image\/upload\/)?(v\d+\/[\w-]+\.\w+)/;
+    const matches = rawUrl.match(cloudinaryRegex);
+
+    if (matches && matches[2]) {
+      return `https://res.cloudinary.com/dlrpns8z7/image/upload/${matches[2]}`;
+    }
+
+    // Si no es una URL de Cloudinary, devuelve la original
+    return rawUrl;
+  }
+
+  getPlaceholder(): string {
+    return 'data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHdpZHRoPSIyMDAiIGhlaWdodD0iMjAwIiB2aWV3Qm94PSIwIDAgMjAwIDIwMCI+PHJlY3QgZmlsbD0iI2RkZCIgd2lkdGg9IjIwMCIgaGVpZ2h0PSIyMDAiLz48dGV4dCBmaWxsPSIjNjY2IiBmb250LWZhbWlseT0ic2Fucy1zZXJpZiIgZm9udC1zaXplPSIxNiIgZHk9Ii4zNWVtIiB0ZXh0LWFuY2hvcj0ibWlkZGxlIiB4PSIxMDAiIHk9IjEwMCI+Tm8gaW1hZ2U8L3RleHQ+PC9zdmc+';
+  }
+
+  onImageError(event: Event): void {
+    const img = event.target as HTMLImageElement;
+    console.error('Error loading image:', img.src);
+    img.src = this.getPlaceholder();
+    img.style.objectFit = 'contain';
+  }
+}
+

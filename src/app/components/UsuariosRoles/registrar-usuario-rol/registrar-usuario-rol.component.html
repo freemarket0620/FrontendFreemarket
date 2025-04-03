@@ -1,0 +1,70 @@
+<div class="container">
+  <h2 class="text-center">Registrar Usuario Rol</h2>
+  <form [formGroup]="usuarioRolForm" (ngSubmit)="registrarUsuarioRol()">
+    <div class="mb-3">
+      <label for="usuario" class="form-label">Usuario:</label>
+      <select
+        formControlName="usuario"
+        id="usuario"
+        class="form-select"
+        required
+      >
+        <option value="" disabled selected>Seleccione un usuario</option>
+        <option *ngFor="let user of usuario" [value]="user.id">
+          {{ user.nombre_usuario }} {{ user.apellido }}
+        </option>
+      </select>
+      <div
+        *ngIf="
+          usuarioRolForm.get('usuario')?.invalid &&
+          (usuarioRolForm.get('usuario')?.touched ||
+            usuarioRolForm.get('usuario')?.dirty)
+        "
+        class="text-danger"
+      >
+        El usuario es requerido.
+      </div>
+    </div>
+
+    <div class="mb-3">
+      <label for="rol" class="form-label">Rol:</label>
+      <select formControlName="rol" id="rol" class="form-select" required>
+        <option value="" disabled selected>Seleccione un rol</option>
+        <option *ngFor="let role of roles" [value]="role.id">
+          {{ role.nombre_rol }}
+        </option>
+      </select>
+      <div
+        *ngIf="
+          usuarioRolForm.get('rol')?.invalid &&
+          (usuarioRolForm.get('rol')?.touched ||
+            usuarioRolForm.get('rol')?.dirty)
+        "
+        class="text-danger"
+      >
+        El rol es requerido.
+      </div>
+    </div>
+
+    <button
+      type="submit"
+      class="btn btn-primary"
+      [disabled]="usuarioRolForm.invalid"
+    >
+      Registrar
+    </button>
+  </form>
+  <!-- Modal de Éxito -->
+  <app-ok
+    *ngIf="mensajeModal"
+    [mensaje]="mensajeModal"
+    (close)="manejarOk()"
+  ></app-ok>
+
+  <!-- Modal de Error -->
+  <app-error
+    *ngIf="errorModal"
+    [mensaje]="errorModal"
+    (close)="manejarError()"
+  ></app-error>
+</div>

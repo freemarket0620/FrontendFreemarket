@@ -1,0 +1,304 @@
+<div class="container">
+  <h1 class="text-center">Registro de Usuarios</h1>
+  <form [formGroup]="usuarioForm" (ngSubmit)="registrarUsuario()">
+    <!-- campo nombre -->
+    <div class="form-group">
+      <label for="nombre_usuario" class="label-start">Nombre:</label>
+      <input
+        id="nombre_usuario"
+        formControlName="nombre_usuario"
+        class="form-control"
+        (keypress)="validarNombre($event)"
+        (blur)="validarNombre($event)"
+        (focus)="mensajeNombre = ''"
+        required
+      />
+      <div
+        *ngIf="mensajeNombre"
+        [ngClass]="{
+          'alert alert-danger': !exitoNombre,
+          'alert alert-success': exitoNombre
+        }"
+      >
+        {{ mensajeNombre }}
+      </div>
+    </div>
+    <!-- campo apellido -->
+    <div class="form-group">
+      <label for="apellido" class="label-start">Apellido:</label>
+      <input
+        id="apellido"
+        formControlName="apellido"
+        class="form-control"
+        (keypress)="validarApellido($event)"
+        (blur)="validarApellido($event)"
+        required
+      />
+      <div
+        *ngIf="mensajeApellido"
+        [ngClass]="{
+          'alert alert-danger': !exitoApellido,
+          'alert alert-success': exitoApellido
+        }"
+      >
+        {{ mensajeApellido }}
+      </div>
+    </div>
+    <!-- campo fecha de nacimiento -->
+    <div class="form-group">
+      <label for="fecha_nacimiento" class="label-start"
+        >Fecha de Nacimiento:</label
+      >
+      <input
+        type="date"
+        id="fecha_nacimiento"
+        formControlName="fecha_nacimiento"
+        class="form-control"
+        required
+        (blur)="validarFechaNacimiento($event)"
+        (focus)="mensajeFechaNacimiento = ''"
+      />
+      <div
+        *ngIf="mensajeFechaNacimiento"
+        [ngClass]="{
+          'alert alert-danger': !exitoFechaNacimiento,
+          'alert alert-success': exitoFechaNacimiento
+        }"
+      >
+        {{ mensajeFechaNacimiento }}
+      </div>
+    </div>
+    <!-- telefono -->
+    <div class="form-group">
+      <label for="telefono" class="label-start">Teléfono:</label>
+      <input
+        id="telefono"
+        formControlName="telefono"
+        type="text"
+        class="form-control"
+        (keypress)="validarTelefono($event)"
+        (blur)="validarTelefono($event)"
+        (focus)="mensajeTelefono = ''"
+        required
+      />
+      <div
+        *ngIf="mensajeTelefono"
+        [ngClass]="{
+          'alert alert-danger': !exitoTelefono,
+          'alert alert-success': exitoTelefono
+        }"
+      >
+        {{ mensajeTelefono }}
+      </div>
+    </div>
+    <!-- correo -->
+    <div class="form-group">
+      <label for="correo" class="label-start">Correo:</label>
+      <input
+        type="email"
+        id="correo"
+        name="correo"
+        formControlName="correo"
+        class="form-control"
+        (keypress)="validarCorreo($event)"
+        (blur)="validarCorreo($event)"
+        (focus)="mensajeCorreo = ''"
+        required
+      />
+      <div
+        *ngIf="mensajeCorreo"
+        [ngClass]="{
+          'alert alert-danger': !exitoCorreo,
+          'alert alert-success': exitoCorreo
+        }"
+      >
+        {{ mensajeCorreo }}
+      </div>
+    </div>
+    <br />
+    <!-- Password -->
+    <div class="form-group">
+      <div class="d-md-flex justify-content-between align-items-center">
+        <label for="password" class="mr-2">Contraseña:</label>
+        <div>
+          <button
+            type="button"
+            class="btn btn-primary"
+            (click)="generarContrasenaAutomatica()"
+          >
+            Generar contraseña
+          </button>
+        </div>
+      </div>
+      <br />
+      <div class="input-group">
+        <input
+          type="password"
+          id="password"
+          formControlName="password"
+          class="form-control"
+          placeholder="Ingrese una contraseña: Ejemplo/123"
+          (input)="validarContrasena($event)"
+          (blur)="validarContrasena($event)"
+          [type]="isPasswordVisible ? 'text' : 'password'"
+          required
+        />
+        <div class="input-group-append">
+          <!-- Botón para mostrar/ocultar la contraseña -->
+          <button
+            class="btn btn-outline-secondary"
+            type="button"
+            (click)="togglePasswordVisibility()"
+          >
+            <i
+              class="fa"
+              [ngClass]="isPasswordVisible ? 'fa-eye-slash' : 'fa-eye'"
+            ></i>
+          </button>
+        </div>
+      </div>
+
+      <!-- Mostrar el mensaje de validación -->
+      <div
+        *ngIf="mensajePassword"
+        [ngClass]="{
+          'alert alert-success': exitoContrasenia,
+          'alert alert-danger': !exitoContrasenia
+        }"
+      >
+        {{ mensajePassword }}
+      </div>
+    </div>
+    <!-- Campo C.I. y Departamento CI -->
+    <div class="d-flex justify-content-between gap-1">
+      <div class="form-group flex-grow-1">
+        <label for="ci">C.I.:</label>
+        <div class="d-flex align-items-center">
+          <input
+            id="ci"
+            formControlName="ci"
+            type="text"
+            class="form-control me-1"
+            (keypress)="validarCI($event)"
+            (blur)="validarCI($event)"
+            (focus)="mensajeCI = ''"
+            placeholder="Ingrese su Identificación"
+            required
+          />
+        </div>
+      </div>
+
+      <!-- Campo Departamento CI -->
+      <div class="form-group flex-grow-1">
+        <label for="ci_departamento">Departamento CI:</label>
+        <div class="d-flex align-items-center">
+          <select
+            id="ci_departamento"
+            class="form-control me-1"
+            formControlName="ci_departamento"
+            required
+            (change)="onSelectChange()"
+            (blur)="onSelectChange()"
+            [ngClass]="{
+              'is-invalid': !exitoDepaCI && mensajeDepaCI,
+              'is-valid': exitoDepaCI
+            }"
+          >
+            <option value="">Seleccione un departamento</option>
+            <option value="LP">La Paz</option>
+            <option value="CB">Cochabamba</option>
+            <option value="SC">Santa Cruz</option>
+            <option value="BN">Beni</option>
+            <option value="PD">Pando</option>
+            <option value="TJ">Tarija</option>
+            <option value="CH">Chuquisaca</option>
+            <option value="OR">Oruro</option>
+            <option value="PT">Potosí</option>
+          </select>
+        </div>
+      </div>
+    </div>
+
+    <!-- Mensajes de C.I. -->
+    <div
+      *ngIf="mensajeCI"
+      [ngClass]="{
+        'alert alert-danger': !exitoCI,
+        'alert alert-success': exitoCI
+      }"
+    >
+      {{ mensajeCI }}
+    </div>
+
+    <!-- Mensaje de departamento CI -->
+    <div
+      *ngIf="mensajeDepaCI"
+      [ngClass]="{
+        'alert alert-danger': !exitoDepaCI,
+        'alert alert-success': exitoDepaCI
+      }"
+    >
+      {{ mensajeDepaCI }}
+    </div>
+    <!-- imagenes -->
+    <div class="form-group" style="padding-bottom: 30px">
+      <label for="imagen_url">Imagen:</label>
+      <div class="custom-file">
+        <input
+          type="file"
+          id="imagen_url"
+          (change)="onFileChange($event)"
+          class="custom-file-input"
+          aria-describedby="inputGroupFileAddon01"
+          required
+          (focus)="mensajeImagen = ''"
+        />
+        <label
+          class="custom-file-label"
+          for="imagen_url"
+          [ngClass]="{ 'is-invalid': isFileInvalid }"
+        >
+          Seleccionar archivo
+        </label>
+        <div *ngIf="imagenPreview" class="mt-2">
+          <div *ngIf="imagenPreview">
+            <img
+              [src]="imagenPreview"
+              alt="Vista Previa"
+              class="img-fluid"
+              style="max-width: 200px; max-height: 200px"
+            />
+          </div>
+
+          <div class="valid-feedback">¡Archivo cargado correctamente!</div>
+
+          <div class="invalid-feedback">Error al cargar el archivo.</div>
+        </div>
+
+        <div class="invalid-feedback" *ngIf="errorMensaje">
+          {{ errorMensaje }}
+        </div>
+      </div>
+    </div>
+    <br />
+    <!-- boton registrar -->
+    <div class="d-flex justify-content-center">
+      <button type="submit" class="btn btn-primary mt-3 mx-auto">
+        Registrar Usuario
+      </button>
+    </div>
+  </form>
+  <!-- Modal de Éxito -->
+  <app-ok
+    *ngIf="mensajeModal"
+    [mensaje]="mensajeModal"
+    (close)="manejarOk()"
+  ></app-ok>
+
+  <!-- Modal de Error -->
+  <app-error
+    *ngIf="errorModal"
+    [mensaje]="errorModal"
+    (close)="manejarError()"
+  ></app-error>
+</div>

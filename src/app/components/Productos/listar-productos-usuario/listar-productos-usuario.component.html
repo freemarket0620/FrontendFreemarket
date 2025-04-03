@@ -1,0 +1,261 @@
+<div class="container-fluid mt-4">
+  <a
+    class="btn btn-primary position-absolute top-0 end-0 m-4 btn-lg"
+    (click)="navigateToHome()"
+    title="Volver a Inicio"
+  >
+    <span class="d-flex align-items-center">
+      <i class="bi bi-person-walking fs-5"></i>
+      <i class="bi bi-door-open fs-2 rotate-left"></i>
+    </span>
+  </a>
+  <div class="row">
+    <!-- Columna de la izquierda: Lista de Productos -->
+    <div class="col-md-7">
+      <h2 class="text-center my-4">Lista de Productos</h2>
+      <!-- Barra de búsqueda -->
+      <div class="row mb-4">
+        <div class="col-md-3">
+          <label for="categoriaSelect" class="form-label"
+            >Seleccionar Categoría</label
+          >
+          <select
+            id="categoriaSelect"
+            class="form-control"
+            [(ngModel)]="searchCategoria"
+            (change)="filteredProductos()"
+          >
+            <option value="">Seleccionar Categoría</option>
+            <option
+              *ngFor="let categoria of categorias"
+              [value]="categoria.nombre_categoria"
+            >
+              {{ categoria.nombre_categoria }}
+            </option>
+          </select>
+        </div>
+
+        <div class="col-md-3">
+          <label for="nombreInput" class="form-label">Buscar por Nombre</label>
+          <input
+            id="nombreInput"
+            type="text"
+            class="form-control"
+            placeholder="Buscar por nombre"
+            [(ngModel)]="searchNombreProducto"
+          />
+        </div>
+
+        <div class="col-md-3">
+          <label for="codigoInput" class="form-label">Buscar por Código</label>
+          <input
+            id="codigoInput"
+            type="text"
+            class="form-control"
+            placeholder="Buscar por Código"
+            [(ngModel)]="searchCodigoProducto"
+          />
+        </div>
+
+        <div class="text-center col-md-3">
+          <button
+            class="btn btn-danger d-flex align-items-center"
+            (click)="clearQuantities()"
+          >
+            <i class="fas fa-trash-alt fs-1 me-2"></i> Limpiar Cantidades
+          </button>
+        </div>
+      </div>
+
+      <!-- Lista de productos en formato de tarjetas (cards) -->
+      <div class="row">
+        <div
+          *ngFor="let producto of filteredProductos()"
+          class="col-sm-12 col-md-6 col-lg-4 mb-4"
+        >
+          <div
+            class="card h-100 shadow-sm border-light card-body d-flex justify-content-center"
+          >
+            <h5 class="card-title text-primary text-center p-4">
+              {{ producto.nombre_producto }}
+            </h5>
+            <img
+              *ngIf="producto.imagen_productos"
+              [src]="producto.imagen_productos"
+              class="card-img-top"
+              alt="{{ producto.nombre_producto }}"
+              (click)="openModal(producto.imagen_productos)"
+            />
+            <h1 class="card-text text-center text-info">
+              Bs {{ producto.precio_unitario }}
+            </h1>
+            <div class="card-body">
+              <div class="row">
+                <div class="col-md-6">
+                  <p><strong>Código:</strong> {{ producto.codigo_producto }}</p>
+                  <p><strong>Stock:</strong> {{ producto.stock }}</p>
+                </div>
+                <div class="col-md-6">
+                  <p>
+                    <strong>Descripción:</strong> {{ producto.descripcion }}
+                  </p>
+                </div>
+              </div>
+            </div>
+            <div class="card-footer text-center">
+              <div class="input-group mb-2">
+                <input
+                  type="number"
+                  class="form-control sin-flechas"
+                  placeholder="Cantidad"
+                  min="1"
+                  [max]="producto.stock"
+                  [(ngModel)]="cantidadPorProducto[producto.id]"
+                  (ngModelChange)="
+                    agregarAlCarrito(producto, cantidadPorProducto[producto.id])
+                  "
+                />
+                <button
+                  class="btn btn-success"
+                  (click)="
+                    agregarAlCarrito(producto, cantidadPorProducto[producto.id])
+                  "
+                >
+                  <i class="fas fa-shopping-cart"></i> Agregar al Carrito
+                </button>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Paginación -->
+      <div class="row">
+        <div class="col text-center">
+          <button
+            class="btn btn-secondary me-2"
+            (click)="previousPage()"
+            [disabled]="page === 1"
+          >
+            Anterior
+          </button>
+          <span>Página {{ page }}</span>
+          <button
+            class="btn btn-secondary ms-2"
+            (click)="nextPage()"
+            [disabled]="filteredProductos().length < pageSize"
+          >
+            Siguiente
+          </button>
+        </div>
+      </div>
+    </div>
+
+    <!-- Columna de la derecha: Carrito -->
+    <div class="col-md-5">
+      <div
+        class="mb-4"
+        id="detalles-venta"
+        style="position: sticky; top: 150px; padding-top: 10px"
+      >
+        <!-- Encabezado del carrito -->
+        <div class="card-header">
+          <div class="d-flex justify-content-between align-items-center">
+            <img
+              src="https://files.fm/thumb_show.php?i=qwwh69nz6h"
+              alt="Logo"
+              class="img-fluid"
+              style="height: 80px; margin-top: -10px"
+            />
+          </div>
+          <div class="d-flex justify-content-center">
+            <h4 class="text-center" style="margin-top: 80px">Carrito</h4>
+          </div>
+        </div>
+
+        <!-- Cuerpo del carrito -->
+        <div class="card-body">
+          <table class="table table-bordered">
+            <thead>
+              <tr>
+                <th>Código</th>
+                <th>Producto</th>
+                <th>Cantidad</th>
+                <th>Precio</th>
+                <th>Total</th>
+                <th class="accion">Acción</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr *ngFor="let item of carrito">
+                <td>{{ item.producto.codigo_producto }}</td>
+                <td class="text-start">{{ item.producto.nombre_producto }}</td>
+                <td>{{ item.cantidad }}</td>
+                <td>
+                  Bs {{ item.producto.precio_unitario | number : "1.2-2" }}
+                </td>
+                <td>
+                  Bs
+                  {{
+                    item.producto.precio_unitario * item.cantidad
+                      | number : "1.2-2"
+                  }}
+                </td>
+                <td class="accion">
+                  <button
+                    class="btn btn-danger btn-sm"
+                    (click)="eliminarProducto(item.producto)"
+                  >
+                    Eliminar
+                  </button>
+                </td>
+              </tr>
+              <tr>
+                <td colspan="4" class="text-end"><strong>Total:</strong></td>
+                <td>Bs {{ totalVenta | number : "1.2-2" }}</td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+
+        <!-- Botones para generar/ver el PDF -->
+        <div class="d-flex justify-content-center align-items-center p-4">
+          <button
+            id="btn-generar-pdf"
+            class="btn btn-info me-2"
+            (click)="generarPDF('descargar')"
+          >
+            Descargar PDF
+          </button>
+          <button
+            id="btn-ver-pdf"
+            class="btn btn-secondary"
+            (click)="generarPDF('ver')"
+          >
+            Ver PDF
+          </button>
+          <button id="btn-whatsapp" class="btn btn-success">
+            <i class="fab fa-whatsapp"></i> Enviar a WhatsApp
+          </button>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- Modal para mostrar la imagen en tamaño completo -->
+<div
+  class="modal"
+  tabindex="-1"
+  [class.show]="modalVisible"
+  *ngIf="modalVisible"
+  (click)="closeModal()"
+>
+  <div class="modal-dialog modal-lg">
+    <div class="modal-content">
+      <div class="modal-body">
+        <img [src]="imageToShow" class="img-fluid" />
+      </div>
+    </div>
+  </div>
+</div>

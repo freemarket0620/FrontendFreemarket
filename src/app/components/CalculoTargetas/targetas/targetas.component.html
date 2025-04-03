@@ -1,0 +1,42 @@
+<div class="container mt-5">
+  <h2 class="text-center">Pedido de Tarjetas</h2>
+  <!-- Título de la tabla -->
+  <table class="table table-bordered">
+    <thead class="thead-light">
+      <tr>
+        <th>Cortes de tarjetas</th>
+        <th>Precio promoción (Bs)</th>
+        <th>Cantidad de pedido</th>
+        <th>Resultado de la operación</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr *ngFor="let tarjeta of tarjetas; let i = index">
+        <td>{{ tarjeta.nombre }}</td>
+        <td>
+          <input
+            type="number"
+            class="form-control"
+            [(ngModel)]="tarjeta.precio"
+            (ngModelChange)="calcularResultado(i)"
+          />
+        </td>
+        <td>
+          <input
+            type="number"
+            class="form-control"
+            [(ngModel)]="tarjeta.cantidad"
+            (ngModelChange)="calcularResultado(i)"
+          />
+        </td>
+        <td>{{ tarjeta.resultado.toFixed(2) }}</td>
+        <!-- Mostrar resultado con 2 decimales -->
+      </tr>
+      <tr>
+        <td colspan="3" class="text-right"><strong>Total:</strong></td>
+        <td>{{ calcularTotal() }}</td>
+        <!-- Total ya redondeado a 2 decimales -->
+      </tr>
+    </tbody>
+  </table>
+</div>

@@ -1,0 +1,128 @@
+<div class="container">
+  <h2 class="text-center">Lista de Detalles de Venta</h2>
+
+  <!-- Campos de búsqueda -->
+  <div class="row mb-4">
+    <div class="col-md-2">
+      <label for="ventaInput" class="form-label">Buscar por Venta</label>
+      <input
+        id="ventaInput"
+        type="text"
+        class="form-control"
+        placeholder="Buscar por Venta"
+        [(ngModel)]="searchVenta"
+      />
+    </div>
+
+    <div class="col-md-2">
+      <label for="fechaInput" class="form-label">Buscar por Fecha</label>
+      <input
+        id="fechaInput"
+        type="text"
+        class="form-control"
+        placeholder="Buscar por Fecha (dd/MM/yyyy)"
+        [(ngModel)]="searchFecha"
+      />
+    </div>
+
+    <div class="col-md-2">
+      <label for="usuarioInput" class="form-label"
+        >Buscar por Usuarioo C.I.</label
+      >
+      <input
+        id="usuarioInput"
+        type="text"
+        class="form-control"
+        placeholder="Buscar por Usuario o C.I."
+        [(ngModel)]="searchUsuario"
+      />
+    </div>
+
+    <div class="col-md-2">
+      <label for="productoInput" class="form-label">Buscar por Producto</label>
+      <input
+        id="productoInput"
+        type="text"
+        class="form-control"
+        placeholder="Buscar por Producto"
+        [(ngModel)]="searchProducto"
+      />
+    </div>
+
+    <div class="col-md-2">
+      <label for="codigoInput" class="form-label">Buscar por Código</label>
+      <input
+        id="codigoInput"
+        type="text"
+        class="form-control"
+        placeholder="Buscar por Código"
+        [(ngModel)]="searchCodigo"
+      />
+    </div>
+    <div class="text-center col-md-2">
+      <div class="d-grid gap-2">
+        <button
+          class="btn btn-success d-flex align-items-center btn-lg py-1"
+          (click)="updateList()"
+        >
+          <i class="bi bi-arrow-clockwise fs-1 me-2"></i>
+          Actualizar
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <table class="table table-striped table-bordered">
+    <thead>
+      <tr>
+        <th class="text-center">Venta</th>
+        <th class="text-center">Fecha</th>
+        <th class="text-center">Usuario</th>
+        <th class="text-center">Producto</th>
+        <th class="text-center">Código</th>
+        <th class="text-center">Cantidad</th>
+        <th class="text-center">Precio U/M</th>
+        <th class="text-center">Precio</th>
+        <th class="text-center">Subtotal</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr *ngFor="let detalle of filteredDetallesVenta()">
+        <td class="text-start">{{ detalle.venta.id }}</td>
+        <td class="text-start">
+          {{ detalle.venta.fecha_venta | date : "dd/MM/yyyy" }}
+        </td>
+        <td class="text-start">
+          {{ detalle.venta.usuario.nombre_usuario }}
+          {{ detalle.venta.usuario.apellido }} ||
+          {{ detalle.venta.usuario.ci }}
+        </td>
+        <td class="text-start">{{ detalle.producto.nombre_producto }}</td>
+        <td class="text-start">{{ detalle.producto.codigo_producto }}</td>
+        <td class="text-start">{{ detalle.cantidad }}</td>
+        <td class="text-start">{{ detalle.tipo_venta }}</td>
+        <td class="text-start">{{ detalle.precio | currency }}</td>
+        <td class="text-start">{{ detalle.subtotal | currency }}</td>
+      </tr>
+    </tbody>
+  </table>
+
+  <!-- Paginación -->
+  <div class="d-flex justify-content-between align-items-center mt-3">
+    <button
+      class="btn btn-secondary"
+      (click)="previousPage()"
+      [disabled]="page === 1"
+    >
+      Anterior
+    </button>
+    <span>Página {{ page }}</span>
+    <button
+      class="btn btn-secondary"
+      (click)="nextPage()"
+      [disabled]="page * pageSize >= detallesVenta.length"
+    >
+      Siguiente
+    </button>
+  </div>
+</div>

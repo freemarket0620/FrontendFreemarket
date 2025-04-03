@@ -1,0 +1,70 @@
+.custom-file-label {
+  transition: color 0.2s; /* Transición suave para el cambio de color */
+}
+.custom-file-input:lang(en) ~ .custom-file-label::after {
+  content: "Examinar";
+}
+
+.custom-file-input:valid ~ .custom-file-label::after {
+  content: "Archivo seleccionado";
+}
+
+.custom-file-input:valid ~ .custom-file-label {
+  color: #28a745; /* Color verde para éxito */
+}
+
+.custom-file-input:invalid ~ .custom-file-label {
+  color: #dc3545; /* Color rojo para error */
+}
+
+.custom-file-input:focus ~ .custom-file-label {
+  color: #007bff; /* Color azul al enfocar */
+}
+
+/* Cambiar el color del botón "Examinar" */
+.custom-file-input:valid ~ .custom-file-label::after {
+  background-color: #28a745; /* Color verde para éxito */
+  color: white; /* Texto blanco */
+}
+
+.custom-file-input:invalid ~ .custom-file-label::after {
+  background-color: #dc3545; /* Color rojo para error */
+  color: white; /* Texto blanco */
+}
+
+.custom-file-input:focus ~ .custom-file-label::after {
+  background-color: #007bff; /* Color azul al enfocar */
+  color: white; /* Texto blanco */
+}
+
+.custom-file-label::before {
+  content: "\f15b"; /* Ícono de archivo (Font Awesome) */
+  font-family: "Font Awesome 5 Free";
+  font-weight: 900;
+  margin-right: 5px;
+}
+
+.mt-2 {
+  display: flex;
+  justify-content: center; /* Centra horizontalmente */
+  align-items: center; /* Centra verticalmente */
+}
+
+.img-fluid {
+  max-width: 200px;
+  max-height: 200px;
+}
+
+/* marco de para la imagen  */
+.marco {
+  border: 10px solid #8b4513; /* Color marrón para simular madera */
+  padding: 5px; /* Espacio entre la imagen y el borde del marco */
+  border-radius: 10px; /* Bordes redondeados */
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2); /* Sombra para dar profundidad */
+  background-color: #f5f5dc; /* Color de fondo para simular el interior del marco */
+}
+
+.label-start {
+  text-align: left; /* Alinea el texto a la izquierda */
+  display: block; /* Asegúrate de que el label ocupe toda la línea */
+}

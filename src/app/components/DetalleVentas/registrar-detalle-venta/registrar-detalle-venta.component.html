@@ -1,0 +1,72 @@
+<div class="container mt-4">
+  <!-- Título -->
+  <h2 class="text-center mb-4">Detalle de Venta</h2>
+
+  <!-- Formulario para agregar productos -->
+  <div class="row mb-3">
+    <div class="col-md-6">
+      <label for="producto" class="form-label">Producto</label>
+      <select class="form-select" id="producto">
+        <!-- Opciones de productos se cargarían aquí -->
+        <option value="1">Producto 1</option>
+        <option value="2">Producto 2</option>
+        <option value="3">Producto 3</option>
+      </select>
+    </div>
+
+    <div class="col-md-3">
+      <label for="cantidad" class="form-label">Cantidad</label>
+      <input
+        type="number"
+        class="form-control"
+        id="cantidad"
+        min="1"
+        max="10"
+      />
+    </div>
+
+    <div class="col-md-3 d-flex align-items-end">
+      <button class="btn btn-success w-100">Agregar al Carrito</button>
+    </div>
+  </div>
+
+  <!-- Tabla para mostrar los productos en el carrito -->
+  <table class="table table-bordered">
+    <thead class="thead-dark">
+      <tr>
+        <th scope="col">Producto</th>
+        <th scope="col">Cantidad</th>
+        <th scope="col">Precio Unitario</th>
+        <th scope="col">Total</th>
+        <th scope="col">Acción</th>
+      </tr>
+    </thead>
+    <tbody>
+      <!-- Aquí se mostrarían los productos agregados al carrito -->
+      <tr>
+        <td>Producto 1</td>
+        <td>2</td>
+        <td>$20</td>
+        <td>$40</td>
+        <td>
+          <button class="btn btn-danger btn-sm">Eliminar</button>
+        </td>
+      </tr>
+      <tr>
+        <td>Producto 2</td>
+        <td>1</td>
+        <td>$15</td>
+        <td>$15</td>
+        <td>
+          <button class="btn btn-danger btn-sm">Eliminar</button>
+        </td>
+      </tr>
+    </tbody>
+  </table>
+
+  <!-- Resumen de la venta -->
+  <div class="d-flex justify-content-between mt-3">
+    <h4>Total: $55</h4>
+    <button class="btn btn-primary">Finalizar Venta</button>
+  </div>
+</div>

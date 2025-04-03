@@ -1,0 +1,142 @@
+<div class="container">
+  <h2 class="text-center">Lista de Usuarios</h2>
+
+  <!-- campos de busqueda -->
+  <label for="">Campos de busqueda</label><br />
+  <div class="row mb-4">
+    <div class="col-md-3 text-start">
+      <label for="nombreInput" class="form-label"
+        >Buscar por Nombre o Apellido</label
+      >
+      <input
+        id="nombreInput"
+        type="text"
+        class="form-control"
+        placeholder="Ingrese Nombre"
+        [(ngModel)]="searchnombreUsuario"
+      />
+    </div>
+    <div class="col-md-3 text-start">
+      <label for="Correo" class="form-label">Buscar por Correo</label>
+      <input
+        type="text"
+        class="form-control"
+        placeholder="Ingrese Correo"
+        [(ngModel)]="searchcorreo"
+      />
+    </div>
+    <div class="col-md-2 text-start">
+      <label for="ci" class="form-label">Buscar por ci</label>
+      <input
+        type="text"
+        class="form-control"
+        placeholder="Ingrese C.I."
+        [(ngModel)]="searchci"
+      />
+    </div>
+    <div class="col-md-2 text-start">
+      <label for="ci_departamento" class="form-label"
+        >Buscar por departamento</label
+      >
+      <input
+        type="text"
+        class="form-control"
+        placeholder="Ingrese D.P."
+        [(ngModel)]="searchdepartamento"
+      />
+    </div>
+    <div class="text-center col-md-2">
+      <div class="d-grid gap-4">
+        <button
+          class="btn btn-success d-flex align-items-center btn-lg py-1"
+          (click)="registrarUsuario()"
+        >
+          <i class="bi bi-journal-plus fs-1 me-2"></i>
+          Registrar Usuario
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <table class="table table-striped table-bordered">
+    <thead>
+      <tr>
+        <th class="text-center">Foto de Perfil</th>
+        <th class="text-center">Nombre</th>
+        <th class="text-center">Apellido</th>
+        <th class="text-center">Correo</th>
+        <th class="text-center">Telefono</th>
+        <th class="text-center">C.I.</th>
+        <th class="text-center">D.P.</th>
+        <th class="text-center">Estado</th>
+        <th class="text-center">Acciones</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr
+        *ngFor="let usuario of filteredUsuarios()"
+        [ngClass]="{
+          'table-danger': !usuario.estado_Usuario,
+          'table-success': usuario.estado_Usuario
+        }"
+      >
+        <td class="text-start">
+          <img
+            *ngIf="usuario.imagen_url"
+            [src]="usuario.imagen_url"
+            alt="Foto de Perfil"
+            class="img-redonda"
+          />
+        </td>
+        <td class="text-start">{{ usuario.nombre_usuario }}</td>
+        <td class="text-start">{{ usuario.apellido }}</td>
+        <td class="text-start">{{ usuario.correo }}</td>
+        <td class="text-start">{{ usuario.telefono }}</td>
+        <td class="text-start">{{ usuario.ci }}</td>
+        <td class="text-start">{{ usuario.ci_departamento }}</td>
+        <td>{{ usuario.estado_Usuario ? "Activo" : "Inactivo" }}</td>
+        <td class="text-center">
+          <button
+            class="btn btn-primary me-2"
+            (click)="editarUsuario(usuario.id)"
+          >
+            <i class="bi bi-pencil-square me-1"></i>Editar
+          </button>
+          <button
+            class="btn"
+            [ngClass]="usuario.estado_Usuario ? 'btn-danger' : 'btn-success'"
+            (click)="toggleUsuarioActivo(usuario)"
+          >
+            <i
+              [ngClass]="
+                usuario.estado_Usuario
+                  ? 'fas fa-toggle-off'
+                  : 'fas fa-toggle-on'
+              "
+              class="me-1"
+            ></i
+            >{{ usuario.estado_Usuario ? "Desactivar" : "Activar" }}
+          </button>
+        </td>
+      </tr>
+    </tbody>
+  </table>
+  <!-- Paginación -->
+  <div class="d-flex justify-content-between align-items-center mt-3">
+    <button
+      class="btn btn-secondary"
+      (click)="previousPage()"
+      [disabled]="page === 1"
+    >
+      Anterior
+    </button>
+    <span>Página {{ page }}</span>
+    <button
+      class="btn btn-secondary"
+      (click)="nextPage()"
+      [disabled]="page * pageSize >= usuarios.length"
+    >
+      Siguiente
+    </button>
+  </div>
+</div>

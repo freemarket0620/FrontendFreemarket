@@ -1,0 +1,78 @@
+<div class="container">
+  <h2 class="text-center">Lista de Usuarios y Roles</h2>
+  <!-- Campo de búsqueda -->
+  <div class="row mb-4">
+    <div class="col-md-10 text-start">
+      <label for="nombreInput" class="form-label">Buscar por Nombre</label>
+      <input
+        type="text"
+        class="form-control"
+        placeholder="Buscar por nombre de usuario"
+        [(ngModel)]="searchNombreUsuario"
+      />
+    </div>
+    <div class="text-center col-md-2">
+      <div class="d-grid gap-4">
+        <button
+          class="btn btn-success d-flex align-items-center btn-lg py-1"
+          (click)="registrarUsuarioRole()"
+        >
+          <i class="bi bi-journal-plus fs-1 me-2"></i>
+          Registrar Usuario Rol
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <div *ngIf="!usuarioRoles.length && !loading" class="text-center">
+    No hay usuarios y roles disponibles.
+  </div>
+
+  <div *ngIf="loading" class="text-center">Cargando...</div>
+
+  <table class="table table-striped table-bordered" *ngIf="!loading">
+    <thead>
+      <tr>
+        <th class="text-center">Nombre de Usuario</th>
+        <th class="text-center">Rol</th>
+        <th class="text-center">Acciones</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr *ngFor="let usuarioRol of filteredUsuarioRoles()">
+        <td class="text-start">{{ usuarioRol.usuario.nombre_usuario }}</td>
+        <td class="text-start">{{ usuarioRol.rol.nombre_rol }}</td>
+        <td class="text-center">
+          <button
+            class="btn btn-primary me-2"
+            (click)="editarUsuarioRole(usuarioRol.id)"
+          >
+            <i class="bi bi-pencil-square me-1"></i>Editar
+          </button>
+        </td>
+      </tr>
+    </tbody>
+  </table>
+
+  <!-- Paginación -->
+  <div
+    class="d-flex justify-content-between align-items-center mt-3"
+    *ngIf="usuarioRoles.length > 0"
+  >
+    <button
+      class="btn btn-secondary"
+      (click)="previousPage()"
+      [disabled]="page === 1"
+    >
+      Anterior
+    </button>
+    <span>Página {{ page }}</span>
+    <button
+      class="btn btn-secondary"
+      (click)="nextPage()"
+      [disabled]="page * pageSize >= usuarioRoles.length"
+    >
+      Siguiente
+    </button>
+  </div>
+</div>

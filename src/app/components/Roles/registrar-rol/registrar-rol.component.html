@@ -1,0 +1,47 @@
+<div class="container">
+  <h1 class="text-center">Registrar Roles</h1>
+  <form [formGroup]="rolesForm" (ngSubmit)="register()">
+    <div class="form-group">
+      <label for="nombreRol">Nombre del Rol:</label>
+      <input
+        id="nombreRol"
+        type="text"
+        formControlName="nombreRol"
+        class="form-control"
+        placeholder="Ingrese el nombre del rol"
+      />
+      <div
+        *ngIf="
+          rolesForm.get('nombreRol')?.invalid &&
+          rolesForm.get('nombreRol')?.touched
+        "
+        class="text-danger"
+      >
+        El nombre del rol es requerido.
+      </div>
+    </div>
+
+    <div class="d-flex justify-content-center">
+      <button
+        type="submit"
+        class="btn btn-primary"
+        [disabled]="rolesForm.invalid"
+      >
+        Registrar rol
+      </button>
+    </div>
+  </form>
+  <!-- Modal de Éxito -->
+  <app-ok
+    *ngIf="mensajeModal"
+    [mensaje]="mensajeModal"
+    (close)="manejarOk()"
+  ></app-ok>
+
+  <!-- Modal de Error -->
+  <app-error
+    *ngIf="errorModal"
+    [mensaje]="errorModal"
+    (close)="manejarError()"
+  ></app-error>
+</div>

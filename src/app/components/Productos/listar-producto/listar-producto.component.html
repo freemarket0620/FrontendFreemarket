@@ -1,0 +1,189 @@
+<div class="container-fluid mt-4">
+  <div class="row">
+    <!-- Columna de la izquierda: Lista de Productos -->
+    <div class="col-md-12">
+      <h2 class="text-center my-4">Lista de Productos</h2>
+      <!-- Barra de búsqueda -->
+      <div class="row mb-4">
+        <div class="col-md-3">
+          <label for="categoriaSelect" class="form-label"
+            >Seleccionar Categoría</label
+          >
+          <select
+            id="categoriaSelect"
+            class="form-control"
+            [(ngModel)]="searchCategoria"
+            (change)="filteredProductos()"
+          >
+            <option value="">Seleccionar Categoría</option>
+            <option
+              *ngFor="let categoria of categorias"
+              [value]="categoria.nombre_categoria"
+            >
+              {{ categoria.nombre_categoria }}
+            </option>
+          </select>
+        </div>
+
+        <div class="col-md-3">
+          <label for="nombreInput" class="form-label">Buscar por Nombre</label>
+          <input
+            id="nombreInput"
+            type="text"
+            class="form-control"
+            placeholder="Buscar por nombre"
+            [(ngModel)]="searchNombreProducto"
+          />
+        </div>
+
+        <div class="col-md-3">
+          <label for="codigoInput" class="form-label">Buscar por Código</label>
+          <input
+            id="codigoInput"
+            type="text"
+            class="form-control"
+            placeholder="Buscar por Código"
+            [(ngModel)]="searchCodigoProducto"
+          />
+        </div>
+        <div class="text-center col-md-1">
+          <div class="d-grid gap-2">
+            <button
+              class="btn btn-success d-flex align-items-center btn-lg py-1"
+              (click)="registrarProducto()"
+            >
+              <i class="bi bi-journal-plus fs-1 me-2"></i>
+              Registrar Producto
+            </button>
+          </div>
+        </div>
+      </div>
+
+      <!-- Lista de productos en formato de tarjetas (cards) -->
+      <div class="row">
+        <div
+          *ngFor="let producto of filteredProductos()"
+          class="col-sm-12 col-md-2 mb-4"
+        >
+          <div
+            class="card h-100"
+            [ngClass]="
+              producto.estado_equipo ? 'bg-light-green' : 'bg-light-red'
+            "
+          >
+            <img
+              *ngIf="producto.imagen_productos"
+              [src]="producto.imagen_productos"
+              class="card-img-top"
+              alt="{{ producto.nombre_producto }}"
+              (click)="openModal(producto.imagen_productos)"
+            />
+            <div class="card-body">
+              <h5 class="card-title">{{ producto.nombre_producto }}</h5>
+              <ul class="list-unstyled text-start">
+                <li><strong>ID:</strong> {{ producto.id }}</li>
+                <li><strong>Código:</strong> {{ producto.codigo_producto }}</li>
+                <li>
+                  <strong>Descripción:</strong> {{ producto.descripcion }}
+                </li>
+                <li>
+                  <strong>Categoría:</strong>
+                  {{ producto.categoria.nombre_categoria }}
+                </li>
+                <li>
+                  <strong>Precio de Compra:</strong> Bs
+                  {{ producto.precio_compra }}
+                </li>
+                <li>
+                  <strong>Precio Unitario:</strong> Bs
+                  {{ producto.precio_unitario }}
+                </li>
+                <li>
+                  <strong>Precio Mayor:</strong> Bs {{ producto.precio_mayor }}
+                </li>
+                <li><strong>Stock:</strong> {{ producto.stock }}</li>
+                <li>
+                  <strong>Fecha de Creación:</strong>
+                  {{ producto.fecha_creacion | date : "shortDate" }}
+                </li>
+                <li>
+                  <strong>Fecha de Actualización:</strong>
+                  {{ producto.fecha_actualizacion | date : "shortDate" }}
+                </li>
+              </ul>
+            </div>
+            <div class="card-footer text-center">
+              <div
+                class="d-flex flex-column flex-md-row justify-content-center"
+              >
+                <button
+                  class="btn btn-primary mb-2 mb-md-0 me-md-2 d-flex align-items-center btn-sm"
+                  (click)="editarProducto(producto.id)"
+                >
+                  <i class="bi bi-pencil-square fs-5 me-1"></i>
+                  <!-- Cambiar fs-4 a fs-5 para un icono más pequeño -->
+                  Editar
+                </button>
+                <button
+                  class="btn mb-2 mb-md-0 d-flex align-items-center btn-sm"
+                  [ngClass]="
+                    producto.estado_equipo ? 'btn-danger' : 'btn-success'
+                  "
+                  (click)="toggleProductoActivado(producto)"
+                >
+                  <i
+                    [ngClass]="
+                      producto.estado_equipo
+                        ? 'fas fa-toggle-off'
+                        : 'fas fa-toggle-on'
+                    "
+                    class="fs-5 me-1"
+                  ></i>
+                  {{ producto.estado_equipo ? "Desactivar" : "Activar" }}
+                </button>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Paginación -->
+      <div class="row">
+        <div class="col text-center">
+          <button
+            class="btn btn-secondary me-2"
+            (click)="previousPage()"
+            [disabled]="page === 1"
+          >
+            Anterior
+          </button>
+          <span>Página {{ page }}</span>
+          <button
+            class="btn btn-secondary ms-2"
+            (click)="nextPage()"
+            [disabled]="filteredProductos().length < pageSize"
+          >
+            Siguiente
+          </button>
+        </div>
+      </div>
+
+      <!-- Modal para mostrar la imagen en tamaño completo -->
+      <div
+        class="modal"
+        tabindex="-1"
+        [class.show]="modalVisible"
+        *ngIf="modalVisible"
+        (click)="closeModal()"
+      >
+        <div class="modal-dialog modal-lg">
+          <div class="modal-content">
+            <div class="modal-body">
+              <img [src]="imageToShow" class="img-fluid" />
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>

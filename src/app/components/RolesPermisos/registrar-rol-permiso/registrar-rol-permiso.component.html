@@ -1,0 +1,70 @@
+<div class="container">
+  <h2 class="text-center">Registrar Rol Permiso</h2>
+  <form [formGroup]="rolPermisoForm" (ngSubmit)="registrarRolePermiso()">
+    <div class="mb-3">
+      <label for="rol" class="form-label">Rol:</label>
+      <select formControlName="rol" id="rol" class="form-select" required>
+        <option value="" disabled selected>Seleccione un rol</option>
+        <option *ngFor="let role of roles" [value]="role.id">
+          {{ role.nombre_rol }}
+        </option>
+      </select>
+      <div
+        *ngIf="
+          rolPermisoForm.get('rol')?.invalid &&
+          (rolPermisoForm.get('rol')?.touched ||
+            rolPermisoForm.get('rol')?.dirty)
+        "
+        class="text-danger"
+      >
+        El rol es requerido.
+      </div>
+    </div>
+
+    <div class="mb-3">
+      <label for="permiso" class="form-label">Permiso:</label>
+      <select
+        formControlName="permiso"
+        id="permiso"
+        class="form-select"
+        required
+      >
+        <option value="" disabled selected>Seleccione un permiso</option>
+        <option *ngFor="let permiso of permisos" [value]="permiso.id">
+          {{ permiso.nombre_permiso }}
+        </option>
+      </select>
+      <div
+        *ngIf="
+          rolPermisoForm.get('permiso')?.invalid &&
+          (rolPermisoForm.get('permiso')?.touched ||
+            rolPermisoForm.get('permiso')?.dirty)
+        "
+        class="text-danger"
+      >
+        El permiso es requerido.
+      </div>
+    </div>
+
+    <button
+      type="submit"
+      class="btn btn-primary"
+      [disabled]="rolPermisoForm.invalid"
+    >
+      Registrar
+    </button>
+  </form>
+  <!-- Modal de Éxito -->
+  <app-ok
+    *ngIf="mensajeModal"
+    [mensaje]="mensajeModal"
+    (close)="manejarOk()"
+  ></app-ok>
+
+  <!-- Modal de Error -->
+  <app-error
+    *ngIf="errorModal"
+    [mensaje]="errorModal"
+    (close)="manejarError()"
+  ></app-error>
+</div>
