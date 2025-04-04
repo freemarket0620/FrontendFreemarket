@@ -11,7 +11,6 @@
       "prefix": "app",
       "architect": {
         "build": {
-          
           "builder": "@angular-devkit/build-angular:application",
           "options": {
             "outputPath": "dist/frontend-ag",
@@ -42,28 +41,22 @@
               "node_modules/bootstrap/dist/js/bootstrap.bundle.min.js",
               "node_modules/@popperjs/core/dist/umd/popper.min.js",
               "node_modules/@fortawesome/fontawesome-free/js/all.min.js"
-            ],
-            "server": "src/main.server.ts",
-            "prerender": true,
-            "ssr": {
-              "entry": "server.ts"
-            }
+            ]
           },
           "configurations": {
             "production": {
               "budgets": [
-  {
-    "type": "initial",
-    "maximumWarning": "3MB",
-    "maximumError": "5MB"
-  },
-  {
-    "type": "anyComponentStyle",
-    "maximumWarning": "10kB",
-    "maximumError": "15kB"
-  }
-]
-,
+                {
+                  "type": "initial",
+                  "maximumWarning": "3MB",
+                  "maximumError": "5MB"
+                },
+                {
+                  "type": "anyComponentStyle",
+                  "maximumWarning": "10kB",
+                  "maximumError": "15kB"
+                }
+              ],
               "outputHashing": "all"
             },
             "development": {
