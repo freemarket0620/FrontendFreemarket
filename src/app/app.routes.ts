@@ -23,13 +23,8 @@ import { ListarCategoriaComponent } from './components/Categorias/listar-categor
 import { RegistrarProductoComponent } from './components/Productos/registrar-producto/registrar-producto.component';
 import { EditarProductoComponent } from './components/Productos/editar-producto/editar-producto.component';
 import { ListarProductoComponent } from './components/Productos/listar-producto/listar-producto.component';
-import { RegistrarVentaComponent } from './components/Ventas/registrar-venta/registrar-venta.component';
-import { EditarVentaComponent } from './components/Ventas/editar-venta/editar-venta.component';
 import { ListarVentaComponent } from './components/Ventas/listar-venta/listar-venta.component';
-import { RegistrarDetalleVentaComponent } from './components/DetalleVentas/registrar-detalle-venta/registrar-detalle-venta.component';
-import { EditarDetalleVentaComponent } from './components/DetalleVentas/editar-detalle-venta/editar-detalle-venta.component';
 import { ListarDetalleVentaComponent } from './components/DetalleVentas/listar-detalle-venta/listar-detalle-venta.component';
-import { ListarProductosUsuarioComponent } from './components/Productos/listar-productos-usuario/listar-productos-usuario.component';
 import { ListarProductosEmpleadoComponent } from './components/Productos/listar-productos-empleado/listar-productos-empleado.component';
 import { authGuard } from './guards/auth.guard';
 import { DashboardComponent } from './components/Dashboard/dashboard/dashboard.component';
@@ -41,11 +36,6 @@ export const routes: Routes = [
   { path: '', component: IndexComponent },
   { path: 'login', component: LoginComponent },
   { path: 'index', component: IndexComponent },
-  {
-    path: 'listar-productos-usuario',
-    component: ListarProductosUsuarioComponent,
-  },
-
   {
     path: 'panel-control',
     component: PanelControlComponent,
@@ -193,36 +183,13 @@ export const routes: Routes = [
   },
 
   {
-    path: 'registrar-ventas',
-    component: RegistrarVentaComponent,
-    canActivate: [authGuard],
-    data: { roles: ['admin540'], permisos: ['permiso540'] },
-  },
-  {
-    path: 'editar-ventas',
-    component: EditarVentaComponent,
-    canActivate: [authGuard],
-    data: { roles: ['admin540'], permisos: ['permiso540'] },
-  },
-  {
     path: 'listar-ventas',
     component: ListarVentaComponent,
     canActivate: [authGuard],
     data: { roles: ['admin540'], permisos: ['permiso540'] },
   },
 
-  {
-    path: 'registrar-detalle-ventas',
-    component: RegistrarDetalleVentaComponent,
-    canActivate: [authGuard],
-    data: { roles: ['admin540'], permisos: ['permiso540'] },
-  },
-  {
-    path: 'editar-detalle-ventas',
-    component: EditarDetalleVentaComponent,
-    canActivate: [authGuard],
-    data: { roles: ['admin540'], permisos: ['permiso540'] },
-  },
+  
   {
     path: 'listar-detalle-ventas',
     component: ListarDetalleVentaComponent,

@@ -1,5 +1,4 @@
 import { CommonModule } from '@angular/common';
-import { ListarProductosUsuarioComponent } from '../Productos/listar-productos-usuario/listar-productos-usuario.component';
 import { RouterModule } from '@angular/router';
 import { Router } from '@angular/router';
 import { FormsModule, ReactiveFormsModule } from '@angular/forms';
