@@ -262,7 +262,13 @@
         (click)="toggleSidebar()"
         style="cursor: pointer; font-size: 2.5rem; padding: 5px"
       ></i>
-      <div class="ml-auto d-flex align-items-center">
+      <div class="ml-auto d-flex align-items-center gap-2">
+          <!-- Botón de la casita -->
+          <button class="btn btn-success d-flex align-items-center"
+            (click)="mostrarComponente('app-dashboard'); handleItemClick()">
+            <i class="fas fa-home me-2"></i>
+            <span>Inicio</span>
+          </button>
         <div class="dropdown">
           <button
             class="btn btn-secondary dropdown-toggle"
@@ -310,15 +316,6 @@
     style="min-height: calc(100vh - 70px)"
   >
     <div class="text-center" style="margin-top: 10px; width: 100%">
-      <!-- Button to return to Dashboard -->
-      <button
-        id="btn-dashboard"
-        class="btn btn-success"
-        style="position: absolute; right: 10px ; top: 100px"
-        (click)="mostrarComponente('app-dashboard'); handleItemClick()"
-      >
-        <i class="fas fa-home fs-1 me-2"></i>
-      </button>
       <ng-container [ngSwitch]="componenteActual">
         <app-dashboard *ngSwitchDefault />
 
