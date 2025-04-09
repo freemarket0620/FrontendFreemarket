@@ -23,20 +23,23 @@
     >
       <span class="navbar-toggler-icon"></span>
     </button>
+
     <div class="collapse navbar-collapse" id="navbarNav">
-      <ul class="navbar-nav ms-auto">
-        <li class="nav-item">
-          <a class="btn btn-light fs-5" href="#contacto">
+      <ul
+        class="navbar-nav ms-auto flex-column flex-md-row align-items-start align-items-md-center"
+      >
+        <li class="nav-item mx-2 my-2">
+          <a class="btn btn-light fs-5 w-100" href="#contacto">
             <strong>Contactos</strong>
           </a>
         </li>
-        <li class="nav-item">
-          <a class="btn btn-light fs-5" (click)="navigateToProductos()">
+        <li class="nav-item mx-2 my-2">
+          <a class="btn btn-light fs-5 w-100" (click)="navigateToProductos()">
             <strong>Productos</strong>
           </a>
         </li>
-        <li class="nav-item">
-          <a class="btn btn-light fs-5" (click)="navigateToLogin()">
+        <li class="nav-item mx-2 my-2">
+          <a class="btn btn-light fs-5 w-100" (click)="navigateToLogin()">
             <i class="fas fa-user"></i>
             <strong> Iniciar Sesión</strong>
           </a>
