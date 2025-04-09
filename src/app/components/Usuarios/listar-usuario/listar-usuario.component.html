@@ -1,24 +1,23 @@
 <div class="container">
   <h2 class="text-center">Lista de Usuarios</h2>
-
   <!-- campos de búsqueda -->
   <label class="fw-bold">Campos de búsqueda</label>
   <div class="row mb-4 gy-3">
     <div class="col-12 col-md-3">
-      <label for="nombreInput" class="form-label">Nombre o Apellido</label>
+      <label for="nombreInput" class="form-label text-start d-block">Nombre o Apellido</label>
       <input id="nombreInput" type="text" class="form-control" placeholder="Ingrese Nombre"
         [(ngModel)]="searchnombreUsuario" />
     </div>
     <div class="col-12 col-md-3">
-      <label for="Correo" class="form-label">Correo</label>
+      <label for="Correo" class="form-label text-start d-block">Correo</label>
       <input type="text" class="form-control" placeholder="Ingrese Correo" [(ngModel)]="searchcorreo" />
     </div>
     <div class="col-12 col-md-2">
-      <label for="ci" class="form-label">C.I.</label>
+      <label for="ci" class="form-label text-start d-block">C.I.</label>
       <input type="text" class="form-control" placeholder="Ingrese C.I." [(ngModel)]="searchci" />
     </div>
     <div class="col-12 col-md-2">
-      <label for="ci_departamento" class="form-label">Departamento</label>
+      <label for="ci_departamento" class="form-label text-start d-block">Departamento</label>
       <input type="text" class="form-control" placeholder="Ingrese D.P." [(ngModel)]="searchdepartamento" />
     </div>
     <div class="col-12 col-md-2 d-flex align-items-end">
@@ -81,14 +80,16 @@
     </table>
   </div>
 
-  <!-- Paginación responsiva -->
-  <div class="d-flex flex-column flex-md-row justify-content-between align-items-center mt-3 gap-2">
-    <button class="btn btn-secondary" (click)="previousPage()" [disabled]="page === 1">
-      Anterior
-    </button>
-    <span>Página {{ page }}</span>
-    <button class="btn btn-secondary" (click)="nextPage()" [disabled]="page * pageSize >= usuarios.length">
-      Siguiente
-    </button>
-  </div>
+<!-- Paginación responsiva y horizontal también en móviles -->
+<div
+  class="d-flex flex-wrap justify-content-center justify-content-md-between align-items-center mt-3 gap-2 text-center">
+  <button class="btn btn-secondary" (click)="previousPage()" [disabled]="page === 1">
+    Anterior
+  </button>
+  <span class="px-2">Página {{ page }}</span>
+  <button class="btn btn-secondary" (click)="nextPage()" [disabled]="page * pageSize >= usuarios.length">
+    Siguiente
+  </button>
+</div>
+
 </div>
