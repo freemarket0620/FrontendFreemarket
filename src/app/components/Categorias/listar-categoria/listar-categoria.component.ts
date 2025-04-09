@@ -17,6 +17,7 @@ export class ListarCategoriaComponent implements OnInit {
   page: number = 1; // Página actual
   pageSize: number = 5; // Tamaño de la página
   paginatedCategorias: Categoria[] = []; // Categorías paginadas
+  loading: boolean = true;
 
   @Output() editarCategoria = new EventEmitter<number>(); // Emitir evento para editar categoría
   @Output() registrarCategoria = new EventEmitter<number>(); // Emitir evento para registrar una nueva categoría
@@ -28,10 +29,17 @@ export class ListarCategoriaComponent implements OnInit {
   }
 
   getCategorias() {
-    this.servicesService.getCategorias().subscribe((data) => {
+    this.loading = true; // Iniciar el estado de carga
+    this.servicesService.getCategorias().subscribe(
+      (data) => {
       this.categorias = data; // Asignar las categorías obtenidas
       this.updatePaginatedCategorias(); // Actualizar las categorías paginadas
-    });
+      this.loading = false;
+      },
+      () => {
+        this.loading = false; // Finalizar el estado de carga en caso de error
+      }
+    );
   }
 
   editarCategoriaClick(id: number) {

@@ -1,64 +1,43 @@
 <div class="container-fluid mt-4">
   <div class="row">
     <!-- Columna de la izquierda: Lista de Productos (ajustada a col-md-7) -->
-    <div class="col-md-7">
+    <div class="col-md-7 mb-2">
       <h2 class="text-center my-4">Lista de Productos Empleado</h2>
       <!-- Barra de búsqueda -->
       <div class="row mb-4">
-        <div class="col-md-3">
-          <label for="categoriaSelect" class="form-label"
-            >Seleccionar Categoría</label
-          >
-          <select
-            id="categoriaSelect"
-            class="form-control"
-            [(ngModel)]="searchCategoria"
-            (change)="filteredProductos()"
-          >
+        <div class="col-12 col-sm-6 col-md-3">
+          <label for="categoriaSelect" class="form-label text-start d-block">Seleccionar Categoría</label>
+          <select id="categoriaSelect" class="form-control" [(ngModel)]="searchCategoria" (change)="filteredProductos()">
             <option value="">Seleccionar Categoría</option>
-            <option
-              *ngFor="let categoria of categorias"
-              [value]="categoria.nombre_categoria"
-            >
+            <option *ngFor="let categoria of categorias" [value]="categoria.nombre_categoria">
               {{ categoria.nombre_categoria }}
             </option>
           </select>
         </div>
 
-        <div class="col-md-3">
-          <label for="nombreInput" class="form-label">Buscar por Nombre</label>
-          <input
-            id="nombreInput"
-            type="text"
-            class="form-control"
-            placeholder="Buscar por nombre"
-            [(ngModel)]="searchNombreProducto"
-          />
+        <div class="col-12 col-sm-6 col-md-3">
+          <label for="nombreInput" class="form-label text-start d-block">Buscar por Nombre</label>
+          <input id="nombreInput" type="text" class="form-control" placeholder="Buscar por nombre"
+            [(ngModel)]="searchNombreProducto" />
         </div>
 
-        <div class="col-md-3">
-          <label for="codigoInput" class="form-label">Buscar por Código</label>
-          <input
-            id="codigoInput"
-            type="text"
-            class="form-control"
-            placeholder="Buscar por Código"
-            [(ngModel)]="searchCodigoProducto"
-          />
+        <div class="col-12 col-sm-6 col-md-3 mb-2">
+          <label for="codigoInput" class="form-label text-start d-block">Buscar por Código</label>
+          <input id="codigoInput" type="text" class="form-control" placeholder="Buscar por Código"
+            [(ngModel)]="searchCodigoProducto" />
         </div>
-
-        <div class="text-center col-md-3">
+        
+        <div class="col-12 col-sm-6 col-md-3 text-center mt-3">
           <div class="d-grid gap-2">
-            <button
-              class="btn btn-danger d-flex align-items-center btn-lg py-1"
-              (click)="clearQuantities()"
-            >
+            <button class="btn btn-danger d-flex align-items-center btn-lg py-1" (click)="clearQuantities()">
               <i class="fas fa-trash-alt fs-1 me-2"></i>
-              Limpiar Cantidades
+              Borrar Cantidades
             </button>
           </div>
         </div>
+
       </div>
+
 
       <!-- Lista de productos en formato de tarjetas (cards) -->
       <div class="row">
@@ -180,8 +159,10 @@
       </div>
     </div>
 
+
+
     <!-- Columna de la derecha: Registrar Venta -->
-    <div class="col-md-5">
+    <div class="col-md-5 mb-2">
       <div class="card mb-4" style="position: sticky; top: 150px">
         <div class="text-center card-header custom-bg-blue-200">
           <h4>Registrar Venta</h4>
@@ -190,7 +171,7 @@
           <form [formGroup]="ventaForm" (ngSubmit)="registrarVenta()">
             <div class="row mb-3">
               <div class="col-md-4">
-                <label for="usuario" class="form-label">Usuario</label>
+                <label for="usuario" class="form-label text-start d-block">Usuario</label>
                 <input
                   type="text"
                   id="usuario"
@@ -216,7 +197,7 @@
               </div>
 
               <div class="col-md-4">
-                <label for="estado" class="form-label">Estado</label>
+                <label for="estado" class="form-label text-start d-block">Estado</label>
                 <select
                   id="estado"
                   class="form-select"
@@ -230,7 +211,7 @@
               </div>
 
               <div class="col-md-4">
-                <label for="total" class="form-label">Total</label>
+                <label for="total" class="form-label text-start d-block">Total</label>
                 <input
                   type="text"
                   id="total"
@@ -265,16 +246,16 @@
           <div class="d-flex justify-content-center">
             <h4 class="text-center">Detalles de la Venta</h4>
           </div>
-
-          <div class="card-body">
-            <table class="table table-bordered">
+<!-- esto es la seccion de talle de la venta  -->
+          <div class="card-body table-responsive">
+            <table class="table table-striped table-bordered table-hover align-middle text-center">
               <thead>
                 <tr>
                   <th>Codigo</th>
                   <th>Producto</th>
                   <th>Cant.</th>
                   <th>Precio</th>
-                  <th>Tipo de Venta</th>
+                  <th>Venta</th>
                   <th>Total</th>
                   <th class="accion">Acción</th>
                 </tr>
@@ -311,39 +292,21 @@
             </table>
           </div>
         </div>
-        <div
-          class="card-footer d-flex justify-content-between align-items-center"
-        >
-          <button
-            id="btn-generar-pdf"
-            class="btn btn-info me-2"
-            (click)="generarPDF('descargar')"
-          >
-            Descargar PDF
-          </button>
-          <button
-            id="btn-generar-pdf"
-            class="btn btn-secondary me-2"
-            (click)="generarPDF('abrir_nueva')"
-          >
-            Abrir en nueva ventana
-          </button>
-          <button
-            id="btn-generar-pdf"
-            class="btn btn-primary me-2"
-            (click)="generarPDF('abrir_misma')"
-          >
-            Abrir en misma ventana
-          </button>
-          <button
-            id="btn-generar-pdf"
-            class="btn btn-success me-2"
-            (click)="generarPDF('imprimir')"
-          >
-            Imprimir PDF
-          </button>
+        <div class="text-center mb-4">
+          <h3>Opciones de Generación de PDF</h3>
         </div>
 
+        <div class="card-footer d-flex justify-content-center gap-3">
+          <button id="btn-generar-pdf-descargar" class="btn btn-info mb-2 mb-md-0" (click)="generarPDF('descargar')">
+            Descargar
+          </button>
+          <button id="btn-generar-pdf-imprimir" class="btn btn-success mb-2 mb-md-0" (click)="generarPDF('imprimir')">
+            Imprimir
+          </button>
+        </div>
+                                        
+
+<!-- esto es la seccion de tipo de cambio -->
         <div class="card mt-4">
           <div class="card-header custom-bg-blue-200">
             <h4 class="text-center">Cambio</h4>
@@ -351,40 +314,33 @@
           <div class="card-body">
             <div class="row mb-3 align-items-center">
               <!-- Monto pagado -->
-              <div class="col-md-4">
+              <div class="col-12 col-md-4">
                 <div class="row align-items-center">
-                  <div class="col-md-6">
-                    <label for="montoPagado"
-                      ><strong>Monto pagado:</strong></label
-                    >
+                  <div class="col-12 col-md-6">
+                    <label for="montoPagado"><strong>Monto pagado:</strong></label>
                   </div>
-                  <div class="col-md-6">
-                    <input
-                      type="text"
-                      id="montoPagado"
-                      [(ngModel)]="montoPagado"
-                      class="form-control"
-                      (input)="calcularCambio()"
-                      placeholder="Ingrese monto"
-                    />
+                  <div class="col-12 col-md-6">
+                    <input type="text" id="montoPagado" [(ngModel)]="montoPagado" class="form-control"
+                      (input)="calcularCambio()" placeholder="Ingrese monto" />
                   </div>
                 </div>
               </div>
 
               <!-- Total a pagar -->
-              <div class="col-md-4 text-center">
+              <div class="col-12 col-md-4 text-center">
                 <strong>Total a pagar:</strong><br />
-                Bs {{ totalVenta | number : "1.2-2" }}
+                Bs {{ totalVenta | number: '1.2-2' }}
               </div>
 
               <!-- Cambio -->
-              <div class="col-md-4 text-center">
+              <div class="col-12 col-md-4 text-center">
                 <strong>Cambio:</strong><br />
-                Bs {{ cambio | number : "1.2-2" }}
+                Bs {{ cambio | number: '1.2-2' }}
               </div>
             </div>
           </div>
         </div>
+
 
         <!-- Modal para mostrar la imagen en tamaño completo -->
         <div
