@@ -255,61 +255,38 @@
 
 <!-- Contenido principal -->
 <section id="wrapper" [ngClass]="{ shrink: isSidebarOpen }">
-  <nav class="navbar navbar-expand-md" style="background-color: #e7e7e7">
-    <div class="container-fluid mx-2">
-      <i
-        [ngClass]="iconClass + ' ml-2'"
-        (click)="toggleSidebar()"
-        style="cursor: pointer; font-size: 2.5rem; padding: 5px"
-      ></i>
-      <div class="ml-auto d-flex align-items-center gap-2">
-          <!-- Botón de la casita -->
-          <button class="btn btn-success d-flex align-items-center"
-            (click)="mostrarComponente('app-dashboard'); handleItemClick()">
-            <i class="fas fa-home me-2"></i>
-            <span>Inicio</span>
-          </button>
-        <div class="dropdown">
-          <button
-            class="btn btn-secondary dropdown-toggle"
-            type="button"
-            id="dropdownMenuButton"
-            data-bs-toggle="dropdown"
-            aria-expanded="false"
-          >
-            {{ nombre_usuario }} {{ apellido }}
-          </button>
-          <ul
-            class="dropdown-menu dropdown-menu-end"
-            aria-labelledby="dropdownMenuButton"
-          >
-            <li>
-              <div
-                class="dropdown-item d-flex align-items-center"
-                (click)="mostrarComponente('VerPerfil')"
-              >
-                <i class="fas fa-eye me-2"></i>
-                <span>Ver Perfil</span>
-              </div>
-            </li>
-            <li>
-              <div class="dropdown-divider"></div>
-              <!-- Línea divisoria -->
-            </li>
-            <li>
-              <div
-                class="dropdown-item text-danger"
-                (click)="onSelectChange('cerrarSesion')"
-              >
-                <i class="fas fa-sign-out-alt me-2"></i>
-                <span>Cerrar Sesión</span>
-              </div>
-            </li>
-          </ul>
-        </div>
-      </div>
+<nav class="navbar navbar-expand-md" style="background-color: #e7e7e7">
+  <div class="container-fluid mx-2">
+    <!-- Ícono del sidebar -->
+    <i [ngClass]="iconClass + ' ml-2'" (click)="toggleSidebar()"
+      style="cursor: pointer; font-size: 2.5rem; padding: 5px"></i>
+
+    <!-- Botones de acciones a la derecha -->
+    <div class="ml-auto d-flex align-items-center gap-2">
+      <!-- Botón de Inicio -->
+      <button class="btn btn-success d-flex align-items-center"
+        (click)="mostrarComponente('app-dashboard'); handleItemClick()">
+        <i class="fas fa-home me-2"></i>
+        <span>Inicio</span>
+      </button>
+
+      <!-- Botón Ver Perfil -->
+      <button class="btn btn-primary d-flex align-items-center" (click)="mostrarComponente('VerPerfil')">
+        <i class="fas fa-user me-2"></i>
+        <span>Ver Perfil</span>
+      </button>
+
+      <!-- Botón Cerrar Sesión -->
+<!-- Botón redondo solo con el ícono de cerrar sesión -->
+<button class="btn btn-danger rounded-circle d-flex justify-content-center align-items-center"
+  style="width: 40px; height: 40px;" (click)="onSelectChange('cerrarSesion')">
+  <i class="fas fa-sign-out-alt"></i>
+</button>
+
     </div>
-  </nav>
+  </div>
+</nav>
+
 
   <div
     class="content d-flex justify-content-center align-items-center"
