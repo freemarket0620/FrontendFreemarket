@@ -1,21 +1,20 @@
 <div
   class="container-fluid vh-100 d-flex align-items-center justify-content-center"
 >
-  <!-- Botón de salir o volver -->
-  <div
-    class="position-absolute w-100 d-flex justify-content-end p-3"
-    style="z-index: 1000"
+  <!-- Botón Volver a Inicio con margen para separación -->
+  <a
+    class="btn btn-primary position-absolute top-0 end-0 m-4 btn-lg"
+    (click)="navigateToHome()"
+    title="Volver a Inicio"
+    style="margin-top: 20px"
   >
-    <a
-      class="btn btn-primary btn-lg d-flex align-items-center gap-2"
-      (click)="navigateToHome()"
-      title="Volver a Inicio"
-    >
+    <span class="d-flex align-items-center">
       <i class="bi bi-person-walking fs-5"></i>
-      <i class="bi bi-door-open fs-4 rotate-left"></i>
-    </a>
-  </div>
+      <i class="bi bi-door-open fs-2 rotate-left"></i>
+    </span>
+  </a>
 
+  <!-- Contenedor del formulario de inicio de sesión -->
   <div class="row w-100 justify-content-center g-0">
     <!-- Formulario de inicio de sesión -->
     <div class="col-md-1 col-lg-2 d-flex align-items-center">
@@ -93,8 +92,8 @@
               Por favor, ingrese su contraseña.
             </div>
           </div>
-          <small class="form-text"
-            ><a href="#" class="text-primary"
+          <small class="form-text">
+            <a href="#" class="text-primary"
               >¿Has olvidado tu contraseña comuniquese con el Admistrador?</a
             ></small
           >
