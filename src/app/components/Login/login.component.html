@@ -1,16 +1,21 @@
 <div
   class="container-fluid vh-100 d-flex align-items-center justify-content-center"
 >
-  <a
-    class="btn btn-primary position-absolute top-0 end-0 m-4 btn-lg"
-    (click)="navigateToHome()"
-    title="Volver a Inicio"
+  <!-- Botón de salir o volver -->
+  <div
+    class="position-absolute w-100 d-flex justify-content-end p-3"
+    style="z-index: 1000"
   >
-    <span class="d-flex align-items-center">
+    <a
+      class="btn btn-primary btn-lg d-flex align-items-center gap-2"
+      (click)="navigateToHome()"
+      title="Volver a Inicio"
+    >
       <i class="bi bi-person-walking fs-5"></i>
-      <i class="bi bi-door-open fs-2 rotate-left"></i>
-    </span>
-  </a>
+      <i class="bi bi-door-open fs-4 rotate-left"></i>
+    </a>
+  </div>
+
   <div class="row w-100 justify-content-center g-0">
     <!-- Formulario de inicio de sesión -->
     <div class="col-md-1 col-lg-2 d-flex align-items-center">
