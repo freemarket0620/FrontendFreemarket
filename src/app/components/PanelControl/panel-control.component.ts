@@ -164,8 +164,9 @@ export class PanelControlComponent implements OnInit {
 
   toggleSidebar() {
     this.isSidebarOpen = !this.isSidebarOpen;
-    this.iconClass = this.isSidebarOpen ? 'fas fa-bars' : 'fas fa-times';
+    this.iconClass = this.isSidebarOpen ? 'fas fa-times' : 'fas fa-bars';
   }
+
 
   // Método para confirmar el cierre de sesión
   confirmarCerrarSesion() {
