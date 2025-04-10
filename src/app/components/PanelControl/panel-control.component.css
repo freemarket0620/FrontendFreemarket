@@ -8,7 +8,7 @@
   background-color: #343a40;
   color: white;
   transition: transform 0.3s ease-in-out, width 0.3s ease;
-  z-index: 1001;
+  z-index: 1040;
   transform: translateX(0);
 }
 
