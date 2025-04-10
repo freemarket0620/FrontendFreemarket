@@ -255,47 +255,46 @@
 
 <!-- Contenido principal -->
 <section id="wrapper" [ngClass]="{ shrink: isSidebarOpen }">
-  <nav class="navbar navbar-expand-md" style="background-color: #e7e7e7">
+  <nav class="navbar navbar-expand-md sticky-top shadow-sm" style="background-color: #e7e7e7; z-index: 1030;">
     <div class="container-fluid mx-2">
       <!-- Ícono del sidebar -->
-      <i
-        [ngClass]="iconClass + ' ml-2'"
-        (click)="toggleSidebar()"
-        style="cursor: pointer; font-size: 2.5rem; padding: 5px"
-      ></i>
+      <i [ngClass]="iconClass + ' ml-2'" (click)="toggleSidebar()"
+        style="cursor: pointer; font-size: 2.5rem; padding: 5px"></i>
 
       <!-- Botones de acciones a la derecha -->
+      <!-- Botones de acciones a la derecha -->
       <div class="ml-auto d-flex align-items-center gap-2">
-        <!-- Botón de Inicio -->
-        <button
-          class="btn btn-success d-flex align-items-center"
-          (click)="mostrarComponente('app-dashboard'); handleItemClick()"
-        >
-          <i class="fas fa-home me-2"></i>
-          <span>Inicio</span>
+        <!-- Icono de Notificaciones -->
+        <button class="btn btn-warning rounded-circle d-flex justify-content-center align-items-center"
+          style="width: 40px; height: 40px" title="Notificaciones" (click)="mostrarComponente('Notificaciones')">
+          <i class="fas fa-bell"></i>
         </button>
-
-        <!-- Botón Ver Perfil -->
-        <button
-          class="btn btn-primary d-flex align-items-center"
-          (click)="mostrarComponente('VerPerfil')"
-        >
-          <i class="fas fa-user me-2"></i>
-          <span>Ver Perfil</span>
+      
+        <!-- Icono de Mensajes -->
+        <button class="btn btn-info rounded-circle d-flex justify-content-center align-items-center"
+          style="width: 40px; height: 40px" title="Mensajes" (click)="mostrarComponente('Mensajes')">
+          <i class="fas fa-envelope"></i>
         </button>
-
-        <!-- Botón Cerrar Sesión -->
-        <!-- Botón redondo solo con el ícono de cerrar sesión -->
-        <button
-          class="btn btn-danger rounded-circle d-flex justify-content-center align-items-center"
-          style="width: 40px; height: 40px"
-          (click)="onSelectChange('cerrarSesion')"
-        >
+        <!-- Icono de Ver Perfil -->
+        <button class="btn btn-primary rounded-circle d-flex justify-content-center align-items-center"
+          style="width: 40px; height: 40px" title="Ver Perfil" (click)="mostrarComponente('VerPerfil')">
+          <i class="fas fa-user"></i>
+        </button>
+        <!-- Icono de Inicio -->
+        <button class="btn btn-success rounded-circle d-flex justify-content-center align-items-center"
+          style="width: 40px; height: 40px" title="Inicio" (click)="mostrarComponente('app-dashboard'); handleItemClick()">
+          <i class="fas fa-home"></i>
+        </button>
+        <!-- Icono de Cerrar Sesión -->
+        <button class="btn btn-danger rounded-circle d-flex justify-content-center align-items-center"
+          style="width: 40px; height: 40px" title="Cerrar Sesión" (click)="onSelectChange('cerrarSesion')">
           <i class="fas fa-sign-out-alt"></i>
         </button>
       </div>
+
     </div>
   </nav>
+
 
   <div
     class="content d-flex justify-content-center align-items-center"
