@@ -133,6 +133,21 @@ export class PanelControlComponent implements OnInit {
       console.warn('localStorage no está disponible en este entorno.');
     }
   }
+  reiniciarPanel() {
+    console.log('Reiniciando panel...');
+
+    // Restablece los datos como si fuera el inicio
+    this.ngOnInit();
+
+    // También podrías reiniciar más cosas si necesitas
+    this.componenteActual = 'app-dashboard';
+    this.openSubmenu = null;
+    this.iconClass = this.isSidebarOpen ? 'fas fa-times' : 'fas fa-bars';
+
+    // O recargar completamente (opcional y más drástico)
+    // location.reload();
+  }
+
   private getUsuarioLocalStorage() {
     if (typeof window !== 'undefined') {
       // Verifica si localStorage está disponible
