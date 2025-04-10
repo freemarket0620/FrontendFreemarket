@@ -87,7 +87,7 @@ export class PanelControlComponent implements OnInit {
   windowWidth: number = 0; // Inicializa en 0
 
   private openSubmenu: string | null = null;
-   @ViewChild('miFormulario') miFormulario!: NgForm;
+  
 
   constructor(
     private storageService: StorageService,
@@ -135,19 +135,6 @@ export class PanelControlComponent implements OnInit {
       console.warn('localStorage no está disponible en este entorno.');
     }
   }
-    reiniciarPanel() {
-      console.log('Reiniciando panel...');
-
-      this.resetFormulario(); // nuevo método, seguro
-      this.componenteActual = 'app-dashboard';
-      this.openSubmenu = null;
-      this.iconClass = this.isSidebarOpen ? 'fas fa-times' : 'fas fa-bars';
-    }
-    resetFormulario() {
-      if (this.miFormulario) {
-        this.miFormulario.reset(); // reinicia todo el form
-      }
-    }
   private getUsuarioLocalStorage() {
     if (typeof window !== 'undefined') {
       // Verifica si localStorage está disponible
