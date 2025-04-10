@@ -97,12 +97,14 @@ export class PanelControlComponent implements OnInit {
   onResize() {
     this.windowWidth = window.innerWidth;
     this.isSidebarOpen = this.windowWidth >= 768;
+    this.iconClass = this.isSidebarOpen ? 'fas fa-times' : 'fas fa-bars'; // Actualiza el icono
   }
 
   ngOnInit(): void {
     const storedSidebarState = localStorage.getItem('isSidebarOpen');
     this.isSidebarOpen = storedSidebarState === 'true'; // Ajuste aquí
     this.iconClass = this.isSidebarOpen ? 'fas fa-times' : 'fas fa-bars';
+    
     if (typeof window !== 'undefined') {
       const token = this.storageService.getItem('token');
       if (!token) {
@@ -164,12 +166,6 @@ export class PanelControlComponent implements OnInit {
   onLogout() {
     this.authService.logout();
   }
-
-/*   toggleSidebar() {
-    this.isSidebarOpen = !this.isSidebarOpen;
-    localStorage.setItem('isSidebarOpen', this.isSidebarOpen.toString());
-    this.iconClass = this.isSidebarOpen ? 'fas fa-times' : 'fas fa-bars';
-  } */
   toggleSidebar() {
     this.isSidebarOpen = !this.isSidebarOpen;
     localStorage.setItem('isSidebarOpen', this.isSidebarOpen.toString());
