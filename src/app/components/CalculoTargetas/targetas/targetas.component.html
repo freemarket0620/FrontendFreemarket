@@ -1,42 +1,93 @@
-<div class="container mt-5">
-  <h2 class="text-center">Pedido de Tarjetas</h2>
-  <!-- Título de la tabla -->
-  <table class="table table-bordered">
-    <thead class="thead-light">
-      <tr>
-        <th>Cortes de tarjetas</th>
-        <th>Precio promoción (Bs)</th>
-        <th>Cantidad de pedido</th>
-        <th>Resultado de la operación</th>
-      </tr>
-    </thead>
-    <tbody>
-      <tr *ngFor="let tarjeta of tarjetas; let i = index">
-        <td>{{ tarjeta.nombre }}</td>
-        <td>
-          <input
-            type="number"
-            class="form-control"
-            [(ngModel)]="tarjeta.precio"
-            (ngModelChange)="calcularResultado(i)"
-          />
-        </td>
-        <td>
-          <input
-            type="number"
-            class="form-control"
-            [(ngModel)]="tarjeta.cantidad"
-            (ngModelChange)="calcularResultado(i)"
-          />
-        </td>
-        <td>{{ tarjeta.resultado.toFixed(2) }}</td>
-        <!-- Mostrar resultado con 2 decimales -->
-      </tr>
-      <tr>
-        <td colspan="3" class="text-right"><strong>Total:</strong></td>
-        <td>{{ calcularTotal() }}</td>
-        <!-- Total ya redondeado a 2 decimales -->
-      </tr>
-    </tbody>
-  </table>
+<div class="container my-5">
+  <h2 class="text-center mb-4">📦 Pedido de Tarjetas</h2>
+
+  <!-- Tabla de tarjetas -->
+  <div class="table-responsive">
+    <table class="table table-bordered align-middle text-center">
+      <thead class="table-light">
+        <tr>
+          <th>Nombre</th>
+          <th>Precio</th>
+          <th>Cantidad</th>
+          <th>Resultado</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr *ngFor="let tarjeta of tarjetas; let i = index">
+          <td>{{ tarjeta.nombre }}</td>
+          <td>
+            <ng-container *ngIf="getPrecios(tarjeta.nombre).length > 0; else inputLibre">
+              <select class="form-select" [(ngModel)]="tarjeta.precio" (ngModelChange)="calcularResultado(i)">
+                <option value="" disabled selected hidden>Selecciona un precio</option>
+                <option *ngFor="let precio of getPrecios(tarjeta.nombre)" [value]="precio.precio">
+                  {{ precio.precio | number: '1.2-2' }}Bs (desde {{ precio.minimo }} Un.)
+                </option>
+              </select>
+            </ng-container>
+            <ng-template #inputLibre>
+              <input type="number" class="form-control" [(ngModel)]="tarjeta.precio"
+                (ngModelChange)="calcularResultado(i)" placeholder="Precio" />
+            </ng-template>
+          </td>
+          <td>
+            <input type="number" class="form-control" [(ngModel)]="tarjeta.cantidad"
+              (ngModelChange)="calcularResultado(i)" placeholder="Cantidad" />
+          </td>
+          <td>
+            <span *ngIf="tarjeta.precio != null && tarjeta.cantidad != null && tarjeta.resultado > 0">
+              {{ tarjeta.resultado.toFixed(2) }}
+            </span>
+          </td>
+        </tr>
+
+        <!-- Total -->
+        <tr class="table-info">
+          <td colspan="3" class="text-end"><strong>Total:</strong></td>
+          <td><strong>{{ calcularTotal() }}</strong></td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+
+  <!-- Botones principales -->
+  <div class="d-flex flex-column flex-md-row justify-content-center gap-3 text-center my-4">
+    <button class="btn btn-danger" (click)="resetFormulario()">
+      <i class="bi bi-trash-fill me-2"></i> Limpiar Todo
+    </button>
+    <button class="btn btn-success" (click)="mostrarClientes = !mostrarClientes">
+      <i class="bi bi-whatsapp me-2"></i> Enviar por WhatsApp 📱
+    </button>
+  </div>
+
+  <!-- Sección de envío y selección de clientes -->
+  <div *ngIf="mostrarClientes" class="mt-4">
+    <div class="mb-3 text-center">
+      <label class="form-label fw-bold">Buscar Cliente por nombre o número:</label>
+      <input type="text" class="form-control w-100 w-md-50 mx-auto" placeholder="Ej: Paola o 7878"
+        [(ngModel)]="busquedaCliente" (ngModelChange)="filtrarClientes()" />
+    </div>
+
+    <!-- Lista desplegable de resultados -->
+    <div class="mb-3 text-center" *ngIf="clientesFiltrados.length > 0">
+      <select class="form-select w-100 w-md-50 mx-auto" [(ngModel)]="numeroManual"
+        (ngModelChange)="buscarClientePorNumero()">
+        <option disabled selected hidden>Selecciona un cliente</option>
+        <option *ngFor="let cliente of clientesFiltrados" [value]="cliente.numero">
+          {{ cliente.nombre }} - {{ cliente.numero }}
+        </option>
+      </select>
+    </div>
+
+    <!-- Cliente detectado -->
+    <div *ngIf="clienteDetectado" class="text-center mb-3">
+      <p><strong>Cliente detectado:</strong> {{ clienteDetectado.nombre }}</p>
+    </div>
+
+    <!-- Confirmar envío -->
+    <div class="text-center">
+      <button class="btn btn-primary" (click)="confirmarYEnviar()">
+        <i class="bi bi-send-check me-2"></i> Confirmar Envío ✔️
+      </button>
+    </div>
+  </div>
 </div>
