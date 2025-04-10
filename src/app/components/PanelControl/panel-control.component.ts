@@ -1,6 +1,6 @@
 import { CommonModule } from '@angular/common';
 import { NgbDropdownModule } from '@ng-bootstrap/ng-bootstrap';
-import { Component, HostListener, OnInit } from '@angular/core';
+import { Component, HostListener, OnInit, ViewChild } from '@angular/core';
 import { Router } from '@angular/router';
 import { ServicesService } from '../../Services/services.service';
 import { HttpClientModule } from '@angular/common/http';
@@ -32,6 +32,7 @@ import { ListarProductosEmpleadoComponent } from '../Productos/listar-productos-
 import { DashboardComponent } from '../Dashboard/dashboard/dashboard.component';
 import { PerfilComponent } from '../Usuarios/perfil/perfil.component';
 import { TargetasComponent } from '../CalculoTargetas/targetas/targetas.component';
+import { NgForm } from '@angular/forms';
 
 @Component({
   selector: 'app-panel-control',
@@ -86,6 +87,7 @@ export class PanelControlComponent implements OnInit {
   windowWidth: number = 0; // Inicializa en 0
 
   private openSubmenu: string | null = null;
+   @ViewChild('miFormulario') miFormulario!: NgForm;
 
   constructor(
     private storageService: StorageService,
@@ -133,21 +135,19 @@ export class PanelControlComponent implements OnInit {
       console.warn('localStorage no está disponible en este entorno.');
     }
   }
-  reiniciarPanel() {
-    console.log('Reiniciando panel...');
+    reiniciarPanel() {
+      console.log('Reiniciando panel...');
 
-    // Restablece los datos como si fuera el inicio
-    this.ngOnInit();
-
-    // También podrías reiniciar más cosas si necesitas
-    this.componenteActual = 'app-dashboard';
-    this.openSubmenu = null;
-    this.iconClass = this.isSidebarOpen ? 'fas fa-times' : 'fas fa-bars';
-
-    // O recargar completamente (opcional y más drástico)
-    // location.reload();
-  }
-
+      this.resetFormulario(); // nuevo método, seguro
+      this.componenteActual = 'app-dashboard';
+      this.openSubmenu = null;
+      this.iconClass = this.isSidebarOpen ? 'fas fa-times' : 'fas fa-bars';
+    }
+    resetFormulario() {
+      if (this.miFormulario) {
+        this.miFormulario.reset(); // reinicia todo el form
+      }
+    }
   private getUsuarioLocalStorage() {
     if (typeof window !== 'undefined') {
       // Verifica si localStorage está disponible
