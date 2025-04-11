@@ -137,41 +137,57 @@ export class TargetasComponent {
 
     if (busqueda === '') {
       this.clientesFiltrados = [...this.clientes];
+      this.numeroManual = '';
+      this.clienteSeleccionado = null;
       return;
     }
 
     this.clientesFiltrados = this.clientes.filter(cliente => {
       const nombre = cliente.nombre.toLowerCase();
-      const numeroSinCodigo = cliente.numero.slice(3); // Quita el 591
+      const numeroSinCodigo = cliente.numero.slice(3);
       return nombre.includes(busqueda) || numeroSinCodigo.includes(busqueda);
     });
 
-    // Si hay un solo cliente filtrado, asignar el número automáticamente
     if (this.clientesFiltrados.length === 1) {
       this.numeroManual = this.clientesFiltrados[0].numero;
-      this.buscarClientePorNumero(); // Asegurarse de actualizar la detección del cliente
+    } else if (/^\d{7,8}$/.test(busqueda)) {
+      // Si ingresaron directamente un número (sin código 591)
+      this.numeroManual = '591' + busqueda;
     }
+
+    this.buscarClientePorNumero(); // Siempre actualiza detección
   }
+
 
   // Método que se ejecuta cada vez que el número cambia
   buscarClientePorNumero() {
-    const coincidencia = this.clientes.find(c => c.numero === this.numeroManual);
+    let numero = this.numeroManual.trim();
+
+    // Si ya empieza con 591, lo dejamos; si no, lo agregamos
+    if (!numero.startsWith('591')) {
+      numero = '591' + numero;
+    }
+
+    const coincidencia = this.clientes.find(c => c.numero === numero);
+
     if (coincidencia) {
-      // Si encuentra una coincidencia, selecciona el cliente automáticamente
       this.clienteSeleccionado = coincidencia.numero;
       this.clienteDetectado = coincidencia;
     } else {
-      // Si no se encuentra coincidencia, lo reseteará
-      this.clienteSeleccionado = this.numeroManual;
+      this.clienteSeleccionado = numero;
       this.clienteDetectado = null;
     }
   }
+
 
   confirmarYEnviar() {
     if (!this.numeroManual) {
       alert('Por favor ingresa un número de cliente.');
       return;
     }
+
+    this.buscarClientePorNumero();  // Asegura que se haya formateado correctamente
     this.enviarPorWhatsApp();
   }
+
 }
