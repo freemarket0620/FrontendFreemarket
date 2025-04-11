@@ -1,9 +1,7 @@
 <div class="container my-5">
   <div class="card shadow rounded-4">
     <div class="card-body">
-
       <h2 class="text-center mb-4">📦 Pedido de Tarjetas</h2>
-
       <!-- Tabla de tarjetas -->
       <div class="table-responsive">
         <table class="table table-bordered text-center align-middle">
@@ -18,7 +16,6 @@
           <tbody>
             <tr *ngFor="let tarjeta of tarjetas; let i = index">
               <td class="text-start">{{ tarjeta.nombre }}</td>
-
               <!-- Precio -->
               <td>
                 <ng-container *ngIf="getPrecios(tarjeta.nombre).length > 0; else inputLibre">
@@ -34,13 +31,11 @@
                     (ngModelChange)="calcularResultado(i)" placeholder="Precio" />
                 </ng-template>
               </td>
-
               <!-- Cantidad -->
               <td>
                 <input type="number" class="form-control" [(ngModel)]="tarjeta.cantidad"
                   (ngModelChange)="calcularResultado(i)" placeholder="Cantidad" />
               </td>
-
               <!-- Resultado -->
               <td>
                 <span *ngIf="tarjeta.precio != null && tarjeta.cantidad != null && tarjeta.resultado > 0">
@@ -48,7 +43,6 @@
                 </span>
               </td>
             </tr>
-
             <!-- Total -->
             <tr class="table-info fw-bold">
               <td colspan="3" class="text-end">Total:</td>
@@ -57,18 +51,15 @@
           </tbody>
         </table>
       </div>
-
       <!-- Sección de cliente: SIEMPRE visible -->
       <div class="mt-4">
         <h3 class="text-center mb-4">📱 Envío de Pedido</h3>
-
         <div class="row justify-content-center g-3 mb-4">
           <!-- Campo de búsqueda -->
           <div class="col-12 col-md-6 col-lg-4">
             <input type="text" class="form-control" placeholder="Ej: Paola o 7878" [(ngModel)]="busquedaCliente"
               (ngModelChange)="filtrarClientes()" />
           </div>
-
           <!-- Lista desplegable -->
           <div class="col-12 col-md-6 col-lg-4" *ngIf="clientesFiltrados.length > 0">
             <select class="form-select" [(ngModel)]="numeroManual" (ngModelChange)="buscarClientePorNumero()">
@@ -78,10 +69,8 @@
               </option>
             </select>
           </div>
-
         </div>
       </div>
-
       <!-- Botones -->
       <div class="container my-4">
         <div class="row justify-content-center g-3">
@@ -97,7 +86,6 @@
           </div>
         </div>
       </div>
-
     </div>
   </div>
 </div>
