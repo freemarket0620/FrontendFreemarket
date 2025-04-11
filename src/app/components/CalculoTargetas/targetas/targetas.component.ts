@@ -1,8 +1,6 @@
 import { CommonModule } from '@angular/common';
 import { Component } from '@angular/core';
 import { FormsModule, ReactiveFormsModule } from '@angular/forms';
-import data from '@emoji-mart/data';
-import { Picker } from 'emoji-mart';
 
 @Component({
   selector: 'app-targetas',
@@ -12,9 +10,6 @@ import { Picker } from 'emoji-mart';
   styleUrls: ['./targetas.component.css'],
 })
 export class TargetasComponent {
-  mostrarClientes = false;
-  clienteSeleccionado: string | null = null;
-
   numeroManual: string = '';
   clienteDetectado: { nombre: string; numero: string } | null = null;
 
@@ -26,7 +21,7 @@ export class TargetasComponent {
     { nombre: '100', precio: null, cantidad: null, resultado: 0 },
     { nombre: 'Chips', precio: null, cantidad: null, resultado: 0 },
   ];
-  
+
   clientes = [
     { nombre: 'Tienda Cris', numero: '59178788897' },
     { nombre: 'Tienda Paola', numero: '59179592175' },
@@ -89,19 +84,18 @@ export class TargetasComponent {
     });
     this.busquedaCliente = '';
     this.numeroManual = '';
-    this.clienteSeleccionado = null;
     this.clienteDetectado = null;
     this.clientesFiltrados = [...this.clientes];
   }
 
   enviarPorWhatsApp() {
-    if (!this.clienteSeleccionado) {
+    if (!this.numeroManual) {
       alert('Por favor selecciona un cliente.');
       return;
     }
     const mensaje = this.generarMensaje();
     const mensajeCodificado = encodeURIComponent(mensaje);
-    const url = `https://wa.me/${this.clienteSeleccionado}?text=${mensajeCodificado}`;
+    const url = `https://wa.me/${this.numeroManual}?text=${mensajeCodificado}`;
     window.open(url, '_blank');
   }
 
@@ -131,6 +125,7 @@ export class TargetasComponent {
     } else if (/^\d{7,8}$/.test(busqueda) && !busqueda.startsWith('591')) {
       this.numeroManual = '591' + busqueda;
     }
+
     this.buscarClientePorNumero();
   }
 
@@ -140,7 +135,7 @@ export class TargetasComponent {
       numero = '591' + numero;
     }
     const coincidencia = this.clientes.find(c => c.numero === numero);
-    this.clienteSeleccionado = coincidencia ? coincidencia.numero : numero;
+    this.numeroManual = coincidencia ? coincidencia.numero : numero;
     this.clienteDetectado = coincidencia || null;
   }
 
