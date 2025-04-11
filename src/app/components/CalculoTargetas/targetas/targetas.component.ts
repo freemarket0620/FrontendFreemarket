@@ -86,11 +86,21 @@ export class TargetasComponent {
   }
 
   resetFormulario() {
+    // Resetear los valores de las tarjetas
     this.tarjetas.forEach(t => {
       t.precio = null;
       t.cantidad = null;
       t.resultado = 0;
     });
+
+    // Limpiar campos de cliente
+    this.busquedaCliente = '';
+    this.numeroManual = '';
+    this.clienteSeleccionado = null;
+    this.clienteDetectado = null;
+
+    // Restaurar la lista de clientes filtrados
+    this.clientesFiltrados = [...this.clientes];
   }
 
   enviarPorWhatsApp() {
