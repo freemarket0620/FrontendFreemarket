@@ -1,13 +1,15 @@
 import { CommonModule } from '@angular/common';
 import { Component } from '@angular/core';
 import { FormsModule, ReactiveFormsModule } from '@angular/forms';
+import data from '@emoji-mart/data';
+import { Picker } from 'emoji-mart';
 
 @Component({
   selector: 'app-targetas',
   standalone: true,
   imports: [CommonModule, ReactiveFormsModule, FormsModule],
   templateUrl: './targetas.component.html',
-  styleUrl: './targetas.component.css',
+  styleUrls: ['./targetas.component.css'],
 })
 export class TargetasComponent {
   mostrarClientes = false;
@@ -24,6 +26,7 @@ export class TargetasComponent {
     { nombre: '100', precio: null, cantidad: null, resultado: 0 },
     { nombre: 'Chips', precio: null, cantidad: null, resultado: 0 },
   ];
+  
   clientes = [
     { nombre: 'Tienda Cris', numero: '59178788897' },
     { nombre: 'Tienda Paola', numero: '59179592175' },
@@ -31,6 +34,7 @@ export class TargetasComponent {
     { nombre: 'Tienda Cruzet', numero: '59178761850' },
     { nombre: 'Tienda Lurdes', numero: '59172595038' },
   ];
+
   busquedaCliente: string = '';
   clientesFiltrados: { nombre: string; numero: string }[] = [...this.clientes];
 
@@ -63,143 +67,89 @@ export class TargetasComponent {
   };
 
   getPrecios(nombre: string): { minimo: number; precio: number }[] {
-    if (nombre in this.preciosPorCantidad) {
-      return this.preciosPorCantidad[nombre as keyof typeof this.preciosPorCantidad];
-    }
-    return [];
+    return this.preciosPorCantidad[nombre as keyof typeof this.preciosPorCantidad] || [];
   }
 
   calcularResultado(index: number) {
     const tarjeta = this.tarjetas[index];
-
-    if (tarjeta.precio != null && tarjeta.cantidad != null) {
-      tarjeta.resultado = parseFloat((tarjeta.precio * tarjeta.cantidad).toFixed(2));
-    } else {
-      tarjeta.resultado = 0;
-    }
+    tarjeta.resultado = (tarjeta.precio != null && tarjeta.cantidad != null)
+      ? parseFloat((tarjeta.precio * tarjeta.cantidad).toFixed(2))
+      : 0;
   }
 
   calcularTotal() {
-    const total = this.tarjetas.reduce((total, tarjeta) => total + tarjeta.resultado, 0);
-    return total.toFixed(2);
+    return this.tarjetas.reduce((total, tarjeta) => total + tarjeta.resultado, 0).toFixed(2);
   }
 
   resetFormulario() {
-    // Resetear los valores de las tarjetas
     this.tarjetas.forEach(t => {
       t.precio = null;
       t.cantidad = null;
       t.resultado = 0;
     });
-
-    // Limpiar campos de cliente
     this.busquedaCliente = '';
     this.numeroManual = '';
     this.clienteSeleccionado = null;
     this.clienteDetectado = null;
-
-    // Restaurar la lista de clientes filtrados
     this.clientesFiltrados = [...this.clientes];
   }
 
-/*   enviarPorWhatsApp() {
-    if (!this.clienteSeleccionado) {
-      alert('Por favor selecciona un cliente.');
-      return;
-    }
-
-    const mensaje = this.generarMensaje();
-    // Codificar solo el mensaje, pero sin los emojis
-    const mensajeCodificado = encodeURIComponent(mensaje.replace(/([^\x00-\x7F])/g, ''));
-    const url = `https://wa.me/${this.clienteSeleccionado}?text=${mensajeCodificado}`;
-    window.open(url, '_blank');
-  } */
   enviarPorWhatsApp() {
     if (!this.clienteSeleccionado) {
       alert('Por favor selecciona un cliente.');
       return;
     }
-
     const mensaje = this.generarMensaje();
-    // Codificar solo el mensaje, pero sin los emojis
     const mensajeCodificado = encodeURIComponent(mensaje);
     const url = `https://wa.me/${this.clienteSeleccionado}?text=${mensajeCodificado}`;
     window.open(url, '_blank');
   }
 
   generarMensaje(): string {
-    let mensaje = '\u{1F4E6} *Detalle de tu pedido de tarjetas:*\n\n';
-
+    let mensaje = '📦 *Detalle de tu pedido de tarjetas:*\n\n';
     this.tarjetas.forEach(t => {
       if (t.cantidad && t.precio) {
-        mensaje += `\u{1F539} ${t.nombre}: ${t.cantidad} x ${t.precio} Bs = ${t.resultado.toFixed(2)} Bs\n`;
+        mensaje += `🔹 ${t.nombre}: ${t.cantidad} x ${t.precio} Bs = ${t.resultado.toFixed(2)} Bs\n`;
       }
     });
-
-    mensaje += `\n\u{1F4B0} *Total:* ${this.calcularTotal()} Bs\n`;
-    mensaje += '\n\u2705 ¡Gracias por tu compra! \u{1F60A}';
-
+    mensaje += `\n💰 *Total:* ${this.calcularTotal()} Bs\n`;
+    mensaje += '\n✅ ¡Gracias por tu compra! 😄';
     return mensaje;
   }
 
-
-
   filtrarClientes() {
     const busqueda = this.busquedaCliente.toLowerCase().trim();
-
-    if (busqueda === '') {
-      this.clientesFiltrados = [...this.clientes];
-      this.numeroManual = '';
-      this.clienteSeleccionado = null;
-      return;
-    }
-
-    this.clientesFiltrados = this.clientes.filter(cliente => {
-      const nombre = cliente.nombre.toLowerCase();
-      const numeroSinCodigo = cliente.numero.slice(3);
-      return nombre.includes(busqueda) || numeroSinCodigo.includes(busqueda);
-    });
+    this.clientesFiltrados = busqueda === ''
+      ? [...this.clientes]
+      : this.clientes.filter(cliente => 
+          cliente.nombre.toLowerCase().includes(busqueda) || 
+          cliente.numero.slice(3).includes(busqueda)
+        );
 
     if (this.clientesFiltrados.length === 1) {
       this.numeroManual = this.clientesFiltrados[0].numero;
-    } else if (/^\d{7,8}$/.test(busqueda)) {
-      // Si ingresaron directamente un número (sin código 591)
+    } else if (/^\d{7,8}$/.test(busqueda) && !busqueda.startsWith('591')) {
       this.numeroManual = '591' + busqueda;
     }
-
-    this.buscarClientePorNumero(); // Siempre actualiza detección
+    this.buscarClientePorNumero();
   }
 
-
-  // Método que se ejecuta cada vez que el número cambia
   buscarClientePorNumero() {
     let numero = this.numeroManual.trim();
-
-    // Si ya empieza con 591, lo dejamos; si no, lo agregamos
     if (!numero.startsWith('591')) {
       numero = '591' + numero;
     }
-
     const coincidencia = this.clientes.find(c => c.numero === numero);
-
-    if (coincidencia) {
-      this.clienteSeleccionado = coincidencia.numero;
-      this.clienteDetectado = coincidencia;
-    } else {
-      this.clienteSeleccionado = numero;
-      this.clienteDetectado = null;
-    }
+    this.clienteSeleccionado = coincidencia ? coincidencia.numero : numero;
+    this.clienteDetectado = coincidencia || null;
   }
-
 
   confirmarYEnviar() {
     if (!this.numeroManual) {
       alert('Por favor ingresa un número de cliente.');
       return;
     }
-
-    this.buscarClientePorNumero();  // Asegura que se haya formateado correctamente
+    this.buscarClientePorNumero();
     this.enviarPorWhatsApp();
   }
-
 }
