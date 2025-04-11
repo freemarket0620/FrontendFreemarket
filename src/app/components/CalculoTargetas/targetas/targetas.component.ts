@@ -102,7 +102,7 @@ export class TargetasComponent {
     this.clientesFiltrados = [...this.clientes];
   }
 
-  enviarPorWhatsApp() {
+/*   enviarPorWhatsApp() {
     if (!this.clienteSeleccionado) {
       alert('Por favor selecciona un cliente.');
       return;
@@ -111,6 +111,18 @@ export class TargetasComponent {
     const mensaje = this.generarMensaje();
     // Codificar solo el mensaje, pero sin los emojis
     const mensajeCodificado = encodeURIComponent(mensaje.replace(/([^\x00-\x7F])/g, ''));
+    const url = `https://wa.me/${this.clienteSeleccionado}?text=${mensajeCodificado}`;
+    window.open(url, '_blank');
+  } */
+  enviarPorWhatsApp() {
+    if (!this.clienteSeleccionado) {
+      alert('Por favor selecciona un cliente.');
+      return;
+    }
+
+    const mensaje = this.generarMensaje();
+    // Codificar solo el mensaje, pero sin los emojis
+    const mensajeCodificado = encodeURIComponent(mensaje);
     const url = `https://wa.me/${this.clienteSeleccionado}?text=${mensajeCodificado}`;
     window.open(url, '_blank');
   }
