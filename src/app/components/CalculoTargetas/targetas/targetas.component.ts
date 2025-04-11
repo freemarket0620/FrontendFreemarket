@@ -30,7 +30,6 @@ export class TargetasComponent {
     { nombre: 'Tienda Tejada', numero: '59171294007' },
     { nombre: 'Tienda Cruzet', numero: '59178761850' },
     { nombre: 'Tienda Lurdes', numero: '59172595038' },
-    { nombre: 'Tienda Andres', numero: '59172937437' },
   ];
   busquedaCliente: string = '';
   clientesFiltrados: { nombre: string; numero: string }[] = [...this.clientes];
@@ -117,19 +116,20 @@ export class TargetasComponent {
   }
 
   generarMensaje(): string {
-    let mensaje = '📦 *Detalle de tu pedido de tarjetas:*\n\n';
+    let mensaje = '\u{1F4E6} *Detalle de tu pedido de tarjetas:*\n\n';
 
     this.tarjetas.forEach(t => {
       if (t.cantidad && t.precio) {
-        mensaje += `🔹 ${t.nombre}: ${t.cantidad} x ${t.precio} Bs = ${t.resultado.toFixed(2)} Bs\n`;
+        mensaje += `\u{1F539} ${t.nombre}: ${t.cantidad} x ${t.precio} Bs = ${t.resultado.toFixed(2)} Bs\n`;
       }
     });
 
-    mensaje += `\n💰 *Total:* ${this.calcularTotal()} Bs\n`;
-    mensaje += '\n✅ ¡Gracias por tu compra! 😊';
+    mensaje += `\n\u{1F4B0} *Total:* ${this.calcularTotal()} Bs\n`;
+    mensaje += '\n\u2705 ¡Gracias por tu compra! \u{1F60A}';
 
     return mensaje;
   }
+
 
 
   filtrarClientes() {
