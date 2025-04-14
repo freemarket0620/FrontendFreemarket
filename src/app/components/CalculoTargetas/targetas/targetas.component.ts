@@ -100,7 +100,7 @@ export class TargetasComponent {
   }
 
   generarMensaje(): string {
-    let mensaje = '📝 *Detalle de tu pedido de tarjetas:*🗒\n\n';
+    let mensaje = '📝 *Pedido de tarjetas:*🗒\n\n';
     this.tarjetas.forEach(t => {
       if (t.cantidad && t.precio) {
         mensaje += `🔷${t.nombre}: ${t.cantidad} ❌ ${t.precio} Bs 🟰 ${t.resultado.toFixed(2)} Bs\n`;

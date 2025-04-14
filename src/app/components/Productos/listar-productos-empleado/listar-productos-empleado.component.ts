@@ -1,4 +1,4 @@
-import { Component, EventEmitter, OnInit, Output } from '@angular/core';
+import { Component } from '@angular/core';
 import {
   Categoria,
   DetalleVenta,
@@ -16,10 +16,6 @@ import {
   Validators,
 } from '@angular/forms';
 import { RouterModule } from '@angular/router';
-
-import jsPDF from 'jspdf';
-import html2canvas from 'html2canvas';
-import { StorageService } from '../../../Services/Storage.service';
 
 @Component({
   selector: 'app-listar-productos-empleado',
@@ -428,93 +424,36 @@ export class ListarProductosEmpleadoComponent {
     this.imageToShow = imageUrl;
     this.modalVisible = true;
   }
-
   closeModal() {
     this.modalVisible = false;
   }
 
-  generarPDF(accion: string) {
-    const img = new Image();
-    img.src = 'https://files.fm/thumb_show.php?i=qwwh69nz6h';
-    img.crossOrigin = 'Anonymous'; // Permitir CORS para la imagen
 
-    img.onload = () => {
-      const data = document.getElementById('detalles-venta');
+  numeroTelefono: string = ''; // Agrega esta propiedad en tu clase
 
-      if (data) {
-        // Ocultar temporalmente la columna "Acción" y los botones
-        const actionColumns = data.querySelectorAll('.accion');
-        const buttons = document.querySelectorAll('.card-footer button');
-        const pdfButton = document.getElementById('btn-generar-pdf');
+  generarMensaje(): string {
+    let mensaje = '📝 *Detalles de la Venta:* 🗒\n\n';
+    
+    this.detalleVenta.forEach(item => {
+      mensaje += `🔷 Producto: ${item.producto.nombre_producto}\n`;
+      mensaje += `🔷 Cantidad: ${item.cantidad}\n`;
+      mensaje += `🔷 Precio Unitario: Bs ${item.precio.toFixed(2)}\n`; // Formatear el precio
+      mensaje += `🔷 Subtotal: Bs ${item.subtotal.toFixed(2)}\n\n`; // Formatear el subtotal
+    });
 
-        // Ocultar columnas de acción y botones
-        actionColumns.forEach(
-          (col) => ((col as HTMLElement).style.display = 'none')
-        );
-        buttons.forEach((btn) => ((btn as HTMLElement).style.display = 'none'));
+    mensaje += `💵 *Total:* Bs ${this.totalVenta.toFixed(2)}\n`; // Formatear el total
+    mensaje += `\n✅ ¡Gracias por tu compra! 😊`;
 
-        if (pdfButton) pdfButton.style.display = 'none';
-
-        // Generar el PDF
-        html2canvas(data, { useCORS: true, scale: 2 })
-          .then((canvas) => {
-            const imgData = canvas.toDataURL('image/png');
-            const pdf = new jsPDF('p', 'mm', 'a4');
-            const imgWidth = 190; // Ancho de la imagen en el PDF
-            const pageHeight = pdf.internal.pageSize.height;
-            const imgHeight = (canvas.height * imgWidth) / canvas.width; // Calcular altura proporcional
-            let heightLeft = imgHeight;
-            let position = 10; // Margen superior
-
-            // Añadir la imagen del canvas al PDF
-            pdf.addImage(imgData, 'PNG', 10, position, imgWidth, imgHeight);
-            heightLeft -= pageHeight;
-
-            while (heightLeft > 0) {
-              position = heightLeft - imgHeight;
-              pdf.addPage(); // Añadir una nueva página
-              pdf.addImage(imgData, 'PNG', 10, position, imgWidth, imgHeight);
-              heightLeft -= pageHeight;
-            }
-
-            // Realizar la acción especificada
-            switch (accion) {
-              case 'descargar':
-                pdf.save('detalles_venta.pdf');
-                break;
-              case 'abrir_nueva':
-                const blobUrl = URL.createObjectURL(pdf.output('blob'));
-                window.open(blobUrl, '_blank');
-                break;
-              case 'abrir_misma':
-                const blobUrlSame = URL.createObjectURL(pdf.output('blob'));
-                window.location.href = blobUrlSame;
-                break;
-              case 'imprimir':
-                pdf.autoPrint();
-                pdf.output('dataurlnewwindow');
-                break;
-            }
-
-            // Restaurar la visibilidad de la columna "Acción" y los botones
-            actionColumns.forEach(
-              (col) => ((col as HTMLElement).style.display = '')
-            );
-            buttons.forEach((btn) => ((btn as HTMLElement).style.display = ''));
-            if (pdfButton) pdfButton.style.display = '';
-          })
-          .catch((error) => {
-            console.error('Error al generar el PDF:', error);
-            alert('Ocurrió un error al generar el PDF.');
-          });
-      } else {
-        alert('No se encontró el elemento "detalles-venta".');
-      }
-    };
-
-    img.onerror = () => {
-      console.error('Error al cargar la imagen.');
-      alert('No se pudo cargar la imagen para el PDF.');
-    };
+    return mensaje;
+  }
+  enviarPorWhatsApp() {
+    if (!this.numeroTelefono) {
+      alert('Por favor ingresa un número de teléfono.');
+      return; 
+    }
+    const mensaje = this.generarMensaje();
+    const mensajeCodificado = encodeURIComponent(mensaje);
+    const url = `https://wa.me/${this.numeroTelefono}?text=${mensajeCodificado}`;
+    window.open(url, '_blank');
   }
 }
