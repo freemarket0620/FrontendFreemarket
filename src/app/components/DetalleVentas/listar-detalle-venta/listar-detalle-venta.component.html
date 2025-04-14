@@ -65,7 +65,8 @@
               <td class="text-start">{{ detalle.producto.codigo_producto }}</td>
               <td class="text-start">{{ detalle.cantidad }}</td>
               <td class="text-start">{{ detalle.tipo_venta }}</td>
-              <td class="text-start">{{ detalle.precio | currency }}</td>
+              <td class="text-start">{{ detalle.precio | currency:'Bs. ':true }}</td>
+
               <td class="text-start">{{ detalle.subtotal | currency }}</td>
             </tr>
           </tbody>

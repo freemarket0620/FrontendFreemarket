@@ -146,43 +146,40 @@ export class ListarProductosEmpleadoComponent {
     });
   }
   // Modificación en el método agregarAlCarrito
-  aagregarAlCarrito(producto: Producto, cantidad: number, tipoPrecio: string) {
-    if (cantidad <= 0 || cantidad > producto.stock) {
-      alert(
-        'Cantidad inválida. No puede ser mayor al stock disponible ni menor a 1.'
-      );
-      return;
-    }
+  agregarAlCarrito(producto: Producto, cantidad: number, tipoPrecio: string) {
+      if (cantidad <= 0 || cantidad > producto.stock) {
+          alert('Cantidad inválida. No puede ser mayor al stock disponible ni menor a 1.');
+          return;
+      }
 
-    // Verificar si el producto ya está en el detalle de venta
-    const existingDetail = this.detalleVenta.find(
-      (d) => d.producto.id === producto.id
-    );
+      // Determinar el precio según el tipo de venta y convertirlo a número
+      const precioAplicado = tipoPrecio === 'mayor' ? Number(producto.precio_mayor) : Number(producto.precio_unitario);
 
-    let precioUnitario =
-      tipoPrecio === 'mayor' ? producto.precio_mayor : producto.precio_unitario;
+      // Verificar si el producto ya está en el detalle de venta
+      const existingDetail = this.detalleVenta.find(d => d.producto.id === producto.id);
 
-    if (existingDetail) {
-      // Si ya existe, actualizar la cantidad y el subtotal
-      existingDetail.cantidad = cantidad; // Actualizar la cantidad existente
-      existingDetail.subtotal = cantidad * precioUnitario; // Actualizar el subtotal
-      existingDetail.tipo_venta = tipoPrecio;
-    } else {
-      // Si no existe, agregar un nuevo detalle
-      const detalle: DetalleVenta = {
-        id: this.detalleVenta.length + 1, // Asignar un ID temporal o manejarlo según tu lógica
-        venta: { id: 0 } as Venta, // Asignar un objeto de tipo Venta con un ID temporal
-        producto: producto,
-        cantidad: cantidad,
-        precio: precioUnitario,
-        subtotal: cantidad * precioUnitario,
-        tipo_venta: tipoPrecio,
-      };
+      if (existingDetail) {
+          // Si ya existe, actualizar el tipo de venta y el precio
+          existingDetail.tipo_venta = tipoPrecio; // Cambiar el tipo de venta
+          existingDetail.precio = precioAplicado; // Actualizar el precio
+          existingDetail.subtotal = existingDetail.cantidad * precioAplicado; // Actualizar el subtotal
+      } else {
+          // Si no existe, agregar un nuevo detalle
+          const detalle: DetalleVenta = {
+              id: this.detalleVenta.length + 1, // Asignar un ID temporal o manejarlo según tu lógica
+              venta: { id: 0 } as Venta, // Asignar un objeto de tipo Venta con un ID temporal
+              producto: producto,
+              cantidad: cantidad,
+              precio: precioAplicado, // Asignar el precio correcto aquí
+              subtotal: cantidad * precioAplicado, // Calcular el subtotal
+              tipo_venta: tipoPrecio,
+          };
 
-      this.detalleVenta.push(detalle);
-    }
-    this.actualizarTotalVenta();
-    this.cantidadPorProducto[producto.id]; // Reiniciar la cantidad después de agregar
+          this.detalleVenta.push(detalle);
+      }
+
+      this.actualizarTotalVenta();
+      this.cantidadPorProducto[producto.id]; // Reiniciar la cantidad después de agregar
   }
   actualizarCantidad(
     item: DetalleVenta | undefined,
@@ -431,33 +428,35 @@ export class ListarProductosEmpleadoComponent {
   }
 
   generarMensaje(): string {
-    let mensaje = '📝 *Detalles de la Venta:* 🗒\n\n';
-    
-    this.detalleVenta.forEach(item => {
-      const precio = typeof item.precio === 'number' ? item.precio : 0; // Verificar si es un número
-      const subtotal = typeof item.subtotal === 'number' ? item.subtotal : 0; // Verificar si es un número
+      let mensaje = '📝 *Detalles de Venta:* 🗒\n\n';
+      
+      this.detalleVenta.forEach(item => {
+          const precio = item.precio != null ? item.precio : 0; // Verificar si es un número
+          const subtotal = item.subtotal != null ? item.subtotal : 0; // Verificar si es un número
 
-      mensaje += `🔷 Producto: ${item.producto.nombre_producto}\n`;
-      mensaje += `   Cantidad: ${item.cantidad}\n`;
-      mensaje += `   Precio Unitario: Bs ${precio.toFixed(2)}\n`; // Usar precio verificado
-      mensaje += `   Subtotal: Bs ${subtotal.toFixed(2)}\n\n`; // Usar subtotal verificado
-    });
+          mensaje += `🔷 Código: ${item.producto.codigo_producto}\n`;
+          mensaje += `   Producto: ${item.producto.nombre_producto}\n`;
+          mensaje += `   Cantidad: ${item.cantidad}\n`;
+          mensaje += `   Precio: Bs ${precio.toFixed(2)}\n`; // Mostrar precio correctamente
+          mensaje += `   Tipo de Venta: ${item.tipo_venta}\n`;
+          mensaje += `   Subtotal: Bs ${subtotal.toFixed(2)}\n\n`; // Mostrar subtotal correctamente
+      });
 
-    mensaje += `💵 *Total:* Bs ${this.totalVenta.toFixed(2)}\n`; // Asegúrate de que totalVenta sea un número
-    mensaje += `\n✅ ¡Gracias por tu compra! 😊`;
+      mensaje += `💵 *Total:* Bs ${this.totalVenta.toFixed(2)}\n`; // Asegúrate de que totalVenta sea un número
+      mensaje += `\n✅ ¡Gracias por tu compra! 😊`;
 
-    return mensaje;
+      return mensaje;
   }
   enviarPorWhatsApp() {
-    if (!this.numeroTelefono) {
-      alert('Por favor ingresa un número de teléfono.');
-      return;
-    }
-    
-    const mensaje = this.generarMensaje();
-    const mensajeCodificado = encodeURIComponent(mensaje);
-    const url = `https://wa.me/${this.numeroTelefono}?text=${mensajeCodificado}`;
-    
-    window.open(url, '_blank');
+      if (!this.numeroTelefono) {
+          alert('Por favor ingresa un número de teléfono.');
+          return;
+      }
+      
+      const mensaje = this.generarMensaje();
+      const mensajeCodificado = encodeURIComponent(mensaje);
+      const url = `https://wa.me/${this.numeroTelefono}?text=${mensajeCodificado}`;
+      
+      window.open(url, '_blank');
   }
 }

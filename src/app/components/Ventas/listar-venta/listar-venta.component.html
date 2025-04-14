@@ -53,7 +53,7 @@
               <td>
                 {{ venta.usuario.nombre_usuario }} {{ venta.usuario.apellido }}
               </td>
-              <td>{{ venta.total | currency }}</td>
+              <td class="text-start">{{ venta.total | currency:'Bs. ':true }}</td>
               <td>{{ venta.estado }}</td>
             </tr>
           </tbody>

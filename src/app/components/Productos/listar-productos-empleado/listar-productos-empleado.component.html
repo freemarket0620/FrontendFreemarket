@@ -105,7 +105,7 @@
                 class="btn btn-success"
                 [disabled]="!isCantidadValida(producto.id, 'unidad')"
                 (click)="
-                  aagregarAlCarrito(
+                  agregarAlCarrito(
                     producto,
                     cantidadPorProducto[producto.id],
                     'unidad'
@@ -120,7 +120,7 @@
                 *ngIf="isCategoriaConBotonUnidad(producto)"
                 [disabled]="!isCantidadValida(producto.id, 'mayor')"
                 (click)="
-                  aagregarAlCarrito(
+                  agregarAlCarrito(
                     producto,
                     cantidadPorProducto[producto.id],
                     'mayor'
