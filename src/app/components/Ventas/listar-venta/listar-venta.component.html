@@ -1,34 +1,29 @@
 <div class="container mt-5">
   <div class="card shadow rounded-4">
     <div class="card-body">
-      <h2 class="text-center mb-4">Listado de Ventas</h2>
+      <h2 class="text-center mb-4">Ventas</h2>
 
       <!-- Campos de búsqueda -->
     <div class="row mb-4">
-      <p>Campos de busquedas</p>
+     
       <div class="col-md-2 mb-2">
-        <label for="idInput" class="form-label text-start d-block">ID</label>
-        <input id="idInput" type="text" class="form-control" placeholder="ID" [(ngModel)]="searchID" />
+        <input id="idInput" type="text" class="form-control" placeholder="Busqueda Por ID" [(ngModel)]="searchID" />
       </div>
 
       <div class="col-md-2 mb-2">
-        <label for="fechaInput" class="form-label text-start d-block">Fecha</label>
-        <input id="fechaInput" type="text" class="form-control" placeholder="dd/MM/yyyy" [(ngModel)]="searchFecha" />
+        <input id="fechaInput" type="text" class="form-control" placeholder="Infrese Fecha dd/MM/yyyy" [(ngModel)]="searchFecha" />
       </div>
 
       <div class="col-md-2 mb-2">
-        <label for="usuarioInput" class="form-label text-start d-block">Usuario</label>
-        <input id="usuarioInput" type="text" class="form-control" placeholder="Usuario" [(ngModel)]="searchUsuario" />
+        <input id="usuarioInput" type="text" class="form-control" placeholder="Busqueda Por Usuario" [(ngModel)]="searchUsuario" />
       </div>
 
       <div class="col-md-2 mb-2">
-        <label for="totalInput" class="form-label text-start d-block">Total</label>
-        <input id="totalInput" type="text" class="form-control" placeholder="Total" [(ngModel)]="searchTotal" />
+        <input id="totalInput" type="text" class="form-control" placeholder="Busqueda Por Total" [(ngModel)]="searchTotal" />
       </div>
 
       <div class="col-md-2 mb-2">
-        <label for="estadoInput" class="form-label text-start d-block">Estado</label>
-        <input id="estadoInput" type="text" class="form-control" placeholder="Estado" [(ngModel)]="searchEstado" />
+        <input id="estadoInput" type="text" class="form-control" placeholder="Busqueda Por Estado" [(ngModel)]="searchEstado" />
       </div>
 
       <div class="col-md-2 mb-2 d-flex align-items-end">
@@ -54,7 +49,7 @@
           <tbody>
             <tr *ngFor="let venta of filteredVentas()">
               <td>{{ venta.id }}</td>
-              <td>{{ venta.fecha_venta | date : "dd/MM/yyyy" }}</td>
+              <td>{{ venta.fecha_venta | date : "dd/MM/yyyy HH:mm:ss" }}</td>
               <td>
                 {{ venta.usuario.nombre_usuario }} {{ venta.usuario.apellido }}
               </td>

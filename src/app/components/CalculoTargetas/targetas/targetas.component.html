@@ -16,18 +16,24 @@
             <tr *ngFor="let tarjeta of tarjetas; let i = index">
               <td class="text-start">{{ tarjeta.nombre }}</td>
               <td>
-                <ng-container *ngIf="getPrecios(tarjeta.nombre).length > 0; else inputLibre">
-                  <select class="form-select" [(ngModel)]="tarjeta.precio" (ngModelChange)="calcularResultado(i)">
-                    <option value="" disabled selected hidden>Selecciona un precio</option>
-                    <option *ngFor="let precio of getPrecios(tarjeta.nombre)" [value]="precio.precio">
-                      {{ precio.precio | number: '1.2-2' }} Bs (desde {{ precio.minimo }} Un.)
-                    </option>
-                  </select>
+                <ng-container *ngIf="tarjeta.nombre !== 'Chips'">
+                  <ng-container *ngIf="isAdmin || isAdministracionYucumo; else inputLibre">
+                    <select class="form-select" [(ngModel)]="tarjeta.precio" (ngModelChange)="calcularResultado(i)">
+                      <option value="" disabled selected hidden>Selecciona un precio</option>
+                      <option *ngFor="let precio of getPreciosFiltrados(tarjeta.nombre)" [value]="precio.precio">
+                        {{ precio.precio | number: '1.2-2' }} Bs (desde {{ precio.minimo }} Un.)
+                      </option>
+                    </select>
+                  </ng-container>
+                  <ng-template #inputLibre>
+                    <input type="number" class="form-control" [(ngModel)]="tarjeta.precio"
+                      (ngModelChange)="calcularResultado(i)" placeholder="Precio" />
+                  </ng-template>
                 </ng-container>
-                <ng-template #inputLibre>
+                <ng-container *ngIf="tarjeta.nombre === 'Chips'">
                   <input type="number" class="form-control" [(ngModel)]="tarjeta.precio"
-                    (ngModelChange)="calcularResultado(i)" placeholder="Precio" />
-                </ng-template>
+                    (ngModelChange)="calcularResultado(i)" placeholder="Precio Chips" />
+                </ng-container>
               </td>
               <td>
                 <input type="number" class="form-control" [(ngModel)]="tarjeta.cantidad"

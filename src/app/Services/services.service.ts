@@ -361,4 +361,15 @@ export class ServicesService {
       throw new Error('Usuario no autenticado');
     }
   }
+  /* SECCION DE TARJETAS */
+  // En ServicesService
+
+  isAdmin(): boolean {
+    const roles = this.getRolesFromLocalStorage();
+    return roles.includes('Administrador'); // Cambia 'Administrador' por el nombre exacto del rol
+  }
+  isAdministracionYucumo(): boolean {
+    const roles = this.getRolesFromLocalStorage();
+    return roles.includes('AdministraciónYucumo'); // Verifica si el usuario tiene el rol de AdministraciónYucumo
+  }
 }

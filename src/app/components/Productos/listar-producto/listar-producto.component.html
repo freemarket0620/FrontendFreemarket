@@ -5,9 +5,8 @@
 
       <!-- Filtros de búsqueda -->
       <div class="row mb-4">
-        <p>Campos de Busquedas</p>
         <div class="col-md-3 mb-2">
-          <label for="categoriaSelect" class="form-label text-start d-block">Seleccionar Categoría</label>
+          
           <select id="categoriaSelect" class="form-control" [(ngModel)]="searchCategoria"
             (change)="filteredProductos()">
             <option value="">Seleccionar Categoría</option>
@@ -18,14 +17,12 @@
         </div>
 
         <div class="col-md-3 mb-2">
-          <label for="nombreInput" class="form-label text-start d-block">Nombre</label>
-          <input id="nombreInput" type="text" class="form-control" placeholder="Buscar por nombre"
+          <input id="nombreInput" type="text" class="form-control" placeholder="Buscar Por Nombre"
             [(ngModel)]="searchNombreProducto" />
         </div>
 
         <div class="col-md-3 mb-2">
-          <label for="codigoInput" class="form-label text-start d-block">Código</label>
-          <input id="codigoInput" type="text" class="form-control" placeholder="Buscar por Código"
+          <input id="codigoInput" type="text" class="form-control" placeholder="Buscar Por Código"
             [(ngModel)]="searchCodigoProducto" />
         </div>
 

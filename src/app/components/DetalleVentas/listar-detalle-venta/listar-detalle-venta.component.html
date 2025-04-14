@@ -6,32 +6,27 @@
       <!-- Campos de búsqueda -->
       <div class="row mb-4">
         <div class="col-md-2 mb-2">
-          <label for="ventaInput" class="form-label text-start d-block">Buscar por Venta</label>
-          <input id="ventaInput" type="text" class="form-control" placeholder="Buscar por Venta"
+          <input id="ventaInput" type="text" class="form-control" placeholder="Buscar Por Venta"
             [(ngModel)]="searchVenta" />
         </div>
 
         <div class="col-md-2 mb-2">
-          <label for="fechaInput" class="form-label text-start d-block">Buscar por Fecha</label>
-          <input id="fechaInput" type="text" class="form-control" placeholder="Buscar por Fecha (dd/MM/yyyy)"
+          <input id="fechaInput" type="text" class="form-control" placeholder="Buscar Por Fecha (dd/MM/yyyy)"
             [(ngModel)]="searchFecha" />
         </div>
 
         <div class="col-md-2 mb-2">
-          <label for="usuarioInput" class="form-label text-start d-block">Buscar por Usuario o C.I.</label>
-          <input id="usuarioInput" type="text" class="form-control" placeholder="Buscar por Usuario o C.I."
+          <input id="usuarioInput" type="text" class="form-control" placeholder="Buscar Por Usuario o C.I."
             [(ngModel)]="searchUsuario" />
         </div>
 
         <div class="col-md-2 mb-2">
-          <label for="productoInput" class="form-label text-start d-block">Buscar por Producto</label>
-          <input id="productoInput" type="text" class="form-control" placeholder="Buscar por Producto"
+          <input id="productoInput" type="text" class="form-control" placeholder="Buscar Por Producto"
             [(ngModel)]="searchProducto" />
         </div>
 
         <div class="col-md-2 mb-2">
-          <label for="codigoInput" class="form-label text-start d-block">Buscar por Código</label>
-          <input id="codigoInput" type="text" class="form-control" placeholder="Buscar por Código"
+          <input id="codigoInput" type="text" class="form-control" placeholder="Buscar Por Código"
             [(ngModel)]="searchCodigo" />
         </div>
 
@@ -61,7 +56,7 @@
           <tbody>
             <tr *ngFor="let detalle of filteredDetallesVenta()">
               <td class="text-start">{{ detalle.venta.id }}</td>
-              <td class="text-start">{{ detalle.venta.fecha_venta | date : "dd/MM/yyyy" }}</td>
+              <td class="text-start">{{ detalle.venta.fecha_venta | date : "dd/MM/yyyy HH:mm:ss" }}</td>
               <td class="text-start">
                 {{ detalle.venta.usuario.nombre_usuario }} {{ detalle.venta.usuario.apellido }} ||
                 {{ detalle.venta.usuario.ci }}
