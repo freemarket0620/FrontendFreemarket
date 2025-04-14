@@ -4,36 +4,35 @@
     <div class="col-md-7 mb-2">
       <h2 class="text-center my-4">Productos</h2>
       <!-- Barra de búsqueda sin label  -->
-      <div class="row mb-4">
-        <div class="col-12 col-sm-6 col-md-3">
-          <select id="categoriaSelect" class="form-control" [(ngModel)]="searchCategoria" (change)="filteredProductos()">
-            <option value="">Seleccionar Categoría</option>
-            <option *ngFor="let categoria of categorias" [value]="categoria.nombre_categoria">
-              {{ categoria.nombre_categoria }}
-            </option>
-          </select>
-        </div>
-
-        <div class="col-12 col-sm-6 col-md-3">
-          <input id="nombreInput" type="text" class="form-control" placeholder="Buscar por nombre"
-            [(ngModel)]="searchNombreProducto" />
-        </div>
-
-        <div class="col-12 col-sm-6 col-md-3 mb-2">
-          <input id="codigoInput" type="text" class="form-control" placeholder="Buscar por Código"
-            [(ngModel)]="searchCodigoProducto" />
-        </div>
+        <div class="row mb-4">
+          <div class="col-12 col-sm-6 col-md-3 mb-3">
+            <select id="categoriaSelect" class="form-control" [(ngModel)]="searchCategoria" (change)="filteredProductos()">
+              <option value="">Seleccionar Categoría</option>
+              <option *ngFor="let categoria of categorias" [value]="categoria.nombre_categoria">
+                {{ categoria.nombre_categoria }}
+              </option>
+            </select>
+          </div>
         
-        <div class="col-12 col-sm-6 col-md-3 text-center mt-3">
-          <div class="d-grid gap-2">
-            <button class="btn btn-danger d-flex align-items-center btn-lg py-1" (click)="clearQuantities()">
-              <i class="fas fa-trash-alt fs-1 me-2"></i>
-              Borrar Cantidades....
-            </button>
+          <div class="col-12 col-sm-6 col-md-3 mb-3">
+            <input id="nombreInput" type="text" class="form-control" placeholder="Buscar por nombre"
+              [(ngModel)]="searchNombreProducto" />
+          </div>
+        
+          <div class="col-12 col-sm-6 col-md-3 mb-3">
+            <input id="codigoInput" type="text" class="form-control" placeholder="Buscar por Código"
+              [(ngModel)]="searchCodigoProducto" />
+          </div>
+        
+          <div class="col-12 col-sm-6 col-md-3 mb-3 text-center">
+            <div class="d-grid">
+              <button class="btn btn-danger btn-lg" (click)="clearQuantities()">
+                <i class="fas fa-trash-alt me-2"></i>
+                Borrar Cantidades...
+              </button>
+            </div>
           </div>
         </div>
-
-      </div>
 
 
       <!-- Lista de productos en formato de tarjetas (cards) -->
