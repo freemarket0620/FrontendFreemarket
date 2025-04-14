@@ -55,6 +55,8 @@ export class ListarProductosEmpleadoComponent {
   /* variables para los camboios  */
   montoPagado: string = '';
   cambio: number = 0;
+
+  numeroTelefono: string = ''; // Agrega esta propiedad en tu clase
   constructor(
     private productoService: ServicesService,
     private fb: FormBuilder
@@ -428,20 +430,20 @@ export class ListarProductosEmpleadoComponent {
     this.modalVisible = false;
   }
 
-
-  numeroTelefono: string = ''; // Agrega esta propiedad en tu clase
-
   generarMensaje(): string {
     let mensaje = '📝 *Detalles de la Venta:* 🗒\n\n';
     
     this.detalleVenta.forEach(item => {
+      const precio = typeof item.precio === 'number' ? item.precio : 0; // Verificar si es un número
+      const subtotal = typeof item.subtotal === 'number' ? item.subtotal : 0; // Verificar si es un número
+
       mensaje += `🔷 Producto: ${item.producto.nombre_producto}\n`;
-      mensaje += `🔷 Cantidad: ${item.cantidad}\n`;
-      mensaje += `🔷 Precio Unitario: Bs ${item.precio.toFixed(2)}\n`; // Formatear el precio
-      mensaje += `🔷 Subtotal: Bs ${item.subtotal.toFixed(2)}\n\n`; // Formatear el subtotal
+      mensaje += `   Cantidad: ${item.cantidad}\n`;
+      mensaje += `   Precio Unitario: Bs ${precio.toFixed(2)}\n`; // Usar precio verificado
+      mensaje += `   Subtotal: Bs ${subtotal.toFixed(2)}\n\n`; // Usar subtotal verificado
     });
 
-    mensaje += `💵 *Total:* Bs ${this.totalVenta.toFixed(2)}\n`; // Formatear el total
+    mensaje += `💵 *Total:* Bs ${this.totalVenta.toFixed(2)}\n`; // Asegúrate de que totalVenta sea un número
     mensaje += `\n✅ ¡Gracias por tu compra! 😊`;
 
     return mensaje;
@@ -449,11 +451,13 @@ export class ListarProductosEmpleadoComponent {
   enviarPorWhatsApp() {
     if (!this.numeroTelefono) {
       alert('Por favor ingresa un número de teléfono.');
-      return; 
+      return;
     }
+    
     const mensaje = this.generarMensaje();
     const mensajeCodificado = encodeURIComponent(mensaje);
     const url = `https://wa.me/${this.numeroTelefono}?text=${mensajeCodificado}`;
+    
     window.open(url, '_blank');
   }
 }
