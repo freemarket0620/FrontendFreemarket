@@ -2,11 +2,10 @@
   <div class="row">
     <!-- Columna de la izquierda: Lista de Productos (ajustada a col-md-7) -->
     <div class="col-md-7 mb-2">
-      <h2 class="text-center my-4">Lista de Productos Empleado</h2>
-      <!-- Barra de búsqueda -->
+      <h2 class="text-center my-4">Productos</h2>
+      <!-- Barra de búsqueda sin label  -->
       <div class="row mb-4">
         <div class="col-12 col-sm-6 col-md-3">
-          <label for="categoriaSelect" class="form-label text-start d-block">Seleccionar Categoría</label>
           <select id="categoriaSelect" class="form-control" [(ngModel)]="searchCategoria" (change)="filteredProductos()">
             <option value="">Seleccionar Categoría</option>
             <option *ngFor="let categoria of categorias" [value]="categoria.nombre_categoria">
@@ -16,13 +15,11 @@
         </div>
 
         <div class="col-12 col-sm-6 col-md-3">
-          <label for="nombreInput" class="form-label text-start d-block">Buscar por Nombre</label>
           <input id="nombreInput" type="text" class="form-control" placeholder="Buscar por nombre"
             [(ngModel)]="searchNombreProducto" />
         </div>
 
         <div class="col-12 col-sm-6 col-md-3 mb-2">
-          <label for="codigoInput" class="form-label text-start d-block">Buscar por Código</label>
           <input id="codigoInput" type="text" class="form-control" placeholder="Buscar por Código"
             [(ngModel)]="searchCodigoProducto" />
         </div>
@@ -31,7 +28,7 @@
           <div class="d-grid gap-2">
             <button class="btn btn-danger d-flex align-items-center btn-lg py-1" (click)="clearQuantities()">
               <i class="fas fa-trash-alt fs-1 me-2"></i>
-              Borrar Cantidades
+              Borrar Cantidades....
             </button>
           </div>
         </div>
