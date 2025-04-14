@@ -1,10 +1,17 @@
-.card-img-top {
-  height: 150px; /* Ajusta la altura deseada para las imágenes */
-  width: auto; /* Mantiene la proporción de la imagen */
-  max-width: 100%; /* Limita el ancho máximo al 100% del contenedor */
-  object-fit: cover; /* Llenará el espacio sin distorsionar */
-  margin: 0 auto; /* Centra la imagen horizontalmente */
-  display: block; /* Asegura que el margen funcione correctamente */
+/* Imágenes en cards que NO son product-card (si las tienes) */
+.card-img-top:not(.product-card .card-img-top) {
+  height: 150px;
+  /* Ajusta la altura deseada para las imágenes */
+  width: auto;
+  /* Mantiene la proporción de la imagen */
+  max-width: 100%;
+  /* Limita el ancho máximo al 100% del contenedor */
+  object-fit: cover;
+  /* Llenará el espacio sin distorsionar */
+  margin: 0 auto;
+  /* Centra la imagen horizontalmente */
+  display: block;
+  /* Asegura que el margen funcione correctamente */
 }
 
 /* Estilos para el modal */
@@ -38,6 +45,7 @@
   display: block;
 }
 
+/* Quitar flechas de inputs tipo number */
 .sin-flechas::-webkit-outer-spin-button,
 .sin-flechas::-webkit-inner-spin-button {
   -webkit-appearance: none;
@@ -49,19 +57,108 @@
   appearance: textfield;
 }
 
+/* Margen entre tarjetas */
 .card {
-  margin-bottom: 20px; /* Espacio entre las tarjetas */
+  margin-bottom: 20px;
 }
 
+/* Sticky position para elementos */
 .position-sticky {
-  z-index: 10; /* Asegúrate de que la tarjeta esté por encima de otros elementos */
+  z-index: 10;
+  /* Asegúrate de que la tarjeta esté por encima de otros elementos */
 }
 
+/* Colores personalizados */
 .custom-bg-blue-200 {
-  background-color: #90caf9; /* Reemplaza con el valor hexadecimal de $blue-200 */
-  color: black; /* Asegúrate de que el texto sea legible */
+  background-color: #90caf9;
+  /* Reemplaza con el valor hexadecimal de $blue-200 */
+  color: black;
+  /* Asegúrate de que el texto sea legible */
 }
+
 .custom-bg-orange-400 {
-  background-color: #ff9800; /* Color naranja */
-  color: white; /* Texto blanco */
+  background-color: #ff9800;
+  /* Color naranja */
+  color: white;
+  /* Texto blanco */
+}
+
+/* Estilos para product-card */
+.card.product-card {
+  font-size: 0.9rem;
+  min-height: 320px;
+  max-width: 100%;
+  padding: 0.5rem;
+  transition: font-size 0.3s ease;
+}
+
+.card.product-card .card-img-top {
+  max-height: 110px;
+  object-fit: contain;
+  margin: 0.5rem auto;
+  transition: max-height 0.3s ease;
+}
+
+.card.product-card .card-header {
+  padding: 0.3rem 0.5rem;
+}
+
+.card.product-card .card-body {
+  padding: 0.5rem 0.5rem;
+}
+
+.card.product-card .card-footer {
+  padding: 0.3rem 0.5rem;
+}
+
+/* Ajustes para pantallas pequeñas (celulares) */
+@media (max-width: 576px) {
+  .card.product-card {
+    min-height: 260px;
+    font-size: 0.85rem;
+  }
+
+  .card.product-card .card-img-top {
+    max-height: 80px;
+  }
+}
+
+/* Ajustes para pantallas medianas (tablets) */
+@media (min-width: 577px) and (max-width: 991px) {
+  .card.product-card {
+    min-height: 300px;
+    font-size: 0.9rem;
+  }
+
+  .card.product-card .card-img-top {
+    max-height: 100px;
+  }
+}
+
+/* Ajustes para pantallas grandes (PC) */
+@media (min-width: 992px) {
+  .card.product-card {
+    min-height: 320px;
+    font-size: 1rem;
+  }
+
+  .card.product-card .card-img-top {
+    max-height: 110px;
+  }
+}
+.image-enlarged-container {
+  position: fixed;
+  /* o absolute según el caso */
+  z-index: 1000;
+  /* un valor alto que supere a los ojitos */
+  background: rgba(0, 0, 0, 0.8);
+  /* para dar énfasis y ocultar elementos debajo */
+}
+
+.eye-icon {
+  z-index: 500;
+  /* menor valor */
+}
+.btn-eye-hidden {
+  display: none !important;
 }

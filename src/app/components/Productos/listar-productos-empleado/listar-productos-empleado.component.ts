@@ -57,6 +57,10 @@ export class ListarProductosEmpleadoComponent {
   cambio: number = 0;
 
   numeroTelefono: string = ''; // Agrega esta propiedad en tu clase
+
+  // Array para controlar qué productos tienen detalles visibles
+  detallesAbiertos: boolean[] = [];
+  isMobile = false;
   constructor(
     private productoService: ServicesService,
     private fb: FormBuilder
@@ -82,6 +86,10 @@ export class ListarProductosEmpleadoComponent {
     this.getCategorias();
     this.getVentas();
     this.recuperarUsuario(); // Llama a este método después de cargar los usuarios
+    this.detallesAbiertos = new Array(100).fill(false);
+    this.checkScreenSize();
+    window.addEventListener('resize', () => this.checkScreenSize());
+    this.detallesAbiertos = new Array(100).fill(false);
   }
   recuperarUsuario() {
     const usuario = this.getUsuarioLocalStorage();
@@ -459,4 +467,14 @@ export class ListarProductosEmpleadoComponent {
       
       window.open(url, '_blank');
   }
+
+
+  // Método para alternar la visibilidad de detalles de un producto
+  toggleDetalles(index: number): void {
+    this.detallesAbiertos[index] = !this.detallesAbiertos[index];
+  }
+  checkScreenSize() {
+  this.isMobile = window.innerWidth < 768; // Bootstrap md breakpoint
+  }
+  
 }
