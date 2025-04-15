@@ -29,7 +29,6 @@ import { ListarProductosEmpleadoComponent } from './components/Productos/listar-
 import { authGuard } from './guards/auth.guard';
 import { DashboardComponent } from './components/Dashboard/dashboard/dashboard.component';
 import { PerfilComponent } from './components/Usuarios/perfil/perfil.component';
-
 import { TargetasComponent } from './components/CalculoTargetas/targetas/targetas.component';
 
 export const routes: Routes = [

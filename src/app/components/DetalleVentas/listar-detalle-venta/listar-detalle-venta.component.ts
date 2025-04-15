@@ -21,6 +21,9 @@ export class ListarDetalleVentaComponent implements OnInit {
   page: number = 1;
   pageSize: number = 5;
   paginatedDetallesVenta: DetalleVenta[] = [];
+  searchFechaInicio: string = ''; // Nueva propiedad para la fecha de inicio
+  searchFechaFin: string = ''; // Nueva propiedad para la fecha de fin
+
 
   constructor(private servicesService: ServicesService) {}
 
@@ -76,15 +79,20 @@ export class ListarDetalleVentaComponent implements OnInit {
           .includes(this.searchCodigo.toLowerCase())
       );
     }
-
-    if (this.searchFecha) {
+    // Filtrar por rango de fechas
+    if (this.searchFechaInicio) {
+      const fechaInicio = new Date(this.searchFechaInicio).getTime();
       filtered = filtered.filter((detalle) =>
-        new Date(detalle.venta.fecha_venta)
-          .toLocaleDateString()
-          .includes(this.searchFecha)
+        new Date(detalle.venta.fecha_venta).getTime() >= fechaInicio
       );
     }
 
+    if (this.searchFechaFin) {
+      const fechaFin = new Date(this.searchFechaFin).getTime();
+      filtered = filtered.filter((detalle) =>
+        new Date(detalle.venta.fecha_venta).getTime() <= fechaFin
+      );
+    }
     return filtered.slice(
       (this.page - 1) * this.pageSize,
       this.page * this.pageSize
@@ -109,6 +117,12 @@ export class ListarDetalleVentaComponent implements OnInit {
     }
   }
   updateList() {
-    this.getDetallesVenta();
-  }
+  this.searchVenta = '';
+  this.searchProducto = '';
+  this.searchUsuario = '';
+  this.searchCodigo = '';
+  this.searchFechaInicio = ''; 
+  this.searchFechaFin = '';
+  this.getDetallesVenta();
+}
 }

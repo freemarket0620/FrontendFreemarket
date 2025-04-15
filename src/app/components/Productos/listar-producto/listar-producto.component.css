@@ -43,6 +43,8 @@
 
 .sin-flechas {
   -moz-appearance: textfield;
+  appearance: textfield;
+  
 }
 
 .card {

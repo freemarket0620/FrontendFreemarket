@@ -25,6 +25,7 @@ export class ListarProductoComponent implements OnInit {
   searchCodigoProducto: string = '';
   page: number = 1;
   pageSize: number = 6;
+  ordenarAscendente: boolean = true;
 
   @Output() editarProductos = new EventEmitter<number>();
   @Output() registrarProductos = new EventEmitter<void>();
@@ -55,9 +56,28 @@ export class ListarProductoComponent implements OnInit {
   registrarProducto() {
     this.registrarProductos.emit();
   }
+  ordenarPorStock() {
+    this.ordenarAscendente = !this.ordenarAscendente; // Cambiar el estado de orden
+
+    this.productos.sort((a, b) => {
+      if (this.ordenarAscendente) {
+        // Ordenar de menor a mayor
+        if (a.stock === 0) return -1; // Colocar productos con stock 0 al principio
+        if (b.stock === 0) return 1; // Colocar productos con stock 0 al principio
+        return a.stock - b.stock; // Ordenar normalmente
+      } else {
+        // Ordenar de mayor a menor
+        if (a.stock === 0) return 1; // Colocar productos con stock 0 al final
+        if (b.stock === 0) return -1; // Colocar productos con stock 0 al final
+        return b.stock - a.stock; // Ordenar normalmente
+      }
+    });
+  }
 
   filteredProductos(): Producto[] {
     let filtered = this.productos;
+
+    // Filtrar por categoría
     if (this.searchCategoria) {
       filtered = filtered.filter((producto) =>
         producto.categoria.nombre_categoria
@@ -65,6 +85,8 @@ export class ListarProductoComponent implements OnInit {
           .includes(this.searchCategoria.toLowerCase())
       );
     }
+
+    // Filtrar por nombre de producto
     if (this.searchNombreProducto) {
       filtered = filtered.filter((producto) =>
         producto.nombre_producto
@@ -72,6 +94,7 @@ export class ListarProductoComponent implements OnInit {
           .includes(this.searchNombreProducto.toLowerCase())
       );
     }
+
     // Filtrar por código de producto
     if (this.searchCodigoProducto) {
       filtered = filtered.filter((producto) =>
@@ -81,7 +104,14 @@ export class ListarProductoComponent implements OnInit {
       );
     }
 
-    return filtered.slice(
+    // Filtrar productos con stock cero
+    const productosConStockCero = filtered.filter(producto => producto.stock === 0);
+    const productosConStock = filtered.filter(producto => producto.stock > 0);
+
+    // Combinar los productos con stock cero y los que tienen stock
+    const productosFiltrados = [...productosConStockCero, ...productosConStock];
+
+    return productosFiltrados.slice(
       (this.page - 1) * this.pageSize,
       this.page * this.pageSize
     );

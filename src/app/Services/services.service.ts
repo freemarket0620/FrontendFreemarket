@@ -317,6 +317,7 @@ export class ServicesService {
   getDetalleVentas(): Observable<DetalleVenta[]> {
     return this.http.get<DetalleVenta[]>(`${this.apiUrl}detallesventas/`);
   }
+  
   getDetalleVentaById(id: number): Observable<DetalleVenta> {
     return this.http.get<DetalleVenta>(`${this.apiUrl}detallesventas/${id}/`);
   }

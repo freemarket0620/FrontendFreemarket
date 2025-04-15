@@ -16,11 +16,13 @@ import {
   Validators,
 } from '@angular/forms';
 import { RouterModule } from '@angular/router';
+import { OkComponent } from "../../Mensajes/ok/ok.component";
+import { ErrorComponent } from "../../Mensajes/error/error.component";
 
 @Component({
   selector: 'app-listar-productos-empleado',
   standalone: true,
-  imports: [CommonModule, ReactiveFormsModule, FormsModule, RouterModule],
+  imports: [CommonModule, ReactiveFormsModule, FormsModule, RouterModule, OkComponent, ErrorComponent],
   templateUrl: './listar-productos-empleado.component.html',
   styleUrl: './listar-productos-empleado.component.css',
 })
@@ -61,6 +63,9 @@ export class ListarProductosEmpleadoComponent {
   // Array para controlar qué productos tienen detalles visibles
   detallesAbiertos: boolean[] = [];
   isMobile = false;
+
+  ok: string = '';
+  error: string = '';
   constructor(
     private productoService: ServicesService,
     private fb: FormBuilder
@@ -150,13 +155,13 @@ export class ListarProductosEmpleadoComponent {
   }
   getUsuarios() {
     this.productoService.getUsuarios().subscribe((data) => {
-      this.usuarios = data; // Asigna los datos a la propiedad usuarios
+      this.usuarios = data;
     });
   }
   // Modificación en el método agregarAlCarrito
   agregarAlCarrito(producto: Producto, cantidad: number, tipoPrecio: string) {
-      if (cantidad <= 0 || cantidad > producto.stock) {
-          alert('Cantidad inválida. No puede ser mayor al stock disponible ni menor a 1.');
+    if (cantidad <= 0 || cantidad > producto.stock) {
+        this.error = 'Cantidad inválida. No puede ser mayor al stock disponible ni menor a 1.';
           return;
       }
 
@@ -189,11 +194,7 @@ export class ListarProductosEmpleadoComponent {
       this.actualizarTotalVenta();
       this.cantidadPorProducto[producto.id]; // Reiniciar la cantidad después de agregar
   }
-  actualizarCantidad(
-    item: DetalleVenta | undefined,
-    nuevaCantidad: number,
-    tipoPrecio: string
-  ) {
+  actualizarCantidad(item: DetalleVenta | undefined,nuevaCantidad: number,tipoPrecio: string) {
     if (!item) {
       console.error('No se encontró el detalle de venta.');
       return; // Salir si el item es undefined
@@ -201,12 +202,12 @@ export class ListarProductosEmpleadoComponent {
 
     // Verificar que la nueva cantidad sea válida
     if (nuevaCantidad < 1) {
-      alert('La cantidad no puede ser menor a 1.');
+      this.error = 'La cantidad no puede ser menor a 1.';
       return;
     }
 
     if (nuevaCantidad > item.producto.stock) {
-      alert('La cantidad no puede ser mayor al stock disponible.');
+      this.error = 'La cantidad no puede ser mayor al stock disponible.';
       return;
     }
 
@@ -234,12 +235,10 @@ export class ListarProductosEmpleadoComponent {
           this.detalleVentaForm.value.cantidad *
           this.detalleVentaForm.value.precio_unitario,
       };
-
       // Verificar si el producto ya está en el detalle de venta
       const existingDetail = this.detalleVenta.find(
         (d) => d.producto.id === nuevoDetalle.producto.id
       );
-
       if (existingDetail) {
         // Si ya existe, actualizar la cantidad y el subtotal
         existingDetail.cantidad = nuevoDetalle.cantidad;
@@ -248,29 +247,23 @@ export class ListarProductosEmpleadoComponent {
         // Si no existe, agregar un nuevo detalle
         this.detalleVenta.push(nuevoDetalle);
       }
-
       this.detalleVentaForm.reset();
       this.actualizarTotalVenta(); // Asegúrate de actualizar el total después de agregar o modificar
     }
   }
   actualizarTotalVenta() {
     this.totalVenta = this.detalleVenta.reduce(
-      (total, item) => total + item.subtotal,
-      0
-    );
+      (total, item) => total + item.subtotal,0);
   }
-
   eliminarProducto(item: DetalleVenta) {
     this.detalleVenta = this.detalleVenta.filter((d) => d !== item);
     this.actualizarTotalVenta();
   }
-
   verificarCantidad(item: any) {
     if (item.cantidad > item.producto.stock) {
       item.cantidad = item.producto.stock; // Restablece la cantidad al máximo disponible en stock
     }
   }
-
   // Método para registrar la venta
   registrarVenta() {
     if (this.ventaForm.valid && this.detalleVenta.length > 0) {
@@ -297,7 +290,6 @@ export class ListarProductosEmpleadoComponent {
       );
     }
   }
-
   // Método para registrar los detalles de la venta
   registrarDetallesVenta() {
     if (this.detalleVenta.length === 0) {
@@ -309,7 +301,7 @@ export class ListarProductosEmpleadoComponent {
       return;
     }
     const detalles: DetalleVenta[] = this.detalleVenta.map((item) => ({
-      id: 0, // Puedes asignar un ID temporal o manejarlo según tu lógica
+      id: 0, // Asignar un ID temporal o manejarlo según tu lógica
       venta: { id: this.idVentaActual } as Venta, // Asegúrate de que esto sea un objeto de tipo Venta
       producto: item.producto,
       cantidad: item.cantidad,
@@ -329,7 +321,7 @@ export class ListarProductosEmpleadoComponent {
       this.detalleVenta = [];
       this.totalVenta = 0;
       this.idVentaActual = null; // Reiniciar el ID de la venta actual
-      alert('Venta registrada correctamente.');
+      this.ok = 'Venta registrada correctamente.';
     });
   }
   // Método para obtener la lista de productos
@@ -360,15 +352,14 @@ export class ListarProductosEmpleadoComponent {
       tipoPrecio === 'mayor' &&
       producto?.categoria.nombre_categoria === 'Targetas Entel Tigo Viva'
     ) {
-      return cantidad >= 10; // La cantidad debe ser mayor o igual a 10
+      return cantidad >= 10;
     }
-
     return (
       !isNaN(cantidad) &&
       cantidad !== null &&
       cantidad !== undefined &&
       cantidad > 0
-    ); // Validación general
+    );
   }
   isCategoriaConBotonUnidad(producto: Producto): boolean {
     return producto.categoria.nombre_categoria === 'Targetas Entel Tigo Viva';
@@ -382,13 +373,10 @@ export class ListarProductosEmpleadoComponent {
     this.searchPrecio = '';
   }
   /* *********************************** */
-  /* *********************************** */
   /*     seccion de menos importancia    */
   /* *********************************** */
-  /* *********************************** */
-
   filteredProductos(): Producto[] {
-    let filtered = this.productos;
+    let filtered = this.productos.filter(producto => producto.estado_equipo !== false); // Filtrar productos con estado false
     if (this.searchCategoria) {
       filtered = filtered.filter((producto) =>
         producto.categoria.nombre_categoria
@@ -476,5 +464,10 @@ export class ListarProductosEmpleadoComponent {
   checkScreenSize() {
   this.isMobile = window.innerWidth < 768; // Bootstrap md breakpoint
   }
-  
+  manejarOk() {
+    this.ok = '';
+  }
+  manejarError() {
+    this.error = '';
+  }
 }

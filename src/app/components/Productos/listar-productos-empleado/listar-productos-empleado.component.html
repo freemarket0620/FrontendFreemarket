@@ -33,15 +33,19 @@
             </div>
           </div>
         </div>
-
-
-      <!-- Lista de productos en formato de tarjetas (cards) -->
       <!-- Lista de productos en formato de tarjetas (cards) -->
       <div class="row g-3">
         <ng-container *ngFor="let producto of filteredProductos() | slice:(page-1)*6:(page-1)*6+6; let i = index">
           <div class="col-6 col-sm-4 col-md-4 col-lg-3 mb-3">
                       
-          <div class="card product-card h-100 position-relative">
+          <div class="card product-card h-100 position-relative"  
+              [ngClass]="{
+                
+                'bg-danger': producto.categoria.nombre_categoria === 'Targetas Entel Tigo Viva' && producto.stock < 50,
+                'bg-warning': producto.categoria.nombre_categoria === 'Targetas Entel Tigo Viva' && producto.stock >= 50 && producto.stock < 100,
+                'bg-dangerP': producto.stock === 0 && producto.categoria.nombre_categoria !== 'Targetas Entel Tigo Viva',
+                'bg-warningP': producto.stock > 0 && producto.stock <= 3 && producto.categoria.nombre_categoria !== 'Targetas Entel Tigo Viva',
+              }">
             <!-- Botón para móvil que despliega detalles con ícono ojo, posicionado en esquina superior derecha -->
             <button *ngIf="!modalVisible" class="btn btn-link btn-sm d-md-none position-absolute top-0 end-0 m-2 p-1" type="button"
               (click)="toggleDetalles(i); $event.stopPropagation()" [attr.aria-expanded]="detallesAbiertos[i] ? 'true' : 'false'"
@@ -235,9 +239,6 @@
           💰 Vender
         </button>
       </div>
-                                      
-
-
         <!-- Modal para mostrar la imagen en tamaño completo -->
         <div
           class="modal"
@@ -257,4 +258,12 @@
       </div>
     </div>
   </div>
+  <app-ok *ngIf="ok"
+    [mensaje]="ok"
+    (close)="manejarOk()">
+  </app-ok>
+  <app-error *ngIf="error"
+    [mensaje]="error"
+    (close)="manejarError()">
+  </app-error>
 </div>

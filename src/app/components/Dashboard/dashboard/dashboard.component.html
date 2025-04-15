@@ -1,110 +1,56 @@
-<div class="container mt-4">
-  <h1 class="text-center mb-4">Dashboard</h1>
+<div class="container my-5">
+  <div class="row justify-content-center text-center mb-5">
+    <h1 class="display-5 fw-bold">Dashboard de Ventas</h1>
+  </div>
 
-  <div class="row">
-    <div class="col-md-4 mb-4">
-      <div class="card text-center">
-        <div class="card-body">
-          <h2 class="card-title">Usuarios</h2>
-          <p class="card-text">
-            Total: <span class="font-weight-bold">150</span>
-          </p>
-          <p class="card-text">
-            Activos: <span class="font-weight-bold">120</span>
-          </p>
-          <p class="card-text">
-            Inactivos: <span class="font-weight-bold">30</span>
-          </p>
-        </div>
+  <!-- Fila 1 -->
+  <div class="row mb-5">
+    <!-- Gráfico de Barras -->
+    <div class="col-12 col-lg-6 mb-4">
+      <div class="card shadow p-3 h-100">
+        <h3 class="card-title text-center mb-3">Productos Vendidos (Gráfico de Barras)</h3>
+        <ngx-charts-bar-vertical [view]="[500, 300]" [scheme]="colorScheme" [results]="productosVendidos"
+          [gradient]="false" [xAxis]="true" [yAxis]="true" [legend]="true" [showXAxisLabel]="true"
+          [showYAxisLabel]="true" [xAxisLabel]="'Productos'" [yAxisLabel]="'Cantidad Vendida'">
+        </ngx-charts-bar-vertical>
       </div>
     </div>
 
-    <div class="col-md-4 mb-4">
-      <div class="card text-center">
-        <div class="card-body">
-          <h2 class="card-title">Roles</h2>
-          <p class="card-text">
-            Total: <span class="font-weight-bold">5</span>
-          </p>
-          <p class="card-text">
-            Activos: <span class="font-weight-bold">4</span>
-          </p>
-          <p class="card-text">
-            Inactivos: <span class="font-weight-bold">1</span>
-          </p>
-        </div>
-      </div>
-    </div>
-
-    <div class="col-md-4 mb-4">
-      <div class="card text-center">
-        <div class="card-body">
-          <h2 class="card-title">Permisos</h2>
-          <p class="card-text">
-            Total: <span class="font-weight-bold">20</span>
-          </p>
-          <p class="card-text">
-            Activos: <span class="font-weight-bold">18</span>
-          </p>
-          <p class="card-text">
-            Inactivos: <span class="font-weight-bold">2</span>
-          </p>
-        </div>
-      </div>
-    </div>
-
-    <div class="col-md-4 mb-4">
-      <div class="card text-center">
-        <div class="card-body">
-          <h2 class="card-title">Productos</h2>
-          <p class="card-text">
-            Total: <span class="font-weight-bold">300</span>
-          </p>
-          <p class="card-text">
-            En Stock: <span class="font-weight-bold">250</span>
-          </p>
-          <p class="card-text">
-            Agotados: <span class="font-weight-bold">50</span>
-          </p>
-        </div>
-      </div>
-    </div>
-
-    <div class="col-md-4 mb-4">
-      <div class="card text-center">
-        <div class="card-body">
-          <h2 class="card-title">Ventas</h2>
-          <p class="card-text">
-            Total Ventas: <span class="font-weight-bold">75</span>
-          </p>
-          <p class="card-text">
-            Ventas del Mes: <span class="font-weight-bold">20</span>
-          </p>
-          <p class="card-text">
-            Ingresos Totales: <span class="font-weight-bold">$5000</span>
-          </p>
-        </div>
+    <!-- Gráfico de Torta -->
+    <div class="col-12 col-lg-6 mb-4">
+      <div class="card shadow p-3 h-100">
+        <h3 class="card-title text-center mb-3">Stock de Productos</h3>
+        <ngx-charts-pie-chart [view]="[500, 300]" [scheme]="colorScheme" [results]="productosVendidos" [legend]="true"
+          [labels]="true" [doughnut]="false" [explodeSlices]="false">
+        </ngx-charts-pie-chart>
       </div>
     </div>
   </div>
 
-  <div class="row mt-4">
-    <div class="col-md-6 mb-4">
-      <h2>Estadísticas</h2>
-      <div class="card">
-        <div class="card-body">
-          <p>Gráfico de Ventas por Mes</p>
-          <div class="chart-placeholder">[Gráfico aquí]</div>
-        </div>
+  <!-- Fila 2 -->
+  <div class="row">
+    <!-- Gráfico Pie Grid -->
+    <div class="col-12 col-lg-6 mb-4">
+      <div class="card shadow p-3 h-100">
+        <h3 class="card-title text-center mb-3">Distribución de Productos Vendidos</h3>
+        <ngx-charts-pie-grid [view]="[500, 300]" [scheme]="colorScheme" [results]="ventasPorProducto">
+        </ngx-charts-pie-grid>
       </div>
     </div>
 
-    <div class="col-md-6 mb-4">
-      <h2>Distribución de Roles</h2>
-      <div class="card">
-        <div class="card-body">
-          <p>Distribución de Roles</p>
-          <div class="chart-placeholder">[Gráfico aquí]</div>
+    <!-- Tarjetas de Ventas por Producto -->
+    <div class="col-12 col-lg-6 mb-4">
+      <div class="card shadow p-3 h-100">
+        <h3 class="card-title text-center mb-3">Ventas por Producto</h3>
+        <div class="d-flex flex-wrap justify-content-center gap-3">
+          <div class="card" style="width: 9rem;" *ngFor="let producto of ventasPorProducto">
+            <div class="card-body">
+              <h6 class="card-title text-center">{{ producto.name }}</h6>
+              <p class="card-text text-center">
+                <strong>{{ producto.value }}</strong>
+              </p>
+            </div>
+          </div>
         </div>
       </div>
     </div>

@@ -162,3 +162,21 @@
 .btn-eye-hidden {
   display: none !important;
 }
+
+.bg-danger {
+  background: linear-gradient(to bottom, #ff9ca4, #ff9ca4);
+  /* Degradado suave de rojo claro */
+}
+
+.bg-warning {
+  background: linear-gradient(to bottom, #fff3cd, #ffeeba);
+  /* Degradado suave de naranja claro */
+}
+.bg-dangerP {
+  background: linear-gradient(to bottom, #ff9ca4, #ff9ca4);
+  /* Degradado suave de rojo claro */
+}
+.bg-warningP {
+  background: linear-gradient(to bottom, #fff3cd, #ffeeba);
+  /* Degradado suave de naranja claro */
+}

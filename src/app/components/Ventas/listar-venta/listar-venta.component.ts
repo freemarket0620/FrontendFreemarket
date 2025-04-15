@@ -14,12 +14,13 @@ import { FormsModule, ReactiveFormsModule } from '@angular/forms';
 export class ListarVentaComponent implements OnInit {
   ventas: Venta[] = []; // Array para almacenar las ventas
   searchID: string = ''; // Campo de búsqueda para el ID
-  searchFecha: string = ''; // Campo de búsqueda para la fecha
   searchUsuario: string = ''; // Campo de búsqueda para el usuario
   searchTotal: string = ''; // Campo de búsqueda para el total
   searchEstado: string = ''; // Campo de búsqueda para el estado
   page: number = 1; // Página actual
   pageSize: number = 5; // Tamaño de la página
+  searchFechaInicio: string = ''; // Nueva propiedad para la fecha de inicio
+  searchFechaFin: string = ''; // Nueva propiedad para la fecha de fin
 
   constructor(private servicesService: ServicesService) {}
 
@@ -46,14 +47,6 @@ export class ListarVentaComponent implements OnInit {
         venta.id.toString().includes(this.searchID)
       );
     }
-
-    if (this.searchFecha) {
-      const searchDate = new Date(this.searchFecha).toLocaleDateString();
-      filtered = filtered.filter((venta) =>
-        new Date(venta.fecha_venta).toLocaleDateString().includes(searchDate)
-      );
-    }
-
     if (this.searchUsuario) {
       filtered = filtered.filter((venta) =>
         (venta.usuario.nombre_usuario + ' ' + venta.usuario.apellido)
@@ -73,6 +66,20 @@ export class ListarVentaComponent implements OnInit {
         venta.estado.toLowerCase().includes(this.searchEstado.toLowerCase())
       );
     }
+    // Filtrar por rango de fechas
+    if (this.searchFechaInicio) {
+      const fechaInicio = new Date(this.searchFechaInicio).getTime();
+      filtered = filtered.filter((detalle) =>
+        new Date(detalle.fecha_venta).getTime() >= fechaInicio
+      );
+    }
+
+    if (this.searchFechaFin) {
+      const fechaFin = new Date(this.searchFechaFin).getTime();
+      filtered = filtered.filter((detalle) =>
+        new Date(detalle.fecha_venta).getTime() <= fechaFin
+      );
+    }
 
     return filtered.slice(
       (this.page - 1) * this.pageSize,
@@ -88,5 +95,14 @@ export class ListarVentaComponent implements OnInit {
     if (this.page > 1) {
       this.page--;
     }
+  }
+  updateList() {
+    this.searchID = '';
+    this.searchUsuario = '';
+    this.searchTotal = '';
+    this.searchEstado = '';
+    this.searchFechaInicio = ''; 
+    this.searchFechaFin = '';
+    this.getVentas();
   }
 }

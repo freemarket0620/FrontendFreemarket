@@ -81,3 +81,5 @@ export interface DetalleVenta {
   subtotal: number; // Nueva variable 'subtotal'
   tipo_venta: string; // Tipo de venta (detalle o mayor)
 }
+
+/* dato de estaditicas */

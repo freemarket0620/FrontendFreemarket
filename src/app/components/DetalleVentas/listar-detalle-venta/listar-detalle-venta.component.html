@@ -9,12 +9,6 @@
           <input id="ventaInput" type="text" class="form-control" placeholder="Buscar Por Venta"
             [(ngModel)]="searchVenta" />
         </div>
-
-        <div class="col-md-2 mb-2">
-          <input id="fechaInput" type="text" class="form-control" placeholder="Buscar Por Fecha (dd/MM/yyyy)"
-            [(ngModel)]="searchFecha" />
-        </div>
-
         <div class="col-md-2 mb-2">
           <input id="usuarioInput" type="text" class="form-control" placeholder="Buscar Por Usuario o C.I."
             [(ngModel)]="searchUsuario" />
@@ -28,6 +22,15 @@
         <div class="col-md-2 mb-2">
           <input id="codigoInput" type="text" class="form-control" placeholder="Buscar Por Código"
             [(ngModel)]="searchCodigo" />
+        </div>
+        <div class="col-md-2 mb-2">
+          <p class="text-start">Fecha Inicio</p>
+          <input id="fechaInicioInput" type="date" class="form-control" [(ngModel)]="searchFechaInicio" />
+        </div>
+        
+        <div class="col-md-2 mb-2">
+          <p class="text-start">Fecha Fin</p>
+          <input id="fechaFinInput" type="date" class="form-control" [(ngModel)]="searchFechaFin" />
         </div>
 
         <div class="col-md-2 mb-2 d-flex align-items-end">
@@ -67,7 +70,7 @@
               <td class="text-start">{{ detalle.tipo_venta }}</td>
               <td class="text-start">{{ detalle.precio | currency:'Bs. ':true }}</td>
 
-              <td class="text-start">{{ detalle.subtotal | currency }}</td>
+              <td class="text-start">{{ detalle.subtotal | currency:'Bs. ':true }}</td>
             </tr>
           </tbody>
         </table>
