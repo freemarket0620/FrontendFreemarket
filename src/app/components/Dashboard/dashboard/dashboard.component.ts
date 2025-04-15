@@ -14,6 +14,7 @@ import { NgxChartsModule, ScaleType } from '@swimlane/ngx-charts';
 })
 export class DashboardComponent implements OnInit {
   /* https://swimlane.github.io/ngx-charts/#/ngx-charts/bar-vertical-2d */
+  /* colores https://paletadecolores.com.mx/paleta/d0324a/dc4c60/e86777/f3818d/ff9ca4/ */
   // Datos
   productos: Producto[] = [];
   ventas: Venta[] = [];
