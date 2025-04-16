@@ -1,88 +1,129 @@
-<div class="container my-5">
-  <div class="row justify-content-center text-center mb-5">
-    <h1 class="display-5 fw-bold">Dashboard de Ventas</h1>
-  </div>
-
-  <!-- Fila 1 -->
-  <div class="row mb-5">
-    <!-- Gráfico de Barras -->
-    <div class="col-12 col-lg-6 mb-4">
-      <div class="card shadow p-3 h-100">
-        <h3 class="card-title text-center mb-3">Productos Vendidos (Gráfico de Barras)</h3>
-        <ngx-charts-bar-vertical [view]="[500, 300]" [scheme]="colorScheme" [results]="productosVendidos"
-          [gradient]="false" [xAxis]="true" [yAxis]="true" [legend]="true" [showXAxisLabel]="true"
-          [showYAxisLabel]="true" [xAxisLabel]="'Productos'" [yAxisLabel]="'Cantidad Vendida'">
-        </ngx-charts-bar-vertical>
-      </div>
-    </div>
-
-    <!-- Gráfico de Torta -->
-    <div class="col-12 col-lg-6 mb-4">
-      <div class="card shadow p-3 h-100">
-        <h3 class="card-title text-center mb-3">Stock de Productos</h3>
-        <ngx-charts-pie-chart [view]="[500, 300]" [scheme]="colorScheme" [results]="productosVendidos" [legend]="true"
-          [labels]="true" [doughnut]="false" [explodeSlices]="false">
-        </ngx-charts-pie-chart>
-      </div>
-    </div>
-  </div>
-
-  <!-- Fila 2 -->
+<div class="container-fluid mt-4">
   <div class="row">
-    <!-- Gráfico Pie Grid -->
-    <div class="col-12 col-lg-6 mb-4">
-      <div class="card shadow p-3 h-100">
-        <h3 class="card-title text-center mb-3">Distribución de Productos Vendidos</h3>
-        <ngx-charts-pie-grid [view]="[500, 300]" [scheme]="colorScheme" [results]="ventasPorProducto">
-        </ngx-charts-pie-grid>
-      </div>
-    </div>
+    <div class="col-md-12">
+      <div class="card-body">
+        <h3 class="card-title text-center mb-3">Dashboard de Ventas</h3>
 
-    <!-- Tarjetas de Ventas por Producto -->
-    <div class="col-12 col-lg-6 mb-4">
-      <div class="card shadow p-3 h-100">
-        <h3 class="card-title text-center mb-3">Ventas por Producto</h3>
-        <div class="d-flex flex-wrap justify-content-center gap-3">
-          <div class="card" style="width: 9rem;" *ngFor="let producto of ventasPorProducto">
-            <div class="card-body">
-              <h6 class="card-title text-center">{{ producto.name }}</h6>
-              <p class="card-text text-center">
-                <strong>{{ producto.value }}</strong>
-              </p>
+        <div class="container-fluid mt-4">
+
+          <!-- Fila 1 -->
+          <div class="row">
+            <div class="col-12 col-md-4 mb-4">
+              <h5 class="text-center">Stock de Productos</h5>
+              <ngx-charts-bar-vertical [view]="view" [legend]="true" [scheme]="colorScheme" [results]="productosVendidos"
+                [gradient]="false" [xAxis]="true" [yAxis]="true" [showXAxisLabel]="true" [showYAxisLabel]="true"
+                [xAxisLabel]="'Productos'" [yAxisLabel]="'Stock'">
+              </ngx-charts-bar-vertical>
+            </div>
+            <div class="col-12 col-md-4 mb-4">
+              <h5 class="text-center">Stock de Productos</h5>
+              <ngx-charts-pie-chart [view]="view" [legend]="true" [scheme]="colorScheme" [results]="productosVendidos"
+                [labels]="true" [doughnut]="false" [explodeSlices]="false">
+              </ngx-charts-pie-chart>
+            </div>
+            <div class="col-12 col-md-4 mb-4">
+              <h5 class="text-center">Distribución de Productos Vendidos</h5>
+              <ngx-charts-bar-horizontal [view]="view" [scheme]="colorScheme" [results]="ventasPorProducto" [xAxis]="true"
+                [yAxis]="true" [showXAxisLabel]="true" [showYAxisLabel]="true" [xAxisLabel]="'Cantidad Vendida'"
+                [yAxisLabel]="'Producto'">
+              </ngx-charts-bar-horizontal>
+            </div>
+
+          </div>
+
+          <!-- Fila 2 -->
+          <div class="row">
+            <div class="col-12 col-md-4 mb-4">
+              <h5 class="text-center">Ventas por Usuario</h5>
+              <ngx-charts-bar-vertical [view]="view" [legend]="true" [scheme]="colorScheme"
+                [results]="ventasPorUsuarioGrafico" [gradient]="false" [xAxis]="true" [yAxis]="true"
+                [showXAxisLabel]="true" [showYAxisLabel]="true" [xAxisLabel]="'Usuario'"
+                [yAxisLabel]="'Cantidad de Ventas'">
+              </ngx-charts-bar-vertical>
+            </div>
+            <div class="col-12 col-md-4 mb-4">
+              <h5 class="text-center">Total Vendido por Usuario</h5>
+              <ngx-charts-pie-chart [view]="view" [legend]="true" [scheme]="colorScheme"
+                [results]="ventasTotalesPorUsuarioGrafico" [labels]="true" [doughnut]="true">
+              </ngx-charts-pie-chart>
+            </div>
+            <div class="col-12 col-md-4 mb-4">
+              <h5 class="text-center">Ventas Totales por Mes</h5>
+              <ngx-charts-line-chart [view]="view" [scheme]="colorScheme" [results]="ventasPorFecha" [xAxis]="true"
+                [yAxis]="true" [showXAxisLabel]="true" [showYAxisLabel]="true" [xAxisLabel]="'Mes'"
+                [yAxisLabel]="'Total Vendido'">
+              </ngx-charts-line-chart>
             </div>
           </div>
+
+          <!-- Fila 3 -->
+          <div class="row">
+            <div class="col-12 col-md-4 mb-4">
+              <h5 class="text-center">Ventas por Día de la Semana</h5>
+              <ngx-charts-bar-vertical [view]="view" [legend]="true" [scheme]="colorScheme"
+                [results]="ventasPorDiaSemana" [gradient]="false" [xAxis]="true" [yAxis]="true" [showXAxisLabel]="true"
+                [showYAxisLabel]="true" [xAxisLabel]="'Día'" [yAxisLabel]="'Cantidad de Ventas'">
+              </ngx-charts-bar-vertical>
+            </div>
+            <div class="col-12 col-md-4 mb-4">
+              <h5 class="text-center">Top 5 Productos Más Vendidos</h5>
+              <ngx-charts-pie-chart [view]="view" [legend]="true" [scheme]="colorScheme"
+                [results]="topProductosVendidos" [labels]="true" [doughnut]="false" [explodeSlices]="false">
+              </ngx-charts-pie-chart>
+            </div>
+            <div class="col-12 col-md-4 mb-4">
+              <h5 class="text-center">Stock Total por Categoría</h5>
+              <ngx-charts-pie-chart [view]="view" [legend]="true" [scheme]="colorScheme" [results]="stockPorCategoria"
+                [labels]="true" [doughnut]="false" [explodeSlices]="false">
+              </ngx-charts-pie-chart>
+            </div>
+          </div>
+
+          <!-- Fila 4 -->
+          <div class="row">
+            <div class="col-12 col-md-4 mb-4">
+              <h5 class="text-center">Precio Compra vs Venta</h5>
+              <ngx-charts-bar-vertical-2d [view]="view" [legend]="true" [scheme]="colorScheme"
+                [results]="comparativaPrecio" [gradient]="false" [xAxis]="true" [yAxis]="true" [showXAxisLabel]="true"
+                [showYAxisLabel]="true" [xAxisLabel]="'Producto'" [yAxisLabel]="'Precio'">
+              </ngx-charts-bar-vertical-2d>
+            </div>
+            <div class="col-12 col-md-4 mb-4">
+              <h5 class="text-center">Productos Más Rentables</h5>
+              <ngx-charts-bar-vertical [view]="view" [legend]="true" [scheme]="colorScheme"
+                [results]="productosRentables" [gradient]="false" [xAxis]="true" [yAxis]="true" [showXAxisLabel]="true"
+                [showYAxisLabel]="true" [xAxisLabel]="'Producto'" [yAxisLabel]="'Rentabilidad'">
+              </ngx-charts-bar-vertical>
+            </div>
+            <div class="col-12 col-md-4 mb-4">
+              <h5 class="text-center">Productos con Bajo Stock</h5>
+              <ngx-charts-bar-vertical [view]="view" [legend]="true" [scheme]="colorScheme"
+                [results]="productosBajoStock" [gradient]="false" [xAxis]="true" [yAxis]="true" [showXAxisLabel]="true"
+                [showYAxisLabel]="true" [xAxisLabel]="'Producto'" [yAxisLabel]="'Cantidad Disponible'">
+              </ngx-charts-bar-vertical>
+            </div>
+          </div>
+
+          <!-- Fila 5 -->
+          <div class="row">
+            <div class="col-12 col-md-6 mb-4">
+              <h5 class="text-center">Ingresos por Usuario</h5>
+              <ngx-charts-pie-chart [view]="view" [legend]="true" [scheme]="colorScheme"
+                [results]="ventasTotalesPorUsuarioGrafico" [labels]="true" [doughnut]="true" [explodeSlices]="false">
+              </ngx-charts-pie-chart>
+            </div>
+            <div class="col-12 col-md-6 mb-4">
+              <h5 class="text-center">Ventas por Categoría</h5>
+              <ngx-charts-bar-vertical [view]="view" [scheme]="colorScheme" [results]="ventasPorCategoria" [xAxis]="true"
+                [yAxis]="true" [showXAxisLabel]="true" [showYAxisLabel]="true" [xAxisLabel]="'Categoría'"
+                [yAxisLabel]="'Total Vendido (Bs)'">
+              </ngx-charts-bar-vertical>
+            </div>
+
+          </div>
+
         </div>
       </div>
     </div>
-    
-
-    <h3>Cantidad de Ventas por Usuario</h3>
-    <ul>
-      <li *ngFor="let c of ventasCantidadPorUsuario">
-        {{ c.name }} - {{ c.value }} ventas - {{ c.total }} Bs
-      </li>
-    </ul>
-    <h3>Ventas por Usuario (Cantidad de Ventas)</h3>
-    <ngx-charts-bar-vertical [view]="[700, 400]" [scheme]="colorScheme" [results]="ventasPorUsuarioGrafico" [xAxis]="true"
-      [yAxis]="true" [legend]="false" [showXAxisLabel]="true" [showYAxisLabel]="true" [xAxisLabel]="'Usuario'"
-      [yAxisLabel]="'Cantidad de Ventas'">
-    </ngx-charts-bar-vertical>
-
-    <!-- dashboard.component.html -->
-    <h1>grafico de ventas usuario total </h1>
-
-    <h3>Gráfico de Torta: Total Vendido por Usuario</h3>
-    <ngx-charts-pie-chart [view]="[700, 400]" [scheme]="colorScheme" [results]="ventasTotalesPorUsuarioGrafico"
-      [legend]="true" [labels]="true" [doughnut]="true">
-    </ngx-charts-pie-chart>
-
-    <h3>Cantidad de Ventas por Usuario más el Total</h3>
-    <ul>
-      <li *ngFor="let c of ventasResumenPorUsuario">
-        {{ c.name }} - {{ c.value }} ventas - {{ c.total | number:'1.2-2' }} Bs
-      </li>
-    </ul>
-
-
   </div>
 </div>

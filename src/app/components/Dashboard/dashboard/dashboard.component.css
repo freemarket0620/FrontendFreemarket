@@ -1,0 +1,9 @@
+/* en tu styles.css global o el CSS/SCSS del componente */
+.chart-container {
+    width: 100%;
+    max-width: 100%;
+    height: auto;
+    padding: 0.5rem;
+    display: flex;
+    justify-content: center;
+}

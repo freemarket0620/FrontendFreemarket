@@ -72,7 +72,10 @@ export interface DetalleVentas {
   subtotal: number;
   producto: {
     id: number;
-    nombre_producto: string;
+      nombre_producto: string;
+      precio_unitario: number; // Decimal en Django
+      precio_mayor: number; // Decimal en Django
+      precio_compra: number;
     categoria: {
       id: number;
       nombre_categoria: string;
