@@ -54,5 +54,35 @@
         </div>
       </div>
     </div>
+    
+
+    <h3>Cantidad de Ventas por Usuario</h3>
+    <ul>
+      <li *ngFor="let c of ventasCantidadPorUsuario">
+        {{ c.name }} - {{ c.value }} ventas - {{ c.total }} Bs
+      </li>
+    </ul>
+    <h3>Ventas por Usuario (Cantidad de Ventas)</h3>
+    <ngx-charts-bar-vertical [view]="[700, 400]" [scheme]="colorScheme" [results]="ventasPorUsuarioGrafico" [xAxis]="true"
+      [yAxis]="true" [legend]="false" [showXAxisLabel]="true" [showYAxisLabel]="true" [xAxisLabel]="'Usuario'"
+      [yAxisLabel]="'Cantidad de Ventas'">
+    </ngx-charts-bar-vertical>
+
+    <!-- dashboard.component.html -->
+    <h1>grafico de ventas usuario total </h1>
+
+    <h3>Gráfico de Torta: Total Vendido por Usuario</h3>
+    <ngx-charts-pie-chart [view]="[700, 400]" [scheme]="colorScheme" [results]="ventasTotalesPorUsuarioGrafico"
+      [legend]="true" [labels]="true" [doughnut]="true">
+    </ngx-charts-pie-chart>
+
+    <h3>Cantidad de Ventas por Usuario más el Total</h3>
+    <ul>
+      <li *ngFor="let c of ventasResumenPorUsuario">
+        {{ c.name }} - {{ c.value }} ventas - {{ c.total | number:'1.2-2' }} Bs
+      </li>
+    </ul>
+
+
   </div>
 </div>

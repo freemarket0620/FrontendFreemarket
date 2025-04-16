@@ -11,6 +11,7 @@ import {
   UsuarioRol,
   Venta,
 } from '../Models/models';
+import { Ventas,Productos,DetalleVentas } from '../Models/model-panel';
 import { BehaviorSubject, catchError, Observable, tap, throwError } from 'rxjs';
 import { Router } from '@angular/router';
 
@@ -373,4 +374,23 @@ export class ServicesService {
     const roles = this.getRolesFromLocalStorage();
     return roles.includes('AdministraciónYucumo'); // Verifica si el usuario tiene el rol de AdministraciónYucumo
   }
+
+  /* seccion de mis graficos */
+  /* Sección de mis gráficos */
+    getProductosPanel(): Observable<Productos[]> {
+      return this.http.get<Productos[]>(`${this.apiUrl}productos/`);
+    }
+
+    getVentasPanel(): Observable<Ventas[]> {
+      return this.http.get<Ventas[]>(`${this.apiUrl}ventas/`);
+    }
+    getVentaByIdPanel(id: number): Observable<Ventas> {
+      return this.http.get<Ventas>(`${this.apiUrl}ventas/${id}/`);
+    }
+    getDetallesPanel(): Observable<DetalleVentas[]> {
+      return this.http.get<DetalleVentas[]>(`${this.apiUrl}detallesventas/`);
+    }
+    getDetalleVentasPanel(): Observable<DetalleVentas[]> {
+      return this.http.get<DetalleVentas[]>(`${this.apiUrl}detallesventas/`);
+    }
 }

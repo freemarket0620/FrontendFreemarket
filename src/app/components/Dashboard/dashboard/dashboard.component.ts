@@ -1,9 +1,10 @@
 import { Component, OnInit } from '@angular/core';
-import { DetalleVenta, Producto, Venta } from '../../../Models/models';
+import { DetalleVentas, Productos, Ventas } from '../../../Models/model-panel';
 import { ServicesService } from '../../../Services/services.service';
 import { CommonModule } from '@angular/common';
 import { FormsModule, ReactiveFormsModule } from '@angular/forms';
 import { NgxChartsModule, ScaleType } from '@swimlane/ngx-charts';
+import { ActivatedRoute } from '@angular/router';
 
 @Component({
   selector: 'app-dashboard',
@@ -13,23 +14,32 @@ import { NgxChartsModule, ScaleType } from '@swimlane/ngx-charts';
   styleUrls: ['./dashboard.component.css']
 })
 export class DashboardComponent implements OnInit {
-  /* https://swimlane.github.io/ngx-charts/#/ngx-charts/bar-vertical-2d */
-  /* colores https://paletadecolores.com.mx/paleta/d0324a/dc4c60/e86777/f3818d/ff9ca4/ */
-  // Datos
-  productos: Producto[] = [];
-  ventas: Venta[] = [];
-  detallesVenta: DetalleVenta[] = [];
 
-  // Datos procesados para gráficos
+  productos: Productos[] = [];
+  ventas: Ventas[] = [];
+  venta: Ventas | null = null;
+  detallesVenta: DetalleVentas[] = [];
+  detalles: DetalleVentas[] = [];
+
   productosVendidos: any[] = [];
   productoMasVendido: any;
-  ventasPorUsuario: any[] = [];
+
+  ventasCantidadPorUsuario: any[] = [];
+  ventasPorUsuarioGrafico: { name: string, value: number }[] = [];
+
+  ventasCantidadTotalPorUsuario: any[] = [];
+  ventasTotalesPorUsuarioGrafico: { name: string, value: number }[] = [];
+
   ventasPorProducto: any[] = [];
   ventasPorCategoria: any[] = [];
   ventasPorFecha: any[] = [];
   estadoVentas: any[] = [];
 
-  // Esquema de colores para gráficos
+  totalDineroVendido: number = 0;
+  graficoTotalDinero: { name: string, value: number }[] = [];
+
+  ventasResumenPorUsuario: { name: string, value: number, total: number }[] = [];
+
   colorScheme = {
     name: 'customScheme',
     selectable: true,
@@ -37,10 +47,29 @@ export class DashboardComponent implements OnInit {
     domain: ['#5AA454', '#A10A28', '#C7B42C', '#AAAAAA']
   };
 
-  constructor(private services: ServicesService) {}
+  constructor(
+    private route: ActivatedRoute,
+    private services: ServicesService
+  ) {}
 
   ngOnInit(): void {
+    let totalGlobal = 0;
     this.cargarDatos();
+
+    this.services.getProductos();
+    this.services.getVentas();
+    this.services.getDetalleVentas();
+
+    const id = this.route.snapshot.paramMap.get('id');
+    if (id) {
+      this.services.getVentaByIdPanel(+id).subscribe((ventaData: Ventas) => {
+        this.venta = ventaData;
+      });
+
+      this.services.getDetalleVentasPanel().subscribe((detalleData: DetalleVentas[]) => {
+        this.detalles = detalleData;
+      });
+    }
   }
 
   cargarDatos(): void {
@@ -50,21 +79,21 @@ export class DashboardComponent implements OnInit {
   }
 
   private obtenerProductos(): void {
-    this.services.getProductos().subscribe((productos: Producto[]) => {
+    this.services.getProductosPanel().subscribe((productos: Productos[]) => {
       this.productos = productos;
       this.generarDatosProductos();
     });
   }
 
   private obtenerVentas(): void {
-    this.services.getVentas().subscribe((ventas: Venta[]) => {
+    this.services.getVentasPanel().subscribe((ventas: Ventas[]) => {
       this.ventas = ventas;
       this.procesarVentas(ventas);
     });
   }
 
   private obtenerDetallesVenta(): void {
-    this.services.getDetalleVentas().subscribe((detalles: DetalleVenta[]) => {
+    this.services.getDetalleVentasPanel().subscribe((detalles: DetalleVentas[]) => {
       this.detallesVenta = detalles;
       this.procesarDetallesVenta(detalles);
     });
@@ -81,33 +110,57 @@ export class DashboardComponent implements OnInit {
     );
   }
 
-  private procesarVentas(ventas: Venta[]): void {
-    const ventasPorUsuarioMap = new Map<string, number>();
+  private procesarVentas(ventas: Ventas[]): void {
+    const cantidadVentasPorUsuarioMap = new Map<string, number>();
+    const totalVentasPorUsuarioMap = new Map<string, number>();
     const ventasPorFechaMap = new Map<string, number>();
     const estadoVentasMap = new Map<string, number>();
+    this.ventasTotalesPorUsuarioGrafico = [];
+
+    let totalGlobal = 0;
 
     ventas.forEach(venta => {
       const usuario = venta.usuario?.nombre_usuario || 'Desconocido';
-      const total = venta.total || 0;
+      const total = parseFloat(venta.total.toString()) || 0;
       const fecha = new Date(venta.fecha_venta).toLocaleDateString();
       const estado = venta.estado;
 
-      this.incrementarMapa(ventasPorUsuarioMap, usuario, total);
+      this.incrementarMapa(cantidadVentasPorUsuarioMap, usuario, 1);
+      this.incrementarMapa(totalVentasPorUsuarioMap, usuario, total);
       this.incrementarMapa(ventasPorFechaMap, fecha, total);
       this.incrementarMapa(estadoVentasMap, estado, 1);
+
+      totalGlobal += total;
     });
 
-    this.ventasPorUsuario = this.mapToArray(ventasPorUsuarioMap);
+    this.totalDineroVendido = totalGlobal;
+    this.graficoTotalDinero = [{ name: 'Total Vendido', value: this.totalDineroVendido }];
+
+    this.ventasCantidadPorUsuario = this.mapToArray(cantidadVentasPorUsuarioMap);
+    this.ventasPorUsuarioGrafico = [...this.ventasCantidadPorUsuario];
+
+    this.ventasCantidadTotalPorUsuario = this.mapToArray(totalVentasPorUsuarioMap);
+    this.ventasTotalesPorUsuarioGrafico = [...this.ventasCantidadTotalPorUsuario];
+
+    // Fusión correcta de ventas y totales para la vista combinada
+    this.ventasResumenPorUsuario = this.ventasCantidadPorUsuario.map(item => {
+      const totalEncontrado = this.ventasTotalesPorUsuarioGrafico.find(t => t.name === item.name);
+      return {
+        name: item.name,
+        value: item.value,
+        total: totalEncontrado ? totalEncontrado.value : 0
+      };
+    });
+
     this.ventasPorFecha = [{
       name: 'Ventas',
       series: this.mapToArray(ventasPorFechaMap)
     }];
-    this.estadoVentas = this.mapToArray(estadoVentasMap);
 
-    console.log('Ventas por Usuario:', this.ventasPorUsuario);
+    this.estadoVentas = this.mapToArray(estadoVentasMap);
   }
 
-  private procesarDetallesVenta(detalles: DetalleVenta[]): void {
+  private procesarDetallesVenta(detalles: DetalleVentas[]): void {
     const ventasPorProductoMap = new Map<string, number>();
     const ventasPorCategoriaMap = new Map<string, number>();
 
@@ -123,12 +176,10 @@ export class DashboardComponent implements OnInit {
     this.ventasPorCategoria = this.mapToArray(ventasPorCategoriaMap);
   }
 
-  // Función auxiliar para incrementar valores de un mapa
   private incrementarMapa(map: Map<string, number>, key: string, valor: number): void {
     map.set(key, (map.get(key) || 0) + valor);
   }
 
-  // Función auxiliar para convertir mapa a array de objetos
   private mapToArray(map: Map<string, number>): { name: string, value: number }[] {
     return Array.from(map.entries()).map(([name, value]) => ({ name, value }));
   }
