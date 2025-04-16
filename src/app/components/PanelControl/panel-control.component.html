@@ -3,17 +3,13 @@
   [ngClass]="{ 'sidebar-hidden': !isSidebarOpen }"
 >
   <div class="p-3 text-center content p-0 bounce-content">
-    <img
-      *ngIf="imagenUrl"
-      [src]="imagenUrl"
-      alt="Foto de usuario"
-      class="rounded-circle img-fluid mb-3"
-      style="width: 150px; height: 150px"
-    />
+    <hr />
+    <hr />
     <p>Nombre: {{ nombre_usuario }} {{ apellido }}</p>
     <div *ngIf="roles.length > 0">
       <p *ngFor="let rol of roles">Rol: {{ rol }}</p>
     </div>
+    <hr />
     <hr />
 
     <ul class="list-group">
@@ -266,22 +262,17 @@
       <!-- Botones de acciones a la derecha -->
       <div class="ml-auto d-flex align-items-center gap-2">
 
-        <!-- Icono de Notificaciones -->
-        <button class="btn btn-warning rounded-circle d-flex justify-content-center align-items-center"
-          style="width: 40px; height: 40px" title="Notificaciones" (click)="mostrarComponente('Notificaciones')">
-          <i class="fas fa-bell"></i>
-        </button>
-      
-        <!-- Icono de Mensajes -->
-        <button class="btn btn-info rounded-circle d-flex justify-content-center align-items-center"
-          style="width: 40px; height: 40px" title="Mensajes" (click)="mostrarComponente('Mensajes')">
-          <i class="fas fa-envelope"></i>
-        </button>
+       
         <!-- Icono de Ver Perfil -->
-        <button class="btn btn-primary rounded-circle d-flex justify-content-center align-items-center"
-          style="width: 40px; height: 40px" title="Ver Perfil" (click)="mostrarComponente('VerPerfil')">
-          <i class="fas fa-user"></i>
+        <!-- Botón con imagen como ícono -->
+        <!-- Botón con imagen como ícono -->
+        <button class="btn btn-primary rounded-circle d-flex justify-content-center align-items-center p-0"
+          style="width: 40px; height: 40px;" title="Ver Perfil" (click)="mostrarComponente('VerPerfil')">
+          <img *ngIf="imagenUrl" [src]="imagenUrl" alt="Foto de usuario" class="rounded-circle"
+            style="width: 100%; height: 100%; object-fit: cover; object-position: top;" />
         </button>
+
+
         <!-- Icono de Inicio -->
         <button class="btn btn-success rounded-circle d-flex justify-content-center align-items-center"
           style="width: 40px; height: 40px" title="Inicio" (click)="mostrarComponente('app-dashboard'); handleItemClick()">
