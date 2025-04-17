@@ -59,7 +59,7 @@
             <input type="text" class="form-control me-2" placeholder="Ej: Paola o 7878" [(ngModel)]="busquedaCliente"
               (ngModelChange)="filtrarClientes()" />
             <select class="form-select" [(ngModel)]="numeroManual" (ngModelChange)="buscarClientePorNumero()">
-              <option disabled selected hidden>Selecciona un cliente</option>
+              <option value="" disabled selected hidden>Selecciona un cliente</option>
               <option *ngFor="let cliente of clientesFiltrados" [value]="cliente.numero">
                 {{ cliente.nombre }} - {{ cliente.numero.startsWith('591') ? cliente.numero.slice(3) : cliente.numero }}
               </option>
