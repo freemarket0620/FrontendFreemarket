@@ -46,10 +46,21 @@ export class DashboardComponent implements OnInit {
   view: [number, number] = [700, 400]; // valor inicial
 
   colorScheme = {
-    name: 'customScheme',
-    selectable: true,
-    group: ScaleType.Ordinal,
-    domain: ['#5AA454', '#A10A28', '#C7B42C', '#AAAAAA']
+      name: 'customScheme',
+      selectable: true,
+      group: ScaleType.Ordinal,
+      domain: [
+          '#5AA454', // Verde
+          '#A10A28', // Rojo
+          '#C7B42C', // Amarillo
+          '#AAAAAA', // Gris
+          '#FF5733', // Naranja
+          '#33FF57', // Verde claro
+          '#3357FF', // Azul
+          '#FF33A1', // Rosa
+          '#FFC300', // Amarillo dorado
+          '#DAF7A6'  // Verde pálido
+      ]
   };
 
   constructor(

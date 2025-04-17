@@ -149,8 +149,19 @@ export class PanelControlComponent implements OnInit {
     return null; // Devuelve null si localStorage no está disponible
   }
 
-  puedeVer(permiso: string): boolean {
-    return this.permisos.includes(permiso);
+
+  // En tu componente
+  puedeVer(permiso: string | string[]): boolean {
+      if (Array.isArray(permiso)) {
+          // Si es un array, verifica si alguno de los permisos está incluido
+          return permiso.some(p => this.permisos.includes(p));
+      } else {
+          // Si es un solo permiso, verifica si está incluido
+          return this.permisos.includes(permiso);
+      }
+  }
+  tieneRol(rol: string): boolean {
+    return this.roles.includes(rol);
   }
   // Ejemplo de cómo establecer un token
   login() {
@@ -168,10 +179,11 @@ export class PanelControlComponent implements OnInit {
   onLogout() {
     this.authService.logout();
   }
+  // Método para manejar el evento de cierre de sesión
   toggleSidebar() {
     this.isSidebarOpen = !this.isSidebarOpen;
     localStorage.setItem('isSidebarOpen', this.isSidebarOpen.toString());
-    this.iconClass = this.isSidebarOpen ? 'fas fa-times' : 'fas fa-bars';
+    /* this.iconClass = this.isSidebarOpen ? 'fas fa-times' : 'fas fa-bars'; */
   }
 
 

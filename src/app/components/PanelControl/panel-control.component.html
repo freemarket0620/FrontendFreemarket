@@ -3,241 +3,145 @@
   [ngClass]="{ 'sidebar-hidden': !isSidebarOpen }"
 >
   <div class="p-3 text-center content p-0 bounce-content">
-    <hr />
-    <hr />
-    <p>Nombre: {{ nombre_usuario }} {{ apellido }}</p>
+    <hr class="text-dark" />
+    <hr class="text-dark" />
+    <p class="text-dark">Nombre: {{ nombre_usuario }} {{ apellido }}</p>
     <div *ngIf="roles.length > 0">
-      <p *ngFor="let rol of roles">Rol: {{ rol }}</p>
+      <p class="text-dark" *ngFor="let rol of roles">Rol: {{ rol }}</p>
     </div>
-    <hr />
-    <hr />
+    <hr class="text-dark" />
+    <hr class="text-dark" />
 
     <ul class="list-group">
       <!-- Menú desplegable para la gestión de usuarios -->
-      <li
-        class="list-group-item list-group-item-action d-flex align-items-center"
-        (click)="toggleSubmenu('usuarios')"
-      >
-        <div class="col-5 text-center pe-3">
-          <i class="bi bi-person fs-2 text-primary"></i>
+      <li *ngIf="tieneRol('Administrador')" class="d-flex align-items-center" (click)="toggleSubmenu('usuarios')">
+        <div class="col-auto text-center pe-2">
+          <i class="bi bi-person fs-2 text-dark"></i>
         </div>
-        <div class="col-8 text-start">
-          <span>Gestión de Usuarios</span>
+        <div class="col text-start">
+          <span class="text-dark">Gestión de Usuarios</span>
+        </div>
+        <div class="col-auto text-center pe-2">
+          <i class="bi bi-chevron-right text-dark"></i>
         </div>
       </li>
       <ul *ngIf="isSubmenuOpen('usuarios')" class="list-group ps-3">
-        <li
-          *ngIf="puedeVer('registrarUsuarios')"
-          class="list-group-item list-group-item-action d-flex align-items-center"
-          (click)="mostrarComponente('VerUsuario')"
-        >
-          <div class="col-5 text-center pe-3">
-            <i class="bi bi-person-plus fs-2 text-primary"></i>
+        <li *ngIf="puedeVer('registrarUsuarios')" class="d-flex align-items-center" (click)="mostrarComponente('VerUsuario')">
+          <div class="col-auto text-center pe-2">
+            <i class="bi bi-person-plus fs-2 text-dark"></i>
           </div>
-          <div class="col-8 text-start">
-            <span>Usuarios</span>
+          <div class="col text-start">
+            <span class="text-dark">Usuarios</span>
           </div>
         </li>
 
-        <li
-          *ngIf="puedeVer('registrarRoles')"
-          class="list-group-item list-group-item-action d-flex align-items-center"
-          (click)="mostrarComponente('VerRoles')"
-        >
-          <div class="col-5 text-center pe-3">
-            <i class="bi bi-people fs-2 text-primary"></i>
+        <li *ngIf="puedeVer('registrarRoles')" class="d-flex align-items-center" (click)="mostrarComponente('VerRoles')">
+          <div class="col-auto text-center pe-2">
+            <i class="bi bi-people fs-2 text-dark"></i>
           </div>
-          <div class="col-10 text-start">
-            <span>Roles</span>
+          <div class="col text-start">
+            <span class="text-dark">Roles</span>
           </div>
         </li>
-        <li
-          *ngIf="puedeVer('registrarPermisos')"
-          class="list-group-item list-group-item-action d-flex align-items-center"
-          (click)="mostrarComponente('VerPermisos')"
-        >
-          <div class="col-5 text-center pe-3">
-            <i class="bi bi-lock fs-2 text-primary"></i>
+
+        <li *ngIf="puedeVer('registrarPermisos')" class="d-flex align-items-center"
+          (click)="mostrarComponente('VerPermisos')">
+          <div class="col-auto text-center pe-2">
+            <i class="bi bi-lock fs-2 text-dark"></i>
           </div>
-          <div class="col-10 text-start">
-            <span>Permisos</span>
+          <div class="col text-start">
+            <span class="text-dark">Permisos</span>
           </div>
         </li>
-        <li
-          *ngIf="puedeVer('registrarUsuarioRoles')"
-          class="list-group-item list-group-item-action d-flex align-items-center"
-          (click)="mostrarComponente('VerUsuarioRoles')"
-        >
-          <div class="col-5 text-center pe-3">
-            <i class="bi bi-person-check fs-2 text-primary"></i>
+
+        <li *ngIf="puedeVer('registrarUsuarioRoles')" class="d-flex align-items-center"
+          (click)="mostrarComponente('VerUsuarioRoles')">
+          <div class="col-auto text-center pe-2">
+            <i class="bi bi-person-check fs-2 text-dark"></i>
           </div>
-          <div class="col-10 text-start">
-            <span>Usuario Roles</span>
+          <div class="col text-start">
+            <span class="text-dark">Usuario Roles</span>
           </div>
         </li>
-        <li
-          *ngIf="puedeVer('registrarRolesPermisos')"
-          class="list-group-item list-group-item-action d-flex align-items-center"
-          (click)="mostrarComponente('VerRolesPermisos')"
-        >
-          <div class="col-5 text-center pe-3">
-            <i class="bi bi-person-lock fs-2 text-primary"></i>
+
+        <li *ngIf="puedeVer('registrarRolesPermisos')" class="d-flex align-items-center"
+          (click)="mostrarComponente('VerRolesPermisos')">
+          <div class="col-auto text-center pe-2">
+            <i class="bi bi-person-lock fs-2 text-dark"></i>
           </div>
-          <div class="col-10 text-start">
-            <span>Roles Permisos</span>
+          <div class="col text-start">
+            <span class="text-dark">Roles Permisos</span>
           </div>
         </li>
       </ul>
-      <!-- fin de desplegable -->
+      <!-- sección de ventas y productos -->
+      <li class="d-flex align-items-center" (click)="toggleSubmenu('VentasProductos')">
+        <div class="col-auto text-center pe-2">
+          <i class="bi bi-shop fs-2 text-dark"></i>
+        </div>
+        <div class="col text-start">
+          <span class="text-dark">Productos y Ventas</span>
+        </div>
+        <div class="col-auto text-center pe-2">
+          <i class="bi bi-chevron-right text-dark"></i>
+        </div>
 
-      <!-- secion de ventas y productos  -->
-      <li
-        class="list-group-item list-group-item-action d-flex align-items-center"
-        (click)="toggleSubmenu('VentasProductos')"
-      >
-        <div class="col-5 text-center pe-3">
-          <i class="bi bi-shop fs-2 text-warning"></i>
-        </div>
-        <div class="col-8 text-start">
-          <span>Productos y Ventas</span>
-        </div>
       </li>
       <ul *ngIf="isSubmenuOpen('VentasProductos')" class="list-group ps-3">
-        <li
-          *ngIf="puedeVer('registrarCategorias')"
-          class="list-group-item list-group-item-action d-flex align-items-center"
-          (click)="mostrarComponente('VerCategorias')"
-        >
-          <div class="col-5 text-center pe-3">
-            <i class="bi bi-tags fs-2 text-warning"></i>
+        <li *ngIf="puedeVer('registrarCategorias')" class="d-flex align-items-center"
+          (click)="mostrarComponente('VerCategorias')">
+          <div class="col-auto text-center pe-2">
+            <i class="bi bi-tags fs-2 text-dark"></i>
           </div>
-          <div class="col-10 text-start">
-            <span>Categorías</span>
+          <div class="col text-start">
+            <span class="text-dark">Categorías</span>
           </div>
         </li>
-        <li
-          *ngIf="puedeVer('registrarProductos')"
-          class="list-group-item list-group-item-action d-flex align-items-center"
-          (click)="mostrarComponente('VerProductos')"
-        >
-          <div class="col-5 text-center pe-3">
-            <i class="bi bi-shop fs-2 text-warning"></i>
+        <li *ngIf="puedeVer('registrarProductos')" class="d-flex align-items-center"
+          (click)="mostrarComponente('VerProductos')">
+          <div class="col-auto text-center pe-2">
+            <i class="bi bi-shop fs-2 text-dark"></i>
           </div>
-          <div class="col-10 text-start">
-            <span>Productos</span>
+          <div class="col text-start">
+            <span class="text-dark">Productos</span>
           </div>
         </li>
-        <li
-          *ngIf="puedeVer('registrarVenta')"
-          class="list-group-item list-group-item-action d-flex align-items-center"
-          (click)="mostrarComponente('VerVenta')"
-        >
-          <div class="col-5 text-center pe-3">
-            <i class="bi bi-cart-check fs-2 text-warning"></i>
+        <li *ngIf="puedeVer(['registrarVenta','registrarVenta-Empleado'])" class="d-flex align-items-center" (click)="mostrarComponente('VerVenta')">
+          <div class="col-auto text-center pe-2">
+            <i class="bi bi-cart-check fs-2 text-dark"></i>
           </div>
-          <div class="col-10 text-start">
-            <span>Ver Venta</span>
+          <div class="col text-start">
+            <span class="text-dark">Ver Venta</span>
           </div>
         </li>
-        <li
-          *ngIf="puedeVer('registrarDetalleVenta')"
-          class="list-group-item list-group-item-action d-flex align-items-center"
-          (click)="mostrarComponente('VerDetalleVenta')"
-        >
-          <div class="col-5 text-center pe-3">
-            <i class="bi bi-journal-bookmark fs-2 text-warning"></i>
+        <li *ngIf="puedeVer(['registrarDetalleVenta', 'registrarDetalleVenta-Empleado'])" class="d-flex align-items-center"
+          (click)="mostrarComponente('VerDetalleVenta')">
+          <div class="col-auto text-center pe-2">
+            <i class="bi bi-journal-bookmark fs-2 text-dark"></i>
           </div>
-          <div class="col-10 text-start">
-            <span>Detalle Venta</span>
+          <div class="col text-start">
+            <span class="text-dark">Detalle Venta</span>
           </div>
         </li>
-        <li
-          *ngIf="puedeVer('registrarVenta-DetalleVenta-Admistrador')"
-          class="list-group-item list-group-item-action d-flex align-items-center"
-          (click)="mostrarComponente('VerVenta-DetalleVenta')"
-        >
-          <div class="col-5 text-center pe-3">
-            <i class="bi bi-cart4 fs-2 text-warning"></i>
+      
+        <li *ngIf="puedeVer(['registrarVenta-DetalleVenta-Admistrador', 'registrarVenta-DetalleVenta-Empleado'])"
+          class="d-flex align-items-center" (click)="mostrarComponente('VerVenta-DetalleVenta')">
+          <div class="col-auto text-center pe-2">
+            <i class="bi bi-cart4 fs-2 text-dark"></i>
           </div>
-          <div class="col-10 text-start">
-            <span>Realizar Venta</span>
+          <div class="col text-start">
+            <span class="text-dark">Vender</span>
           </div>
         </li>
-        <li
-          *ngIf="puedeVer('PedidoTargetas')"
-          class="list-group-item list-group-item-action d-flex align-items-center"
-          (click)="mostrarComponente('Targetas')"
-        >
-          <div class="col-5 text-center pe-3">
-            <i class="bi bi-postcard-heart fs-2 text-warning"></i>
+        <li *ngIf="puedeVer('PedidoTargetas')" class="d-flex align-items-center" (click)="mostrarComponente('Targetas')">
+          <div class="col-auto text-center pe-2">
+            <i class="bi bi-postcard-heart fs-2 text-dark"></i>
           </div>
-          <div class="col-10 text-start">
-            <span>Tarjetas</span>
+          <div class="col text-start">
+            <span class="text-dark">Tarjetas</span>
           </div>
         </li>
       </ul>
-      <li
-        class="list-group-item list-group-item-action d-flex align-items-center"
-        (click)="toggleSubmenu('VentasYucumo')"
-      >
-        <div class="col-5 text-center pe-3">
-          <i class="bi bi-shop-window fs-2 text-success"></i>
-        </div>
-        <div class="col-8 text-start">
-          <span>Ventas Yucumo</span>
-        </div>
-      </li>
-      <ul *ngIf="isSubmenuOpen('VentasYucumo')" class="list-group ps-3">
-        <li
-          *ngIf="puedeVer('registrarVenta-DetalleVenta-Empleado')"
-          class="list-group-item list-group-item-action d-flex align-items-center"
-          (click)="mostrarComponente('VerVenta-DetalleVenta')"
-        >
-          <div class="col-5 text-center pe-3">
-            <i class="bi bi-basket fs-2 text-success"></i>
-          </div>
-          <div class="col-10 text-start">
-            <span>Realizar Venta Yucumo</span>
-          </div>
-        </li>
-        <li
-          *ngIf="puedeVer('registrarVenta-Empleado')"
-          class="list-group-item list-group-item-action d-flex align-items-center"
-          (click)="mostrarComponente('VerVenta')"
-        >
-          <div class="col-5 text-center pe-3">
-            <i class="bi bi-bag-check fs-2 text-success"></i>
-          </div>
-          <div class="col-10 text-start">
-            <span>Ver Venta</span>
-          </div>
-        </li>
-        <li
-          *ngIf="puedeVer('registrarDetalleVenta-Empleado')"
-          class="list-group-item list-group-item-action d-flex align-items-center"
-          (click)="mostrarComponente('VerDetalleVenta')"
-        >
-          <div class="col-5 text-center pe-3">
-            <i class="bi bi-book fs-2 text-success"></i>
-          </div>
-          <div class="col-10 text-start">
-            <span>Detalle Venta</span>
-          </div>
-        </li>
-      </ul>
-
-      <li
-        *ngIf="puedeVer('')"
-        class="list-group-item list-group-item-action d-flex align-items-center"
-        (click)="mostrarComponente(''); handleItemClick()"
-      >
-        <div class="col-5 text-center pe-3">
-          <i class="bi bi-bar-chart fs-2 text-danger"></i>
-        </div>
-        <div class="col-10 text-start">
-          <span>Reportes</span>
-        </div>
-      </li>
     </ul>
   </div>
 </aside>
@@ -253,38 +157,32 @@
 <section id="wrapper" [ngClass]="{ shrink: isSidebarOpen }">
   <nav class="navbar navbar-expand-md sticky-top shadow-sm" style="background-color: #e7e7e7; z-index: 1030;">
     <div class="container-fluid mx-2">
-      <!-- Ícono del sidebar -->
       <!-- Botón para abrir/cerrar el sidebar -->
-      <button class="btn btn-secondary d-flex justify-content-center align-items-center"
-        style="width: 40px; height: 40px; font-size: 1.5rem" (click)="toggleSidebar()" title="Abrir/Cerrar menú">
-        <i [ngClass]="iconClass"></i>
+      <button class="btn btn-secondary d-flex justify-content-center align-items-center me-2"
+        style="width: 40px; height: 40px; font-size: 1.5rem;" (click)="toggleSidebar()" title="Abrir/Cerrar menú">
+        <i class="fas fa-bars"></i>
       </button>
       <!-- Botones de acciones a la derecha -->
-      <div class="ml-auto d-flex align-items-center gap-2">
-
-       
-        <!-- Icono de Ver Perfil -->
-        
-        <!-- Botón con imagen como ícono -->
+      <div class="ms-auto d-flex align-items-center gap-2">
         <!-- Botón con imagen como ícono SIN borde azul -->
-        <button class="btn btn-primary rounded-circle d-flex justify-content-center align-items-center p-0"
-          style="width: 40px; height: 40px; outline: none; box-shadow: none;" title="Ver Perfil"
+        <button class="btn rounded-circle d-flex justify-content-center align-items-center p-0"
+          style="width: 40px; height: 40px; outline: none; box-shadow: none; background: transparent;" title="Ver Perfil"
           (click)="mostrarComponente('VerPerfil')">
           <img *ngIf="imagenUrl" [src]="imagenUrl" alt="Foto de usuario" class="rounded-circle"
             style="width: 100%; height: 100%; object-fit: cover; object-position: top;" />
         </button>
         <!-- Icono de Inicio -->
-        <button class="btn btn-success rounded-circle d-flex justify-content-center align-items-center"
-          style="width: 40px; height: 40px" title="Inicio" (click)="mostrarComponente('app-dashboard'); handleItemClick()">
-          <i class="fas fa-home"></i>
+        <button class="btn rounded-circle d-flex justify-content-center align-items-center"
+          style="width: 40px; height: 40px;" title="Inicio"
+          (click)="mostrarComponente('app-dashboard'); handleItemClick()">
+          <i class="fas fa-home text-success fs-4"></i>
         </button>
         <!-- Icono de Cerrar Sesión -->
-        <button class="btn btn-danger rounded-circle d-flex justify-content-center align-items-center"
-          style="width: 40px; height: 40px" title="Cerrar Sesión" (click)="onSelectChange('cerrarSesion')">
-          <i class="fas fa-sign-out-alt"></i>
+        <button class="btn rounded-circle d-flex justify-content-center align-items-center"
+          style="width: 40px; height: 40px;" title="Cerrar Sesión" (click)="onSelectChange('cerrarSesion')">
+          <i class="fas fa-power-off text-danger fs-4"></i> <!-- Cambiado a un icono de apagado -->
         </button>
       </div>
-
     </div>
   </nav>
 

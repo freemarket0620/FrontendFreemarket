@@ -5,7 +5,7 @@
 
 .sidebar {
   width: 250px;
-  background-color: #343a40;
+  background-color: #e7e7e7;
   color: white;
   transition: transform 0.3s ease-in-out, width 0.3s ease;
   z-index: 1040;
@@ -82,3 +82,5 @@
 .bounce {
   animation: bounce 0.5s;
 }
+
+
