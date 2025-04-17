@@ -7,37 +7,37 @@
           <thead class="table-light">
             <tr>
               <th>Nombre</th>
-              <th style="min-width: 180px;">Precio</th>
-              <th style="min-width: 120px;">Cantidad</th>
+              <th style="width: 80px;">Precio</th>
+              <th style="width: 80px;">Cantidad</th>
               <th>Resultado</th>
             </tr>
           </thead>
           <tbody>
             <tr *ngFor="let tarjeta of tarjetas; let i = index">
-              <td class="text-start">{{ tarjeta.nombre }}</td>
-              <td>
+              <td class="text-center">{{ tarjeta.nombre }}</td>
+              <td class="text-center">
                 <ng-container *ngIf="tarjeta.nombre !== 'Chips'">
                   <ng-container *ngIf="isAdmin || isAdministracionYucumo; else inputLibre">
-                    <select class="form-select" [(ngModel)]="tarjeta.precio" (ngModelChange)="calcularResultado(i)">
+                    <select class="form-select full-width-input" [(ngModel)]="tarjeta.precio" (ngModelChange)="calcularResultado(i)">
                       <option value="" disabled selected hidden>Selecciona un precio</option>
                       <option *ngFor="let precio of getPreciosFiltrados(tarjeta.nombre)" [value]="precio.precio">
-                        {{ precio.precio | number: '1.2-2' }} Bs (desde {{ precio.minimo }} Un.)
+                        {{ precio.precio | number: '1.2-2' }} &#8203; &#8203; &#8203; &#8203; &#8203;&#8203; &#8203; &#8203;&#8203; &#8203; &#8203;&#8203; &#8203; &#8203;&#8203; desde {{ precio.minimo }} Un.
                       </option>
                     </select>
                   </ng-container>
                   <ng-template #inputLibre>
-                    <input type="number" class="form-control" [(ngModel)]="tarjeta.precio"
+                    <input type="number" class="form-control full-width-input" [(ngModel)]="tarjeta.precio"
                       (ngModelChange)="calcularResultado(i)" placeholder="Precio" />
                   </ng-template>
                 </ng-container>
                 <ng-container *ngIf="tarjeta.nombre === 'Chips'">
-                  <input type="number" class="form-control" [(ngModel)]="tarjeta.precio"
-                    (ngModelChange)="calcularResultado(i)" placeholder="Precio Chips" />
+                  <input type="number" class="form-control full-width-input" [(ngModel)]="tarjeta.precio"
+                    (ngModelChange)="calcularResultado(i)" placeholder="P. Chips" />
                 </ng-container>
               </td>
               <td>
                 <input type="number" class="form-control" [(ngModel)]="tarjeta.cantidad"
-                  (ngModelChange)="calcularResultado(i)" placeholder="Cantidad" />
+                  (ngModelChange)="calcularResultado(i)"/>
               </td>
               <td>
                 <span *ngIf="tarjeta.precio != null && tarjeta.cantidad != null && tarjeta.resultado > 0">
@@ -46,7 +46,7 @@
               </td>
             </tr>
             <tr class="table-info fw-bold">
-              <td colspan="3" class="text-end">Total:</td>
+              <td colspan="3" class="text-end">Total Bs:</td>
               <td>{{ calcularTotal() }}</td>
             </tr>
           </tbody>

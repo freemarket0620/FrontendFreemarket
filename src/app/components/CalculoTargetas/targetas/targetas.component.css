@@ -4,85 +4,39 @@
   grid-template-rows: repeat(6, 1fr);
   gap: 8px;
 }
+/* Remove borders from input fields */
+.form-control,
+.form-select {
+  border: none;
+  /* Elimina el borde */
+  background-color: transparent;
+  /* Fondo transparente */
+}
+/* Alternativa: Aplica estilos adicionales solo a los select e inputs dentro de la tabla */
 
-.div5 {
-  grid-row-start: 2;
+
+.table td {
+  padding: 4px;
+  /* Small padding for better spacing */
 }
 
-.div6 {
-  grid-row-start: 2;
+.table td input,
+.table td select {
+  border: none;
+    /* Elimina el borde */
+    background-color: transparent;
+    /* Fondo transparente */
+  box-shadow: none;
+  height: auto;
+  /* Adjust this according to your needs */
+  line-height: normal;
+  /* Ensure text in inputs align properly */
 }
-
-.div7 {
-  grid-row-start: 2;
-}
-
-.div8 {
-  grid-row-start: 2;
-}
-
-.div9 {
-  grid-row-start: 3;
-}
-
-.div10 {
-  grid-row-start: 3;
-}
-
-.div11 {
-  grid-row-start: 3;
-}
-
-.div12 {
-  grid-row-start: 3;
-}
-
-.div13 {
-  grid-row-start: 4;
-}
-
-.div14 {
-  grid-row-start: 4;
-}
-
-.div15 {
-  grid-row-start: 4;
-}
-
-.div16 {
-  grid-row-start: 4;
-}
-
-.div17 {
-  grid-row-start: 5;
-}
-
-.div18 {
-  grid-row-start: 5;
-}
-
-.div19 {
-  grid-row-start: 5;
-}
-
-.div20 {
-  grid-row-start: 5;
-}
-
-.div21 {
-  grid-row-start: 6;
-}
-
-.div22 {
-  grid-row-start: 6;
-}
-
-.div23 {
-  grid-row-start: 6;
-}
-
-.div24 {
-  grid-row-start: 6;
+/* Para Firefox, asegurarte de que la apariencia sea consistente */
+input[type=number] {
+  -moz-appearance: none;
+  appearance: none;
+  /* Sin apariencia por defecto */
 }
 /* Ocultar las flechas de los inputs de tipo number */
 input[type=number]::-webkit-inner-spin-button,
@@ -96,4 +50,82 @@ input[type=number] {
   appearance: textfield;
   
   /* Para Firefox */
+}
+
+.full-width-input {
+  width: 100%;
+  /* Ocupa todo el ancho del contenedor */
+  box-sizing: border-box;
+  /* Incluye padding y borde en el ancho total */
+  border: none;
+  /* Sin borde */
+  background-color: transparent;
+  /* Fondo transparente */
+  height: 100%;
+  /* Ocupa toda la altura del td */
+  margin: 0;
+  /* Elimina el margen */
+  padding: 0;
+  /* Elimina el padding */
+  text-align: center;
+}
+
+/* Estilo para la celda */
+.input-cell {
+  padding: 0;
+  /* Elimina el padding */
+  margin: 0;
+  /* Elimina el margen */
+  height: 40px;
+  /* Ajusta la altura según sea necesario */
+}
+.table td {
+  vertical-align: middle;
+  padding: 0;
+  /* Remove padding from td */
+}
+
+.full-width-input {
+  width: 100%;
+  /* Set width to full */
+  height: 100%;
+  /* Set height to full */
+  box-sizing: border-box;
+  /* Include padding and border in the element's total width and height */
+}
+
+.form-control {
+  height: 100%;
+  text-align: center;
+  /* Ensure input occupies full height */
+}
+
+.form-select {
+  height: 100%;
+  width: 100%;
+  /* Ensure select occupies full height */
+  text-align: center;
+  /* Center the text horizontally */
+  line-height: 40px;
+  /* Adjust according to the height of your input */
+  padding-left: 10px;
+  /* Eliminate padding */
+  margin-left: 10px;
+  /* Eliminate margin */
+}
+.text-center {
+  text-align: center;
+  /* Center align text */
+}
+select {
+  -webkit-appearance: none;
+  /* Para navegadores basados en WebKit */
+  -moz-appearance: none;
+  /* Para navegadores Firefox */
+  appearance: none;
+  /* Estándar */
+  background: transparent;
+  /* Fondo transparente */
+  border: 1px solid #ccc;
+  /* Estilo de borde deseado */
 }
