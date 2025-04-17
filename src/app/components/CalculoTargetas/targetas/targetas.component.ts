@@ -26,11 +26,11 @@ export class TargetasComponent implements OnInit {
   ];
 
   clientes = [
-    { nombre: 'Tienda Cris', numero: '59178788897' },
-    { nombre: 'Tienda Paola', numero: '59179592175' },
-    { nombre: 'Tienda Tejada', numero: '59171294007' },
-    { nombre: 'Tienda Cruzet', numero: '59178761850' },
-    { nombre: 'Tienda Lurdes', numero: '59172595038' },
+    { nombre: 'Cris', numero: '59178788897' },
+    { nombre: 'Paola', numero: '59179592175' },
+    { nombre: 'Tejada', numero: '59171294007' },
+    { nombre: 'Cruzet', numero: '59178761850' },
+    { nombre: 'Lurdes', numero: '59172595038' },
   ];
 
   busquedaCliente: string = '';

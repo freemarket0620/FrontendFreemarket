@@ -4,6 +4,10 @@
   grid-template-rows: repeat(6, 1fr);
   gap: 8px;
 }
+.input-cell {
+  height: 30px;
+  /* Ajusta la altura de la celda */
+}
 /* Remove borders from input fields */
 .form-control,
 .form-select {
@@ -11,26 +15,35 @@
   /* Elimina el borde */
   background-color: transparent;
   /* Fondo transparente */
+  height: 30px;
+    /* Ajusta la altura de los inputs y selects */
+    line-height: 30px;
 }
 /* Alternativa: Aplica estilos adicionales solo a los select e inputs dentro de la tabla */
 
+.table {
+  font-size: 0.85rem;
+  /* Reduce el tamaño de la fuente */
+}
 
 .table td {
-  padding: 4px;
+  padding: 2px;
   /* Small padding for better spacing */
 }
 
 .table td input,
 .table td select {
-  border: none;
+  height: 30px;
+  font-size: 0.85rem;
+    border: none;
     /* Elimina el borde */
     background-color: transparent;
     /* Fondo transparente */
-  box-shadow: none;
-  height: auto;
-  /* Adjust this according to your needs */
-  line-height: normal;
-  /* Ensure text in inputs align properly */
+    box-shadow: none;
+
+    /* Adjust this according to your needs */
+    line-height: normal;
+    /* Ensure text in inputs align properly */
 }
 /* Para Firefox, asegurarte de que la apariencia sea consistente */
 input[type=number] {
@@ -61,7 +74,8 @@ input[type=number] {
   /* Sin borde */
   background-color: transparent;
   /* Fondo transparente */
-  height: 100%;
+  height: 30px;
+    /* Ajusta la altura de los inputs */
   /* Ocupa toda la altura del td */
   margin: 0;
   /* Elimina el margen */
@@ -129,3 +143,4 @@ select {
   border: 1px solid #ccc;
   /* Estilo de borde deseado */
 }
+
