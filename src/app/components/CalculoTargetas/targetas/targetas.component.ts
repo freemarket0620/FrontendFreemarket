@@ -39,8 +39,8 @@ export class TargetasComponent implements OnInit {
   preciosPorCantidad: Record<'10' | '15' | '30' | '50' | '100', { minimo: number; precio: number }[]> = {
     '10': [
       { minimo: 0, precio: 9.07 }, // Solo visible para el rol del administrador
-      { minimo: 5, precio: 9.4 }, // Solo para AdministraciónYucumo y administrador
-      { minimo: 50, precio: 9.35 }, // Solo para AdministraciónYucumo y administrador
+      { minimo: 5, precio: 9.5 }, // Solo para AdministraciónYucumo y administrador
+      { minimo: 50, precio: 9.4 }, // Solo para AdministraciónYucumo y administrador
       { minimo: 100, precio: 9.3 }, // Solo para AdministraciónYucumo y administrador
     ],
     '15': [
