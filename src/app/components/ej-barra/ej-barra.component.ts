@@ -127,23 +127,23 @@ async configurarCamaraAvanzada() {
   }
 }
 
+torch?: boolean; 
 toggleLinterna() {
-  if (!this.videoTrack) return;
+    if (!this.videoTrack) return;
 
-  const capabilities = this.videoTrack.getCapabilities();
-  if ('torch' in capabilities) {
-    this.videoTrack.applyConstraints({
-      advanced: [{ ...( { torch: !this.linternaActiva } as any ) }]
-    }).then(() => {
-      this.linternaActiva = !this.linternaActiva;
-      console.log('Linterna:', this.linternaActiva ? 'Encendida' : 'Apagada');
-    }).catch(e => {
-      console.error('Error al cambiar el estado de la linterna:', e);
-    });
-  } else {
-    console.warn('Este dispositivo no soporta linterna.');
-  }
+    const capabilities = this.videoTrack.getCapabilities();
+    if ('torch' in capabilities) {
+        this.videoTrack.applyConstraints({
+            advanced: [{ torch: !this.linternaActiva } as any]
+        }).then(() => {
+            this.linternaActiva = !this.linternaActiva;
+            console.log('Linterna:', this.linternaActiva ? 'Encendida' : 'Apagada');
+        }).catch(e => {
+            console.error('Error al cambiar el estado de la linterna:', e);
+        });
+    } else {
+        console.warn('Este dispositivo no soporta linterna.');
+    }
 }
-
 
 }
