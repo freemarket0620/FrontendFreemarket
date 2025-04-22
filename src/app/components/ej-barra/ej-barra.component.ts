@@ -1,18 +1,18 @@
 import { Component } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule, ReactiveFormsModule } from '@angular/forms';
-import { ZXingScannerModule } from '@zxing/ngx-scanner'; // Asegúrate de importar ZXingScannerModule
+import { ZXingScannerModule } from '@zxing/ngx-scanner';
 
 @Component({
   selector: 'app-ej-barra',
   standalone: true,
-  imports: [CommonModule, FormsModule, ReactiveFormsModule, ZXingScannerModule], // Asegúrate de incluir ZXingScannerModule
+  imports: [CommonModule, FormsModule, ReactiveFormsModule, ZXingScannerModule],
   templateUrl: './ej-barra.component.html',
-  styleUrls: ['./ej-barra.component.css'] // Corrige 'styleUrl' a 'styleUrls'
+  styleUrls: ['./ej-barra.component.css']
 })
 export class EjBarraComponent {
   scannedResult: string = '';
-  camaraActivada: boolean = false; // Variable para controlar la activación de la cámara
+  camaraActivada: boolean = false;
 
   constructor() {}
 
