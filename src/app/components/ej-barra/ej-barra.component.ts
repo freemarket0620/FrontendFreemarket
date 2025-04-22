@@ -36,7 +36,7 @@ export class EjBarraComponent {
   escanearImagen() {
     if (this.imagenSeleccionada) {
       const imageUrl = URL.createObjectURL(this.imagenSeleccionada);
-      this.lectorMultiFormato.decodeFromImage(imageUrl)
+      this.lectorMultiFormato.decodeFromImageUrl(imageUrl)
         .then(result => {
           this.scannedResult = result.getText();
           console.log('Código escaneado (imagen):', this.scannedResult);
