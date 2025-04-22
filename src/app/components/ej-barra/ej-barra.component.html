@@ -1,19 +1,31 @@
 <h1>Escaner</h1>
-<button (click)="activarCamara()">Activar cámara</button>
+<button (click)="activarCamara()" *ngIf="!camaraActivada">Activar cámara</button>
+<button (click)="camaraActivada = false" *ngIf="camaraActivada">Desactivar cámara</button>
 
 <div *ngIf="camaraActivada">
-    <zxing-scanner (scanSuccess)="onCodeResult($event)"></zxing-scanner>
-    <p>El escáner está aquí</p>
+    <div style="overflow: hidden; width: 320px; height: 240px;"> <zxing-scanner #scanner
+            (scanSuccess)="onCodeResult($event)" [device]="currentDevice" [formats]="formatsEnabled"
+            (camerasFound)="onCamerasFound($event)" (permissionResponse)="onHasPermission($event)"
+            style="width: 100%; height: 100%; object-fit: cover; transform-origin: center center;"
+            [style.transform]="'scale(' + zoomValue + ')'"></zxing-scanner>
+    </div>
+    <p>El escáner está activo</p>
+    <div>
+        <label for="zoom">Zoom:</label>
+        <input type="range" id="zoom" min="1" max="3" step="0.1" [(ngModel)]="zoomValue" (input)="setZoom(zoomValue)">
+        <span>{{ zoomValue }}x</span>
+    </div>
+    <button (click)="captureAndScan()" *ngIf="hasPermission && hasDevices">Capturar y Escanear</button>
 </div>
 <div>
     <h1>Esta es la sección de la cámara</h1>
 </div>
 
-<h2>Escanear desde imagen</h2>
-<input type="file" accept="image/*" (change)="cargarImagen($event)">
-<button (click)="escanearImagen()" [disabled]="!imagenSeleccionada">Escanear imagen</button>
-
 <div *ngIf="scannedResult" style="background-color: aquamarine;">
     <h3>Código escaneado:</h3>
     <p>{{ scannedResult }}</p>
 </div>
+
+<h2>Escanear desde imagen</h2>
+<input type="file" accept="image/*" (change)="cargarImagen($event)">
+<button (click)="escanearImagen()" [disabled]="!imagenSeleccionada">Escanear imagen</button>
