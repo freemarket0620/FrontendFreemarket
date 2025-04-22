@@ -15,7 +15,7 @@ import { BrowserMultiFormatReader } from '@zxing/browser';
 export class EjBarraComponent {
   @ViewChild('scanner') scanner?: ZXingScannerComponent;
 
-  scannedResult: string = '';
+  scannedResults: string[] = []; // lista de códigos escaneados
   camaraActivada: boolean = false;
   imagenSeleccionada: File | null = null;
   lectorMultiFormato = new BrowserMultiFormatReader();
@@ -23,28 +23,30 @@ export class EjBarraComponent {
   hasPermission: boolean = false;
   availableDevices: MediaDeviceInfo[] = [];
   currentDevice: MediaDeviceInfo | undefined;
+  zoomValue: number = 1;
+
   formatsEnabled: BarcodeFormat[] = [
     BarcodeFormat.CODE_128,
     BarcodeFormat.DATA_MATRIX,
     BarcodeFormat.EAN_13,
     BarcodeFormat.QR_CODE,
   ];
-  zoomValue: number = 1; // Valor de zoom inicial (el zoom podría no ser directamente controlable)
-
-  constructor() {}
 
   activarCamara() {
     this.camaraActivada = true;
   }
 
   onCodeResult(resultString: string) {
-    this.scannedResult = resultString;
-    console.log('Código escaneado (cámara):', resultString);
+    // Evitar duplicados
+    if (!this.scannedResults.includes(resultString)) {
+      this.scannedResults.push(resultString);
+      console.log('Código escaneado (cámara):', resultString);
+    }
   }
 
   onCamerasFound(devices: MediaDeviceInfo[]): void {
     this.availableDevices = devices;
-    this.hasDevices = Boolean(devices && devices.length);
+    this.hasDevices = devices && devices.length > 0;
     if (this.availableDevices.length > 0 && !this.currentDevice) {
       this.currentDevice = this.availableDevices[0];
     }
@@ -52,33 +54,24 @@ export class EjBarraComponent {
 
   onHasPermission(has: boolean) {
     this.hasPermission = has;
-    console.log('Permiso de cámara:', has); // Para depuración
+    console.log('Permiso de cámara:', has);
   }
 
   captureAndScan() {
     if (this.scanner) {
-      if (this.scanner) {
-        this.scanner.scanSuccess.subscribe((result: string) => {
-          this.scannedResult = result;
-          console.log('Código escaneado (captura):', this.scannedResult);
-        });
-      }
+      this.scanner.scanSuccess.subscribe((result: string) => {
+        if (!this.scannedResults.includes(result)) {
+          this.scannedResults.push(result);
+          console.log('Código escaneado (captura):', result);
+        }
+      });
     }
   }
 
   setZoom(zoom: number): void {
     this.zoomValue = zoom;
-    // La propiedad 'zoom' podría no existir directamente en el componente.
-    // La manipulación del zoom a menudo se realiza a través de estilos CSS
-    // aplicados al elemento de video del escáner.
-    if (this.scanner && this.scanner.previewElemRef) {
-      if (this.scanner.previewElemRef?.nativeElement) {
-        this.scanner.previewElemRef.nativeElement.style.transform = `scale(${zoom})`;
-      }
-      // O podrías intentar ajustar el tamaño del video container
-      // this.scanner.previewElem.style.width = `${100 * zoom}%`;
-      // this.scanner.previewElem.style.height = `${100 * zoom}%`;
-      // this.scanner.previewElem.style.objectFit = 'contain'; // Asegurar que la imagen se ajuste
+    if (this.scanner && this.scanner.previewElemRef?.nativeElement) {
+      this.scanner.previewElemRef.nativeElement.style.transform = `scale(${zoom})`;
     }
   }
 
@@ -91,17 +84,40 @@ export class EjBarraComponent {
       const imageUrl = URL.createObjectURL(this.imagenSeleccionada);
       this.lectorMultiFormato.decodeFromImageUrl(imageUrl)
         .then(result => {
-          this.scannedResult = result.getText();
-          console.log('Código escaneado (imagen):', this.scannedResult);
+          const texto = result.getText();
+          if (!this.scannedResults.includes(texto)) {
+            this.scannedResults.push(texto);
+          }
+          console.log('Código escaneado (imagen):', texto);
           URL.revokeObjectURL(imageUrl);
         })
         .catch(error => {
           console.error('Error al escanear la imagen:', error);
-          this.scannedResult = 'No se pudo leer el código de barras.';
           URL.revokeObjectURL(imageUrl);
         });
-    } else {
-      this.scannedResult = 'Por favor, selecciona una imagen.';
     }
+  }
+
+  escanearDurante5Segundos() {
+    this.scannedResults = []; // limpiar resultados previos
+    this.activarCamara();
+
+    const suscripcion = this.scanner?.scanSuccess.subscribe((result: string) => {
+      if (!this.scannedResults.includes(result)) {
+        this.scannedResults.push(result);
+      }
+    });
+
+    setTimeout(() => {
+      this.camaraActivada = false;
+
+      if (this.scannedResults.length > 0) {
+        alert('✅ Se pudo escanear al menos un código.');
+      } else {
+        alert('⚠️ No se pudo escanear ningún código.');
+      }
+
+      suscripcion?.unsubscribe();
+    }, 5000);
   }
 }
