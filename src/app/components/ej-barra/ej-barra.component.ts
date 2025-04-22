@@ -36,8 +36,12 @@ export class EjBarraComponent {
 
   activarCamara() {
     this.camaraActivada = true;
-    this.configurarCamaraAvanzada();
+
+    setTimeout(() => {
+      this.configurarCamaraAvanzada();
+    }, 500); // Esperar un poco para que se renderice el <zxing-scanner>
   }
+
 
   onCodeResult(resultString: string) {
     if (!this.scannedResults.includes(resultString)) {
@@ -46,14 +50,15 @@ export class EjBarraComponent {
     this.scannedResult = resultString;
     console.log('Código escaneado (cámara):', resultString);
   }
-
   onCamerasFound(devices: MediaDeviceInfo[]): void {
     this.availableDevices = devices;
     this.hasDevices = Boolean(devices && devices.length);
     if (this.availableDevices.length > 0 && !this.currentDevice) {
       this.currentDevice = this.availableDevices[0];
+      console.log('Dispositivo actual asignado:', this.currentDevice);
     }
   }
+
 
   onHasPermission(has: boolean) {
     this.hasPermission = has;
