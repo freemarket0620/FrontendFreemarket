@@ -67,37 +67,34 @@ export class EjBarraComponent {
     console.log('Permiso de cámara:', has);
   }
 
-  setZoom(zoom: number): void {
-    this.zoomValue = zoom;
-    if (this.scanner && this.scanner.previewElemRef?.nativeElement) {
-      this.scanner.previewElemRef.nativeElement.style.transform = `scale(${zoom})`;
-    }
-  }
-
   cargarImagen(event: any) {
     this.imagenSeleccionada = event.target.files[0];
+    if (this.imagenSeleccionada) {
+        this.escanearImagen(); // Llama a escanearImagen automáticamente
+    }
   }
 
   escanearImagen() {
-    if (this.imagenSeleccionada) {
-      const imageUrl = URL.createObjectURL(this.imagenSeleccionada);
-      this.lectorMultiFormato.decodeFromImageUrl(imageUrl)
-        .then(result => {
-          if (!this.scannedResults.includes(result.getText())) {
-            this.scannedResults.push(result.getText());
-          }
-          this.scannedResult = result.getText();
-          console.log('Código escaneado (imagen):', this.scannedResult);
-          URL.revokeObjectURL(imageUrl);
-        })
-        .catch(error => {
-          console.error('Error al escanear la imagen:', error);
-          this.scannedResult = 'No se pudo leer el código de barras.';
-          URL.revokeObjectURL(imageUrl);
-        });
-    } else {
-      this.scannedResult = 'Por favor, selecciona una imagen.';
-    }
+      if (this.imagenSeleccionada) {
+          const imageUrl = URL.createObjectURL(this.imagenSeleccionada);
+          this.lectorMultiFormato.decodeFromImageUrl(imageUrl)
+              .then(result => {
+                  if (!this.scannedResults.includes(result.getText())) {
+                      this.scannedResults.push(result.getText());
+                  }
+                  this.scannedResult = result.getText();
+                  console.log('Código escaneado (imagen):', this.scannedResult);
+              })
+              .catch(error => {
+                  console.error('Error al escanear la imagen:', error);
+                  this.scannedResult = 'No se pudo leer el código de barras. Asegúrate de que la imagen sea clara y contenga un código de barras válido.';
+              })
+              .finally(() => {
+                  URL.revokeObjectURL(imageUrl);
+              });
+      } else {
+          this.scannedResult = 'Por favor, selecciona una imagen.';
+      }
   }
 
 async configurarCamaraAvanzada() {

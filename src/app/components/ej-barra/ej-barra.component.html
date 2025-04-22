@@ -14,18 +14,6 @@
             style="width: 100%; height: 100%; object-fit: cover;" [style.transform]="'scale(' + zoomValue + ')'">
         </zxing-scanner>
     </div>
-
-    <p class="mt-2">El escáner está activo</p>
-
-    <div class="mb-3">
-        <label>Zoom:</label>
-        <div class="btn-group" role="group" aria-label="Zoom options">
-            <button class="btn btn-outline-secondary" (click)="setZoom(1)">1x</button>
-            <button class="btn btn-outline-secondary" (click)="setZoom(2)">2x</button>
-            <button class="btn btn-outline-secondary" (click)="setZoom(3)">3x</button>
-        </div>
-        <span class="ml-2">{{ zoomValue }}x</span>
-    </div>
 </div>
 
 <!-- Botón de linterna -->
@@ -44,5 +32,4 @@
 <!-- Sección para escanear desde imagen -->
 <h2>Escanear desde imagen</h2>
 <input type="file" accept="image/*" (change)="cargarImagen($event)" class="form-control mb-2">
-<button class="btn btn-info" (click)="escanearImagen()" [disabled]="!imagenSeleccionada">Escanear imagen</button>
 <p>Resultado del escaneo: {{ scannedResult }}</p>
