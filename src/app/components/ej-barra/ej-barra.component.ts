@@ -67,18 +67,6 @@ export class EjBarraComponent {
     console.log('Permiso de cámara:', has);
   }
 
-  captureAndScan() {
-    if (this.scanner) {
-      this.scanner.scanSuccess.subscribe((result: string) => {
-        if (!this.scannedResults.includes(result)) {
-          this.scannedResults.push(result);
-        }
-        this.scannedResult = result;
-        console.log('Código escaneado (captura):', this.scannedResult);
-      });
-    }
-  }
-
   setZoom(zoom: number): void {
     this.zoomValue = zoom;
     if (this.scanner && this.scanner.previewElemRef?.nativeElement) {
@@ -110,23 +98,6 @@ export class EjBarraComponent {
     } else {
       this.scannedResult = 'Por favor, selecciona una imagen.';
     }
-  }
-
-  escanearDurante5Segundos() {
-    this.scannedResults = []; // Limpiar resultados anteriores
-    this.activarCamara();
-
-    const sub = this.scanner?.scanSuccess.subscribe(result => {
-      if (!this.scannedResults.includes(result)) {
-        this.scannedResults.push(result);
-      }
-    });
-
-    setTimeout(() => {
-      sub?.unsubscribe();
-      this.camaraActivada = false;
-      console.log('Escaneo detenido después de 5 segundos');
-    }, 5000);
   }
 
 async configurarCamaraAvanzada() {

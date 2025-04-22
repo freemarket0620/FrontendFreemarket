@@ -1,46 +1,48 @@
-<h1>Escáner de Códigos de Barra..</h1>
+<h1 class="text-center">Escáner de Códigos de Barra</h1>
 
 <!-- Botones para controlar la cámara -->
-<button (click)="activarCamara()" *ngIf="!camaraActivada">Activar cámara</button>
-<button (click)="camaraActivada = false" *ngIf="camaraActivada">Desactivar cámara</button>
+<div class="text-center mb-3">
+    <button class="btn btn-primary" (click)="activarCamara()" *ngIf="!camaraActivada">Activar cámara</button>
+    <button class="btn btn-danger" (click)="camaraActivada = false" *ngIf="camaraActivada">Desactivar cámara</button>
+</div>
 
 <!-- Vista de la cámara -->
-<div *ngIf="camaraActivada">
-    <div style="overflow: hidden; width: 320px; height: 240px;">
+<div *ngIf="camaraActivada" class="text-center">
+    <div style="overflow: hidden; width: 320px; height: 240px;" class="mx-auto">
         <zxing-scanner #scanner (scanSuccess)="onCodeResult($event)" [device]="currentDevice" [formats]="formatsEnabled"
             (camerasFound)="onCamerasFound($event)" (permissionResponse)="onHasPermission($event)"
             style="width: 100%; height: 100%; object-fit: cover;" [style.transform]="'scale(' + zoomValue + ')'">
         </zxing-scanner>
     </div>
 
-    <p>El escáner está activo</p>
+    <p class="mt-2">El escáner está activo</p>
 
-    <div>
-        <label for="zoom">Zoom:</label>
-        <input type="range" id="zoom" min="1" max="3" step="0.1" [(ngModel)]="zoomValue" (input)="setZoom(zoomValue)">
-        <span>{{ zoomValue }}x</span>
+    <div class="mb-3">
+        <label>Zoom:</label>
+        <div class="btn-group" role="group" aria-label="Zoom options">
+            <button class="btn btn-outline-secondary" (click)="setZoom(1)">1x</button>
+            <button class="btn btn-outline-secondary" (click)="setZoom(2)">2x</button>
+            <button class="btn btn-outline-secondary" (click)="setZoom(3)">3x</button>
+        </div>
+        <span class="ml-2">{{ zoomValue }}x</span>
     </div>
-
-    <button (click)="captureAndScan()" *ngIf="hasPermission && hasDevices">Capturar y Escanear</button>
 </div>
+
 <!-- Botón de linterna -->
-<button (click)="toggleLinterna()" *ngIf="camaraActivada">
+<button class="btn btn-warning" (click)="toggleLinterna()" *ngIf="camaraActivada">
     {{ linternaActiva ? 'Apagar linterna 🔦' : 'Encender linterna 🔅' }}
 </button>
 
-
-<!-- Escaneo durante 5 segundos -->
-<button (click)="escanearDurante5Segundos()">Escanear por 5 segundos</button>
-
 <!-- Resultados escaneados -->
-<div *ngIf="scannedResults.length > 0" style="background-color: aquamarine; margin-top: 1rem;">
+<div *ngIf="scannedResults.length > 0" class="bg-light p-3 mt-3">
     <h3>Códigos escaneados:</h3>
-    <ul>
-        <li *ngFor="let codigo of scannedResults">{{ codigo }}</li>
+    <ul class="list-group">
+        <li class="list-group-item" *ngFor="let codigo of scannedResults">{{ codigo }}</li>
     </ul>
 </div>
 
 <!-- Sección para escanear desde imagen -->
 <h2>Escanear desde imagen</h2>
-<input type="file" accept="image/*" (change)="cargarImagen($event)">
-<button (click)="escanearImagen()" [disabled]="!imagenSeleccionada">Escanear imagen</button>
+<input type="file" accept="image/*" (change)="cargarImagen($event)" class="form-control mb-2">
+<button class="btn btn-info" (click)="escanearImagen()" [disabled]="!imagenSeleccionada">Escanear imagen</button>
+<p>Resultado del escaneo: {{ scannedResult }}</p>
