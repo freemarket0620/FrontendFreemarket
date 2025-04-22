@@ -23,6 +23,11 @@
 
     <button (click)="captureAndScan()" *ngIf="hasPermission && hasDevices">Capturar y Escanear</button>
 </div>
+<!-- Botón de linterna -->
+<button (click)="toggleLinterna()" *ngIf="camaraActivada">
+    {{ linternaActiva ? 'Apagar linterna 🔦' : 'Encender linterna 🔅' }}
+</button>
+
 
 <!-- Escaneo durante 5 segundos -->
 <button (click)="escanearDurante5Segundos()">Escanear por 5 segundos</button>

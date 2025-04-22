@@ -31,6 +31,8 @@ export class EjBarraComponent {
     BarcodeFormat.QR_CODE,
   ];
   zoomValue: number = 1;
+  linternaActiva: boolean = false;
+  videoTrack: MediaStreamTrack | null = null;
 
   constructor() {}
 
@@ -127,29 +129,53 @@ export class EjBarraComponent {
     }, 5000);
   }
 
-  async configurarCamaraAvanzada() {
-    try {
-      const stream = await navigator.mediaDevices.getUserMedia({ video: { facingMode: 'environment' } });
-      const videoTrack = stream.getVideoTracks()[0];
-      const capabilities = videoTrack.getCapabilities();
+async configurarCamaraAvanzada() {
+  try {
+    const stream = await navigator.mediaDevices.getUserMedia({ video: { facingMode: 'environment' } });
+    this.videoTrack = stream.getVideoTracks()[0];
+    const videoTrack = this.videoTrack;
 
-      console.log('📸 Capacidades de cámara:', capabilities);
+    const capabilities = videoTrack.getCapabilities(); // ✅ Ahora sí está definida
 
-      // ⚠️ Solo mostrar valores disponibles, sin aplicar focusMode o zoom si no existen
-      if ('focusMode' in capabilities && (capabilities as any).focusMode?.includes('continuous')) {
-        await videoTrack.applyConstraints({
-          advanced: [{ ...(capabilities as any).focusMode && { focusMode: 'continuous' } }]
-        });
-      }
+    console.log('📸 Capacidades de cámara:', capabilities);
 
-      if ('zoom' in capabilities) {
-        const optimalZoom = (capabilities as any).zoom.max / 2;
-        await videoTrack.applyConstraints({
-          advanced: [{ zoom: optimalZoom } as any]
-        });
-      }
-    } catch (error) {
-      console.error('Error al configurar la cámara:', error);
+    // Aplicar enfoque continuo si es compatible
+    if ('focusMode' in capabilities && (capabilities as any).focusMode?.includes('continuous')) {
+      await videoTrack.applyConstraints({
+        advanced: [({ focusMode: 'continuous' } as any)]
+
+      });
     }
+
+    // Aplicar zoom óptimo si es compatible
+    if ('zoom' in capabilities) {
+      const optimalZoom = (capabilities as any).zoom.max / 2;
+      await videoTrack.applyConstraints({
+        advanced: [{ zoom: optimalZoom }as any]
+      });
+    }
+  } catch (error) {
+    console.error('Error al configurar la cámara:', error);
   }
+}
+
+toggleLinterna() {
+  if (!this.videoTrack) return;
+
+  const capabilities = this.videoTrack.getCapabilities();
+  if ('torch' in capabilities) {
+    this.videoTrack.applyConstraints({
+      advanced: [{ ...( { torch: !this.linternaActiva } as any ) }]
+    }).then(() => {
+      this.linternaActiva = !this.linternaActiva;
+      console.log('Linterna:', this.linternaActiva ? 'Encendida' : 'Apagada');
+    }).catch(e => {
+      console.error('Error al cambiar el estado de la linterna:', e);
+    });
+  } else {
+    console.warn('Este dispositivo no soporta linterna.');
+  }
+}
+
+
 }
