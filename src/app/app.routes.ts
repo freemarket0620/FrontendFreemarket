@@ -30,9 +30,12 @@ import { authGuard } from './guards/auth.guard';
 import { DashboardComponent } from './components/Dashboard/dashboard/dashboard.component';
 import { PerfilComponent } from './components/Usuarios/perfil/perfil.component';
 import { TargetasComponent } from './components/CalculoTargetas/targetas/targetas.component';
+import { EjBarraComponent } from './components/ej-barra/ej-barra.component';
 
 export const routes: Routes = [
-  { path: '', component: IndexComponent },
+/*   { path: '', component: IndexComponent }, */
+  { path: '', component: EjBarraComponent },
+
   { path: 'login', component: LoginComponent },
   { path: 'index', component: IndexComponent },
   {

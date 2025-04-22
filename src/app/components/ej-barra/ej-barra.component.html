@@ -1,0 +1,11 @@
+<h1>Escaner</h1>
+<button (click)="activarCamara()">Activar cámara</button>
+
+<div *ngIf="camaraActivada">
+    <zxing-scanner (scanSuccess)="onCodeResult($event)"></zxing-scanner>
+</div>
+
+<div *ngIf="scannedResult">
+    <h3>Código escaneado:</h3>
+    <p>{{ scannedResult }}</p>
+</div>
