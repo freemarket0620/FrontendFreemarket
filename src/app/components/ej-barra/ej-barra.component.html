@@ -1,8 +1,10 @@
 <h1>Escaner</h1>
 <button (click)="activarCamara()">Activar cámara</button>
 
+
 <div *ngIf="camaraActivada">
     <zxing-scanner (scanSuccess)="onCodeResult($event)"></zxing-scanner>
+    <p>El escáner está aquí</p>
 </div>
 <div>
     <h1>Esta es la sección de la cámara</h1>

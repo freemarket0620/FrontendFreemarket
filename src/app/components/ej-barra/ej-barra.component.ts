@@ -9,6 +9,7 @@ import { ZXingScannerModule } from '@zxing/ngx-scanner';
   imports: [CommonModule, FormsModule, ReactiveFormsModule, ZXingScannerModule],
   templateUrl: './ej-barra.component.html',
   styleUrls: ['./ej-barra.component.css']
+  
 })
 export class EjBarraComponent {
   scannedResult: string = '';
