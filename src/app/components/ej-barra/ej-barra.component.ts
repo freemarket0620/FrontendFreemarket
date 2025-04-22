@@ -15,7 +15,8 @@ import { BrowserMultiFormatReader } from '@zxing/browser';
 export class EjBarraComponent {
   @ViewChild('scanner') scanner?: ZXingScannerComponent;
 
-  scannedResults: string[] = []; // lista de códigos escaneados
+  scannedResult: string = '';
+  scannedResults: string[] = []; // ✅ arreglo para múltiples resultados
   camaraActivada: boolean = false;
   imagenSeleccionada: File | null = null;
   lectorMultiFormato = new BrowserMultiFormatReader();
@@ -23,30 +24,32 @@ export class EjBarraComponent {
   hasPermission: boolean = false;
   availableDevices: MediaDeviceInfo[] = [];
   currentDevice: MediaDeviceInfo | undefined;
-  zoomValue: number = 1;
-
   formatsEnabled: BarcodeFormat[] = [
     BarcodeFormat.CODE_128,
     BarcodeFormat.DATA_MATRIX,
     BarcodeFormat.EAN_13,
     BarcodeFormat.QR_CODE,
   ];
+  zoomValue: number = 1;
+
+  constructor() {}
 
   activarCamara() {
     this.camaraActivada = true;
+    this.configurarCamaraAvanzada();
   }
 
   onCodeResult(resultString: string) {
-    // Evitar duplicados
     if (!this.scannedResults.includes(resultString)) {
       this.scannedResults.push(resultString);
-      console.log('Código escaneado (cámara):', resultString);
     }
+    this.scannedResult = resultString;
+    console.log('Código escaneado (cámara):', resultString);
   }
 
   onCamerasFound(devices: MediaDeviceInfo[]): void {
     this.availableDevices = devices;
-    this.hasDevices = devices && devices.length > 0;
+    this.hasDevices = Boolean(devices && devices.length);
     if (this.availableDevices.length > 0 && !this.currentDevice) {
       this.currentDevice = this.availableDevices[0];
     }
@@ -62,8 +65,9 @@ export class EjBarraComponent {
       this.scanner.scanSuccess.subscribe((result: string) => {
         if (!this.scannedResults.includes(result)) {
           this.scannedResults.push(result);
-          console.log('Código escaneado (captura):', result);
         }
+        this.scannedResult = result;
+        console.log('Código escaneado (captura):', this.scannedResult);
       });
     }
   }
@@ -84,40 +88,63 @@ export class EjBarraComponent {
       const imageUrl = URL.createObjectURL(this.imagenSeleccionada);
       this.lectorMultiFormato.decodeFromImageUrl(imageUrl)
         .then(result => {
-          const texto = result.getText();
-          if (!this.scannedResults.includes(texto)) {
-            this.scannedResults.push(texto);
+          if (!this.scannedResults.includes(result.getText())) {
+            this.scannedResults.push(result.getText());
           }
-          console.log('Código escaneado (imagen):', texto);
+          this.scannedResult = result.getText();
+          console.log('Código escaneado (imagen):', this.scannedResult);
           URL.revokeObjectURL(imageUrl);
         })
         .catch(error => {
           console.error('Error al escanear la imagen:', error);
+          this.scannedResult = 'No se pudo leer el código de barras.';
           URL.revokeObjectURL(imageUrl);
         });
+    } else {
+      this.scannedResult = 'Por favor, selecciona una imagen.';
     }
   }
 
   escanearDurante5Segundos() {
-    this.scannedResults = []; // limpiar resultados previos
+    this.scannedResults = []; // Limpiar resultados anteriores
     this.activarCamara();
 
-    const suscripcion = this.scanner?.scanSuccess.subscribe((result: string) => {
+    const sub = this.scanner?.scanSuccess.subscribe(result => {
       if (!this.scannedResults.includes(result)) {
         this.scannedResults.push(result);
       }
     });
 
     setTimeout(() => {
+      sub?.unsubscribe();
       this.camaraActivada = false;
+      console.log('Escaneo detenido después de 5 segundos');
+    }, 5000);
+  }
 
-      if (this.scannedResults.length > 0) {
-        alert('✅ Se pudo escanear al menos un código.');
-      } else {
-        alert('⚠️ No se pudo escanear ningún código.');
+  async configurarCamaraAvanzada() {
+    try {
+      const stream = await navigator.mediaDevices.getUserMedia({ video: { facingMode: 'environment' } });
+      const videoTrack = stream.getVideoTracks()[0];
+      const capabilities = videoTrack.getCapabilities();
+
+      console.log('📸 Capacidades de cámara:', capabilities);
+
+      // ⚠️ Solo mostrar valores disponibles, sin aplicar focusMode o zoom si no existen
+      if ('focusMode' in capabilities && (capabilities as any).focusMode?.includes('continuous')) {
+        await videoTrack.applyConstraints({
+          advanced: [{ ...(capabilities as any).focusMode && { focusMode: 'continuous' } }]
+        });
       }
 
-      suscripcion?.unsubscribe();
-    }, 5000);
+      if ('zoom' in capabilities) {
+        const optimalZoom = (capabilities as any).zoom.max / 2;
+        await videoTrack.applyConstraints({
+          advanced: [{ zoom: optimalZoom } as any]
+        });
+      }
+    } catch (error) {
+      console.error('Error al configurar la cámara:', error);
+    }
   }
 }
