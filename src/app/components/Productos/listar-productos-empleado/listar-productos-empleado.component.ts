@@ -410,7 +410,6 @@
     /*  */
     buscarPorCodigoEscaneado(codigo: string) {
       this.searchCodigoProducto = codigo;
-
       // Filtrar productos y agregar automáticamente al carrito
       const productoEncontrado = this.productos.find(producto => 
         producto.codigo_producto.toLowerCase() === codigo.toLowerCase()
@@ -419,7 +418,6 @@
       if (productoEncontrado) {
         this.agregarAlCarrito(productoEncontrado, 1, 'unidad'); // Agregar al carrito con cantidad 1
       }
-
       this.filteredProductos(); // Llama al método que ya tengas para aplicar filtros
     }
     
