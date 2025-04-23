@@ -5,13 +5,6 @@ import { ZXingScannerComponent, ZXingScannerModule } from '@zxing/ngx-scanner';
 import { BarcodeFormat } from '@zxing/library';
 import { BrowserMultiFormatReader } from '@zxing/browser';
 
-// Extensión de MediaTrackConstraintSet
-interface MediaTrackConstraintSet {
-    focusMode?: string[]; // Agrega la propiedad focusMode
-    zoom?: { max: number; min: number; current: number }; // Agrega la propiedad zoom
-    torch?: boolean; // Agrega la propiedad torch si la necesitas
-}
-
 @Component({
   selector: 'app-ej-barra',
   standalone: true,
@@ -21,10 +14,9 @@ interface MediaTrackConstraintSet {
 })
 export class EjBarraComponent {
   @ViewChild('scanner') scanner?: ZXingScannerComponent;
-
-   @Output() codigoEscaneado = new EventEmitter<string>(); // 👉 evento hacia el padre
+  @Output() codigoEscaneado = new EventEmitter<string>(); // Evento hacia el padre
   scannedResult: string = '';
-  scannedResults: string[] = []; // ✅ arreglo para múltiples resultados
+  scannedResults: string[] = []; // Arreglo para múltiples resultados
   camaraActivada: boolean = false;
   imagenSeleccionada: File | null = null;
   lectorMultiFormato = new BrowserMultiFormatReader();
@@ -34,9 +26,11 @@ export class EjBarraComponent {
   currentDevice: MediaDeviceInfo | undefined;
   formatsEnabled: BarcodeFormat[] = [
     BarcodeFormat.CODE_128,
-    BarcodeFormat.DATA_MATRIX,
     BarcodeFormat.EAN_13,
-    BarcodeFormat.QR_CODE,
+    BarcodeFormat.EAN_8,
+    BarcodeFormat.UPC_A,
+    BarcodeFormat.UPC_E,
+    // Puedes agregar más formatos de código de barras si es necesario
   ];
   zoomValue: number = 1;
   linternaActiva: boolean = false;
@@ -69,10 +63,12 @@ export class EjBarraComponent {
       console.log('Dispositivo actual asignado:', this.currentDevice);
     }
   }
+
   onHasPermission(has: boolean) {
     this.hasPermission = has;
     console.log('Permiso de cámara:', has);
   }
+
   async configurarCamaraAvanzada() {
     try {
       const constraints = {
@@ -92,17 +88,15 @@ export class EjBarraComponent {
         console.error('No se encontró el elemento de video.');
       }
 
-      // Additional configurations for the camera
+      // Configuraciones adicionales para la cámara
       if (videoElement) {
         videoElement.addEventListener('loadedmetadata', () => {
           videoElement.play();
         });
       }
 
-      // Handle errors
     } catch (error) {
       console.error('Error accessing the camera: ', error);
     }
   }
-  }
-  
+}
