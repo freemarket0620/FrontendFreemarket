@@ -409,7 +409,6 @@
     }
     /*  */
     buscarPorCodigoEscaneado(codigo: string) {
-      console.log('Código recibido desde escáner:', codigo);
       this.searchCodigoProducto = codigo;
 
       // Filtrar productos y agregar automáticamente al carrito
@@ -419,8 +418,6 @@
 
       if (productoEncontrado) {
         this.agregarAlCarrito(productoEncontrado, 1, 'unidad'); // Agregar al carrito con cantidad 1
-      } else {
-        this.error = 'Producto no encontrado. Verifica el código ingresado.';
       }
 
       this.filteredProductos(); // Llama al método que ya tengas para aplicar filtros
