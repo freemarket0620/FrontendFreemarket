@@ -252,6 +252,7 @@
         this.actualizarTotalVenta(); // Asegúrate de actualizar el total después de agregar o modificar
       }
     }
+    
     actualizarTotalVenta() {
       this.totalVenta = this.detalleVenta.reduce(
         (total, item) => total + item.subtotal,0);
@@ -406,11 +407,25 @@
         this.page * this.pageSize
       );
     }
+    /*  */
     buscarPorCodigoEscaneado(codigo: string) {
       console.log('Código recibido desde escáner:', codigo);
       this.searchCodigoProducto = codigo;
+
+      // Filtrar productos y agregar automáticamente al carrito
+      const productoEncontrado = this.productos.find(producto => 
+        producto.codigo_producto.toLowerCase() === codigo.toLowerCase()
+      );
+
+      if (productoEncontrado) {
+        this.agregarAlCarrito(productoEncontrado, 1, 'unidad'); // Agregar al carrito con cantidad 1
+      } else {
+        this.error = 'Producto no encontrado. Verifica el código ingresado.';
+      }
+
       this.filteredProductos(); // Llama al método que ya tengas para aplicar filtros
     }
+    
 
     nextPage() {
       this.page++;
