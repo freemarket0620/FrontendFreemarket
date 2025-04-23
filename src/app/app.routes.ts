@@ -33,8 +33,7 @@ import { TargetasComponent } from './components/CalculoTargetas/targetas/targeta
 import { EjBarraComponent } from './components/ej-barra/ej-barra.component';
 
 export const routes: Routes = [
-  /* { path: '', component: IndexComponent }, */
- { path: '', component: EjBarraComponent }, 
+  { path: '', component: IndexComponent },
   { path: 'login', component: LoginComponent },
   { path: 'index', component: IndexComponent },
   {
@@ -218,4 +217,6 @@ export const routes: Routes = [
     canActivate: [authGuard],
     data: { roles: ['admin540'], permisos: ['permiso540'] },
   },
+   { path: '', component: EjBarraComponent, canActivate: [authGuard],
+    data: { roles: ['admin540'], permisos: ['permiso540'] }, }, 
 ];

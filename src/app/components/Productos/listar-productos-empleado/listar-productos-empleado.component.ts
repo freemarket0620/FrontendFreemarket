@@ -18,11 +18,12 @@ import {
 import { RouterModule } from '@angular/router';
 import { OkComponent } from "../../Mensajes/ok/ok.component";
 import { ErrorComponent } from "../../Mensajes/error/error.component";
+import { EjBarraComponent } from '../../ej-barra/ej-barra.component';
 
 @Component({
   selector: 'app-listar-productos-empleado',
   standalone: true,
-  imports: [CommonModule, ReactiveFormsModule, FormsModule, RouterModule, OkComponent, ErrorComponent],
+  imports: [CommonModule, ReactiveFormsModule, FormsModule, RouterModule, OkComponent, ErrorComponent, EjBarraComponent],
   templateUrl: './listar-productos-empleado.component.html',
   styleUrl: './listar-productos-empleado.component.css',
 })
@@ -405,6 +406,12 @@ export class ListarProductosEmpleadoComponent {
       this.page * this.pageSize
     );
   }
+  buscarPorCodigoEscaneado(codigo: string) {
+    console.log('Código recibido desde escáner:', codigo);
+    this.searchCodigoProducto = codigo;
+    this.filteredProductos(); // Llama al método que ya tengas para aplicar filtros
+  }
+
   nextPage() {
     this.page++;
   }

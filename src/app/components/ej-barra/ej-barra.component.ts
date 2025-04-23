@@ -1,4 +1,4 @@
-import { Component, ViewChild } from '@angular/core';
+import { Component, EventEmitter, Output, ViewChild } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule, ReactiveFormsModule } from '@angular/forms';
 import { ZXingScannerComponent, ZXingScannerModule } from '@zxing/ngx-scanner';
@@ -22,6 +22,7 @@ interface MediaTrackConstraintSet {
 export class EjBarraComponent {
   @ViewChild('scanner') scanner?: ZXingScannerComponent;
 
+   @Output() codigoEscaneado = new EventEmitter<string>(); // 👉 evento hacia el padre
   scannedResult: string = '';
   scannedResults: string[] = []; // ✅ arreglo para múltiples resultados
   camaraActivada: boolean = false;
@@ -57,6 +58,7 @@ export class EjBarraComponent {
     }
     this.scannedResult = resultString;
     console.log('Código escaneado (cámara):', resultString);
+    this.codigoEscaneado.emit(resultString); 
   }
 
   onCamerasFound(devices: MediaDeviceInfo[]): void {
@@ -90,6 +92,7 @@ export class EjBarraComponent {
           }
           this.scannedResult = result.getText();
           console.log('Código escaneado (imagen):', this.scannedResult);
+          this.codigoEscaneado.emit(this.scannedResult); 
         })
         .catch(error => {
           console.error('Error al escanear la imagen:', error);

@@ -1,9 +1,7 @@
-<h1 class="text-center">Escáner de Códigos de Barra</h1>
-
 <!-- Botones para controlar la cámara -->
 <div class="text-center mb-3">
-    <button class="btn btn-primary" (click)="activarCamara()" *ngIf="!camaraActivada">Activar cámara</button>
-    <button class="btn btn-danger" (click)="camaraActivada = false" *ngIf="camaraActivada">Desactivar cámara</button>
+    <button class="btn btn-primary" (click)="activarCamara()" *ngIf="!camaraActivada">Escanear</button>
+    <button class="btn btn-danger" (click)="camaraActivada = false" *ngIf="camaraActivada">Desactivar</button>
 </div>
 
 <!-- Vista de la cámara -->
@@ -24,5 +22,5 @@
 </div>
 
 <!-- Sección para escanear desde imagen -->
-<h2>Escanear desde imagen</h2>
-<input type="file" accept="image/*" (change)="cargarImagen($event)" class="form-control mb-2">
+
+<input type="file" accept="image/*" (change)="cargarImagen($event)" placeholder="Escanear desde imagen" class="form-control mb-2">
