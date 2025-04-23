@@ -69,43 +69,10 @@ export class EjBarraComponent {
       console.log('Dispositivo actual asignado:', this.currentDevice);
     }
   }
-
   onHasPermission(has: boolean) {
     this.hasPermission = has;
     console.log('Permiso de cámara:', has);
   }
-
-  cargarImagen(event: any) {
-    this.imagenSeleccionada = event.target.files[0];
-    if (this.imagenSeleccionada) {
-      this.escanearImagen(); // Llama a escanearImagen automáticamente
-    }
-  }
-
-  escanearImagen() {
-    if (this.imagenSeleccionada) {
-      const imageUrl = URL.createObjectURL(this.imagenSeleccionada);
-      this.lectorMultiFormato.decodeFromImageUrl(imageUrl)
-        .then(result => {
-          if (!this.scannedResults.includes(result.getText())) {
-            this.scannedResults.push(result.getText());
-          }
-          this.scannedResult = result.getText();
-          console.log('Código escaneado (imagen):', this.scannedResult);
-          this.codigoEscaneado.emit(this.scannedResult); 
-        })
-        .catch(error => {
-          console.error('Error al escanear la imagen:', error);
-          this.scannedResult = 'No se pudo leer el código de barras. Asegúrate de que la imagen sea clara y contenga un código de barras válido.';
-        })
-        .finally(() => {
-          URL.revokeObjectURL(imageUrl);
-        });
-    } else {
-      this.scannedResult = 'Por favor, selecciona una imagen.';
-    }
-  }
-
   async configurarCamaraAvanzada() {
     try {
       const constraints = {

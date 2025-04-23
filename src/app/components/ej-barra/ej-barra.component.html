@@ -3,7 +3,6 @@
     <button class="btn btn-primary" (click)="activarCamara()" *ngIf="!camaraActivada">Escanear</button>
     <button class="btn btn-danger" (click)="camaraActivada = false" *ngIf="camaraActivada">Desactivar</button>
 </div>
-
 <!-- Vista de la cámara -->
 <div *ngIf="camaraActivada" class="text-center">
     <div style="overflow: hidden; width: 320px; height: 240px;" class="mx-auto">
@@ -13,14 +12,3 @@
         </zxing-scanner>
     </div>
 </div>
-<!-- Resultados escaneados -->
-<div *ngIf="scannedResults.length > 0" class="bg-light p-3 mt-3">
-    <h3>Códigos escaneados:</h3>
-    <ul class="list-group">
-        <li class="list-group-item" *ngFor="let codigo of scannedResults">{{ codigo }}</li>
-    </ul>
-</div>
-
-<!-- Sección para escanear desde imagen -->
-
-<input type="file" accept="image/*" (change)="cargarImagen($event)" placeholder="Escanear desde imagen" class="form-control mb-2">
