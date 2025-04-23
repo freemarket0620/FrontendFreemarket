@@ -15,12 +15,6 @@
         </zxing-scanner>
     </div>
 </div>
-
-<!-- Botón de linterna -->
-<button class="btn btn-warning" (click)="toggleLinterna()" *ngIf="camaraActivada">
-    {{ linternaActiva ? 'Apagar linterna 🔦' : 'Encender linterna 🔅' }}
-</button>
-
 <!-- Resultados escaneados -->
 <div *ngIf="scannedResults.length > 0" class="bg-light p-3 mt-3">
     <h3>Códigos escaneados:</h3>

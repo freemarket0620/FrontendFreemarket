@@ -5,6 +5,13 @@ import { ZXingScannerComponent, ZXingScannerModule } from '@zxing/ngx-scanner';
 import { BarcodeFormat } from '@zxing/library';
 import { BrowserMultiFormatReader } from '@zxing/browser';
 
+// Extensión de MediaTrackConstraintSet
+interface MediaTrackConstraintSet {
+    focusMode?: string[]; // Agrega la propiedad focusMode
+    zoom?: { max: number; min: number; current: number }; // Agrega la propiedad zoom
+    torch?: boolean; // Agrega la propiedad torch si la necesitas
+}
+
 @Component({
   selector: 'app-ej-barra',
   standalone: true,
@@ -44,7 +51,6 @@ export class EjBarraComponent {
     }, 500); // Esperar un poco para que se renderice el <zxing-scanner>
   }
 
-
   onCodeResult(resultString: string) {
     if (!this.scannedResults.includes(resultString)) {
       this.scannedResults.push(resultString);
@@ -52,6 +58,7 @@ export class EjBarraComponent {
     this.scannedResult = resultString;
     console.log('Código escaneado (cámara):', resultString);
   }
+
   onCamerasFound(devices: MediaDeviceInfo[]): void {
     this.availableDevices = devices;
     this.hasDevices = Boolean(devices && devices.length);
@@ -61,7 +68,6 @@ export class EjBarraComponent {
     }
   }
 
-
   onHasPermission(has: boolean) {
     this.hasPermission = has;
     console.log('Permiso de cámara:', has);
@@ -70,80 +76,63 @@ export class EjBarraComponent {
   cargarImagen(event: any) {
     this.imagenSeleccionada = event.target.files[0];
     if (this.imagenSeleccionada) {
-        this.escanearImagen(); // Llama a escanearImagen automáticamente
+      this.escanearImagen(); // Llama a escanearImagen automáticamente
     }
   }
 
   escanearImagen() {
-      if (this.imagenSeleccionada) {
-          const imageUrl = URL.createObjectURL(this.imagenSeleccionada);
-          this.lectorMultiFormato.decodeFromImageUrl(imageUrl)
-              .then(result => {
-                  if (!this.scannedResults.includes(result.getText())) {
-                      this.scannedResults.push(result.getText());
-                  }
-                  this.scannedResult = result.getText();
-                  console.log('Código escaneado (imagen):', this.scannedResult);
-              })
-              .catch(error => {
-                  console.error('Error al escanear la imagen:', error);
-                  this.scannedResult = 'No se pudo leer el código de barras. Asegúrate de que la imagen sea clara y contenga un código de barras válido.';
-              })
-              .finally(() => {
-                  URL.revokeObjectURL(imageUrl);
-              });
-      } else {
-          this.scannedResult = 'Por favor, selecciona una imagen.';
-      }
-  }
-
-async configurarCamaraAvanzada() {
-  try {
-    const stream = await navigator.mediaDevices.getUserMedia({ video: { facingMode: 'environment' } });
-    this.videoTrack = stream.getVideoTracks()[0];
-    const videoTrack = this.videoTrack;
-
-    const capabilities = videoTrack.getCapabilities(); // ✅ Ahora sí está definida
-
-    console.log('📸 Capacidades de cámara:', capabilities);
-
-    // Aplicar enfoque continuo si es compatible
-    if ('focusMode' in capabilities && (capabilities as any).focusMode?.includes('continuous')) {
-      await videoTrack.applyConstraints({
-        advanced: [({ focusMode: 'continuous' } as any)]
-
-      });
-    }
-
-    // Aplicar zoom óptimo si es compatible
-    if ('zoom' in capabilities) {
-      const optimalZoom = (capabilities as any).zoom.max / 2;
-      await videoTrack.applyConstraints({
-        advanced: [{ zoom: optimalZoom }as any]
-      });
-    }
-  } catch (error) {
-    console.error('Error al configurar la cámara:', error);
-  }
-}
-
-torch?: boolean; 
-toggleLinterna() {
-    if (!this.videoTrack) return;
-
-    const capabilities = this.videoTrack.getCapabilities();
-    if ('torch' in capabilities) {
-        this.videoTrack.applyConstraints({
-            advanced: [{ torch: !this.linternaActiva } as any]
-        }).then(() => {
-            this.linternaActiva = !this.linternaActiva;
-            console.log('Linterna:', this.linternaActiva ? 'Encendida' : 'Apagada');
-        }).catch(e => {
-            console.error('Error al cambiar el estado de la linterna:', e);
+    if (this.imagenSeleccionada) {
+      const imageUrl = URL.createObjectURL(this.imagenSeleccionada);
+      this.lectorMultiFormato.decodeFromImageUrl(imageUrl)
+        .then(result => {
+          if (!this.scannedResults.includes(result.getText())) {
+            this.scannedResults.push(result.getText());
+          }
+          this.scannedResult = result.getText();
+          console.log('Código escaneado (imagen):', this.scannedResult);
+        })
+        .catch(error => {
+          console.error('Error al escanear la imagen:', error);
+          this.scannedResult = 'No se pudo leer el código de barras. Asegúrate de que la imagen sea clara y contenga un código de barras válido.';
+        })
+        .finally(() => {
+          URL.revokeObjectURL(imageUrl);
         });
     } else {
-        console.warn('Este dispositivo no soporta linterna.');
+      this.scannedResult = 'Por favor, selecciona una imagen.';
     }
-}
+  }
 
-}
+  async configurarCamaraAvanzada() {
+    try {
+      const constraints = {
+        video: {
+          facingMode: 'environment',
+          width: { ideal: 1280 }, // Ajusta la resolución
+          height: { ideal: 720 }
+        }
+      };
+
+      const stream = await navigator.mediaDevices.getUserMedia(constraints);
+      const videoElement = document.querySelector('video');
+      if (videoElement) {
+        videoElement.srcObject = stream;
+        videoElement.play();
+      } else {
+        console.error('No se encontró el elemento de video.');
+      }
+
+      // Additional configurations for the camera
+      if (videoElement) {
+        videoElement.addEventListener('loadedmetadata', () => {
+          videoElement.play();
+        });
+      }
+
+      // Handle errors
+    } catch (error) {
+      console.error('Error accessing the camera: ', error);
+    }
+  }
+  }
+  
