@@ -128,16 +128,21 @@ export class DashboardComponent implements OnInit {
   }
 
   private generarDatosProductos(): void {
-    this.productosVendidos = this.productos.map(producto => ({
-      name: producto.nombre_producto,
-      value: producto.stock
-    }));
+    // 1. Top 5 productos con mayor stock
+    this.productosVendidos = this.productos
+      .sort((a, b) => b.stock - a.stock) // Ordenar de mayor a menor
+      .slice(0, 5) // Tomar los primeros 5
+      .map(producto => ({
+        name: producto.nombre_producto,
+        value: producto.stock
+      }));
 
+    // 2. Producto con mayor stock
     this.productoMasVendido = this.productos.reduce((prev, curr) =>
       prev.stock > curr.stock ? prev : curr
     );
 
-    // 4. Stock por Categoría
+    // 3. Stock por Categoría
     const stockPorCategoriaMap = new Map<string, number>();
     this.productos.forEach(p => {
       const categoria = p.categoria.nombre_categoria;
@@ -145,95 +150,101 @@ export class DashboardComponent implements OnInit {
     });
     this.stockPorCategoria = this.mapToArray(stockPorCategoriaMap);
 
-    // 5. Precio Compra vs Venta
-    this.comparativaPrecio = this.productos.map(p => ({
-      name: p.nombre_producto,
-      series: [
-        { name: 'Precio Compra', value: p.precio_compra },
-        { name: 'Precio Venta', value: p.precio_unitario }
-      ]
-    }));
+    // 4. Comparativa Precio Compra vs Venta (top 5 productos con más stock)
+    this.comparativaPrecio = this.productos
+      .sort((a, b) => b.stock - a.stock) // Ordenar por mayor stock
+      .slice(0, 5) // Tomar los 5 primeros
+      .map(p => ({
+        name: p.nombre_producto,
+        series: [
+          { name: 'Precio Compra', value: p.precio_compra },
+          { name: 'Precio Venta', value: p.precio_unitario }
+        ]
+      }));
 
-    // 7. Productos con bajo stock
+    // 5. Top 5 productos con bajo stock (stock < 10, ordenados de menor a mayor)
     this.productosBajoStock = this.productos
       .filter(p => p.stock < 10)
+      .sort((a, b) => a.stock - b.stock)
+      .slice(0, 5)
       .map(p => ({ name: p.nombre_producto, value: p.stock }));
   }
+private procesarVentas(ventas: Ventas[]): void {
+  const cantidadVentasPorUsuarioMap = new Map<string, number>();
+  const totalVentasPorUsuarioMap = new Map<string, number>();
+  const ventasPorFechaMap = new Map<string, number>();
+  const estadoVentasMap = new Map<string, number>();
+  const ventasPorMesMap = new Map<string, number>();
+  const ventasPorDiaSemana = new Map<string, number>();
 
-  private procesarVentas(ventas: Ventas[]): void {
-    const cantidadVentasPorUsuarioMap = new Map<string, number>();
-    const totalVentasPorUsuarioMap = new Map<string, number>();
-    const ventasPorFechaMap = new Map<string, number>();
-    const estadoVentasMap = new Map<string, number>();
-    const ventasPorMesMap = new Map<string, number>();
-    const ventasPorDiaSemana = new Map<string, number>();
+  const diasSemana = ['Domingo', 'Lunes', 'Martes', 'Miércoles', 'Jueves', 'Viernes', 'Sábado'];
 
-    const diasSemana = ['Domingo', 'Lunes', 'Martes', 'Miércoles', 'Jueves', 'Viernes', 'Sábado'];
+  let totalGlobal = 0;
 
-    let totalGlobal = 0;
+  ventas.forEach(venta => {
+    const usuario = venta.usuario?.nombre_usuario || 'Desconocido';
+    const total = parseFloat(venta.total.toString()) || 0;
+    const fecha = new Date(venta.fecha_venta);
+    const estado = venta.estado;
 
-    ventas.forEach(venta => {
-      const usuario = venta.usuario?.nombre_usuario || 'Desconocido';
-      const total = parseFloat(venta.total.toString()) || 0;
-      const fecha = new Date(venta.fecha_venta);
-      const estado = venta.estado;
+    this.incrementarMapa(cantidadVentasPorUsuarioMap, usuario, 1);
+    this.incrementarMapa(totalVentasPorUsuarioMap, usuario, total);
+    this.incrementarMapa(ventasPorFechaMap, fecha.toLocaleDateString(), total);
+    this.incrementarMapa(estadoVentasMap, estado, 1);
 
-      this.incrementarMapa(cantidadVentasPorUsuarioMap, usuario, 1);
-      this.incrementarMapa(totalVentasPorUsuarioMap, usuario, total);
-      this.incrementarMapa(ventasPorFechaMap, fecha.toLocaleDateString(), total);
-      this.incrementarMapa(estadoVentasMap, estado, 1);
+    // 1. Ventas por Mes
+    const mes = fecha.toLocaleString('default', { month: 'long' }) + ' ' + fecha.getFullYear();
+    this.incrementarMapa(ventasPorMesMap, mes, total);
 
-      // 1. Ventas por Mes
-      const mes = fecha.toLocaleString('default', { month: 'long' }) + ' ' + fecha.getFullYear();
-      this.incrementarMapa(ventasPorMesMap, mes, total);
+    // 2. Ventas por Día de la Semana
+    const dia = diasSemana[fecha.getDay()];
+    this.incrementarMapa(ventasPorDiaSemana, dia, 1);
 
-      // 2. Ventas por Día de la Semana
-      const dia = diasSemana[fecha.getDay()];
-      this.incrementarMapa(ventasPorDiaSemana, dia, 1);
+    totalGlobal += total;
+  });
 
-      totalGlobal += total;
-    });
+  this.totalDineroVendido = totalGlobal;
+  this.graficoTotalDinero = [{ name: 'Total Vendido', value: totalGlobal }];
 
-    this.totalDineroVendido = totalGlobal;
-    this.graficoTotalDinero = [{ name: 'Total Vendido', value: totalGlobal }];
+  this.ventasPorUsuarioGrafico = this.mapToArray(cantidadVentasPorUsuarioMap);
+  this.ventasTotalesPorUsuarioGrafico = this.mapToArray(totalVentasPorUsuarioMap);
+  this.ventasPorFecha = [{ name: 'Ventas Mensuales', series: this.mapToArray(ventasPorMesMap) }];
+  this.ventasPorDiaSemana = this.mapToArray(ventasPorDiaSemana);
+  this.estadoVentas = this.mapToArray(estadoVentasMap);
+}
 
-    this.ventasPorUsuarioGrafico = this.mapToArray(cantidadVentasPorUsuarioMap);
-    this.ventasTotalesPorUsuarioGrafico = this.mapToArray(totalVentasPorUsuarioMap);
-    this.ventasPorFecha = [{ name: 'Ventas Mensuales', series: this.mapToArray(ventasPorMesMap) }];
-    this.ventasPorDiaSemana = this.mapToArray(ventasPorDiaSemana);
-    this.estadoVentas = this.mapToArray(estadoVentasMap);
-  }
 
-  private procesarDetallesVenta(detalles: DetalleVentas[]): void {
-    const ventasPorProductoMap = new Map<string, number>();
-    const ventasPorCategoriaMap = new Map<string, number>();
-    const gananciaPorProductoMap = new Map<string, number>();
+ private procesarDetallesVenta(detalles: DetalleVentas[]): void {
+  const ventasPorProductoMap = new Map<string, number>();
+  const ventasPorCategoriaMap = new Map<string, number>();
+  const gananciaPorProductoMap = new Map<string, number>();
 
-    detalles.forEach(d => {
-      const producto = d.producto.nombre_producto;
-      const categoria = d.producto.categoria.nombre_categoria;
-      const subtotal = d.producto.precio_unitario * d.cantidad; 
-      const ganancia = (d.producto.precio_unitario - d.producto.precio_compra) * d.cantidad;
+  detalles.forEach(d => {
+    const producto = d.producto.nombre_producto;
+    const categoria = d.producto.categoria.nombre_categoria;
+    const subtotal = d.producto.precio_unitario * d.cantidad; 
+    const ganancia = (d.producto.precio_unitario - d.producto.precio_compra) * d.cantidad;
 
-      this.incrementarMapa(ventasPorProductoMap, producto, d.cantidad);
-      this.incrementarMapa(ventasPorCategoriaMap, categoria, subtotal);
-      this.incrementarMapa(gananciaPorProductoMap, producto, ganancia);
-    });
+    this.incrementarMapa(ventasPorProductoMap, producto, d.cantidad);
+    this.incrementarMapa(ventasPorCategoriaMap, categoria, subtotal);
+    this.incrementarMapa(gananciaPorProductoMap, producto, ganancia);
+  });
 
-    this.ventasPorProducto = this.mapToArray(ventasPorProductoMap);
+  this.ventasPorProducto = this.mapToArray(ventasPorProductoMap);
 
-    // 3. Top 5 productos más vendidos
-    this.topProductosVendidos = this.mapToArray(ventasPorProductoMap)
-      .sort((a, b) => b.value - a.value)
-      .slice(0, 5);
+  // 3. Top 5 productos más vendidos
+  this.topProductosVendidos = this.mapToArray(ventasPorProductoMap)
+    .sort((a, b) => b.value - a.value)
+    .slice(0, 5);
 
-    // 6. Productos más rentables
-    this.productosRentables = this.mapToArray(gananciaPorProductoMap)
-      .sort((a, b) => b.value - a.value);
+  // 6. Productos más rentables
+  this.productosRentables = this.mapToArray(gananciaPorProductoMap)
+    .sort((a, b) => b.value - a.value);
 
-    // 9. Ventas por categoría
-    this.ventasPorCategoria = this.mapToArray(ventasPorCategoriaMap);
-  }
+  // 9. Ventas por categoría
+  this.ventasPorCategoria = this.mapToArray(ventasPorCategoriaMap);
+}
+
 
   private incrementarMapa(map: Map<string, number>, key: string, valor: number): void {
     map.set(key, (map.get(key) || 0) + valor);
