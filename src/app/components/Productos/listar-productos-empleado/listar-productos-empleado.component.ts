@@ -439,7 +439,6 @@
     closeModal() {
       this.modalVisible = false;
     }
-
     generarMensaje(): string {
         let mensaje = '📝 *Detalles de Venta:* 🗒\n\n';
         

@@ -36,49 +36,8 @@ export class IndexComponent implements AfterViewInit {
         this.renderer.setAttribute(h1, 'data-heading', h1.innerText);
       });
     }
-
-    this.getProductos();
-    this.getCategorias();
   }
-
-  getProductos() {
-    this.productoService.getProductos().subscribe((data) => {
-      this.productos = data.filter(
-        (producto) =>
-          !this.categoriasExcluidas.includes(
-            producto.categoria.nombre_categoria.trim().toLowerCase()
-          )
-      );
-      this.agruparProductosPorCategoria();
-    });
-  }
-
-  getCategorias() {
-    this.productoService.getCategorias().subscribe((data) => {
-      this.categorias = data.filter(
-        (categoria) =>
-          !this.categoriasExcluidas.includes(
-            categoria.nombre_categoria.trim().toLowerCase()
-          )
-      );
-    });
-  }
-
-  agruparProductosPorCategoria() {
-    this.productos.forEach((producto) => {
-      const categoriaNombre = producto.categoria.nombre_categoria;
-      // Solo almacenar un producto por categoría
-      if (!this.productosPorCategoria[categoriaNombre]) {
-        this.productosPorCategoria[categoriaNombre] = producto; // Almacena solo un producto
-      }
-    });
-  }
-
   navigateToLogin() {
     this.router.navigate(['/login']);
-  }
-
-  navigateToProductos() {
-    this.router.navigate(['/listar-productos-usuario']);
   }
 }

@@ -66,6 +66,8 @@ h2 {
   font-family: "Frozen", serif;
   background-image: url("https://assets.codepen.io/209981/ice.jpg");
   -webkit-background-clip: text;
+  background-clip: text;
+  background-clip: text;
   -webkit-text-fill-color: transparent;
   background-size: contain;
   position: relative;
@@ -116,112 +118,6 @@ h2:focus {
 @font-face {
   font-family: "Frozen";
   src: url("https://s3-us-west-2.amazonaws.com/s.cdpn.io/209981/Ice%20kingdom%20-%20Bold%20-%20Por%20Kustren.woff");
-}
-
-/* ############################ */
-/* seccion de footer */
-/* ############################ */
-
-.footer-social-icon {
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  position: relative;
-  width: 300px;
-  height: 300px;
-  border-radius: 50%;
-  overflow: hidden;
-  margin: 0 auto;
-}
-
-.footer-social-icon a {
-  position: absolute;
-  width: 60px;
-  height: 60px;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  border-radius: 50%;
-  transition: transform 0.3s ease, box-shadow 0.3s ease;
-  overflow: hidden;
-  background-color: #ccc; /* Por si no tienen color inicial */
-}
-
-/* Efecto hover: escalar íconos */
-.footer-social-icon a:hover {
-  transform: scale(2); /* Escala más notable */
-  box-shadow: 0 10px 25px rgba(0, 0, 0, 0.6); /* Sombra más intensa */
-  z-index: 10; /* Asegura que el ícono esté por encima de los demás */
-}
-
-/* Posición de los íconos en un círculo */
-.footer-social-icon a:nth-child(1) {
-  top: 50%;
-  left: 50%;
-  transform: translate(-50%, -50%) translate(0, -100px);
-}
-
-.footer-social-icon a:nth-child(2) {
-  top: 50%;
-  left: 50%;
-  transform: translate(-50%, -50%) translate(70px, -70px);
-}
-
-.footer-social-icon a:nth-child(3) {
-  top: 50%;
-  left: 50%;
-  transform: translate(-50%, -50%) translate(100px, 0);
-}
-
-.footer-social-icon a:nth-child(4) {
-  top: 50%;
-  left: 50%;
-  transform: translate(-50%, -50%) translate(70px, 70px);
-}
-
-.footer-social-icon a:nth-child(5) {
-  top: 50%;
-  left: 50%;
-  transform: translate(-50%, -50%) translate(0, 100px);
-}
-
-.footer-social-icon a:nth-child(6) {
-  top: 50%;
-  left: 50%;
-  transform: translate(-50%, -50%) translate(-70px, 70px);
-}
-
-.footer-social-icon a:nth-child(7) {
-  top: 50%;
-  left: 50%;
-  transform: translate(-50%, -50%) translate(-100px, 0);
-}
-
-.footer-social-icon a:nth-child(8) {
-  top: 50%;
-  left: 50%;
-  transform: translate(-50%, -50%) translate(-70px, -70px);
-}
-
-/* Ícono central (Discord) */
-.footer-social-icon a:nth-child(9) {
-  top: 50%;
-  left: 50%;
-  transform: translate(-50%, -50%);
-  width: 80px;
-  height: 80px;
-  background-color: #f0f0f0;
-  border-radius: 50%;
-}
-
-.full-width-container-vistas {
-  width: 100%;
-  padding: 0; /* Elimina el padding si es necesario */
-  margin: 0; /* Elimina el margin si es necesario */
-}
-
-.nav-link.active {
-  color: red !important; /* Cambia el color del texto a rojo */
 }
 
 /* ############################ */

@@ -1,53 +1,55 @@
-<header
-  class="navbar navbar-expand-lg navbar-light bg-light fixed-top shadow"
-  id="navbar"
->
+<header class="navbar navbar-expand-lg navbar-light bg-light fixed-top shadow" id="navbar">
   <div class="container-fluid">
     <a class="navbar-brand" href="#">
-      <img
-        src="https://res.cloudinary.com/dlrpns8z7/image/upload/v1744124754/logo.png_w4ofbg.png"
-        width="150"
-        height="70"
-        class="d-inline-block align-top"
-        alt="Logo"
-      />
+      <img src="https://res.cloudinary.com/dlrpns8z7/image/upload/v1744124754/logo.png_w4ofbg.png" width="150"
+        height="70" class="d-inline-block align-top" alt="Logo" />
     </a>
-    <button
-      class="navbar-toggler"
-      type="button"
-      data-bs-toggle="collapse"
-      data-bs-target="#navbarNav"
-      aria-controls="navbarNav"
-      aria-expanded="false"
-      aria-label="Toggle navigation"
-    >
+    <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav"
+      aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
       <span class="navbar-toggler-icon"></span>
     </button>
 
     <div class="collapse navbar-collapse" id="navbarNav">
-      <ul
-        class="navbar-nav ms-auto flex-column flex-md-row align-items-start align-items-md-center"
-      >
-        <li class="nav-item mx-2 my-2">
-          <a class="btn btn-light fs-5 w-100" href="#contacto">
-            <strong>Contactos</strong>
-          </a>
-        </li>
-        <li class="nav-item mx-2 my-2">
-          <a class="btn btn-light fs-5 w-100" (click)="navigateToProductos()">
-            <strong>Productos</strong>
-          </a>
-        </li>
-        <li class="nav-item mx-2 my-2">
-          <a class="btn btn-light fs-5 w-100" (click)="navigateToLogin()">
+      <ul class="navbar-nav ms-auto flex-column flex-md-row align-items-start align-items-md-center">
+
+        <li class="d-flex align-items-center">
+          <div class="col-auto text-center pe-2">
             <i class="fas fa-user"></i>
-            <strong> Iniciar Sesión</strong>
-          </a>
+          </div>
+          <div class="col text-start">
+            <a class="btn" href="#contacto">
+              <strong>Contactos</strong>
+            </a>
+          </div>
         </li>
+
+        <li class="d-flex align-items-center">
+          <div class="col-auto text-center pe-2">
+            <i class="fas fa-box-open"></i>
+          </div>
+          <div class="col text-start">
+            <a class="btn" href="#">
+              <strong>Productos</strong>
+            </a>
+          </div>
+        </li>
+
+        <li class="d-flex align-items-center">
+          <div class="col-auto text-center pe-2">
+            <i class="fas fa-sign-in-alt"></i>
+          </div>
+          <div class="col text-start">
+            <a class="btn" href="#" (click)="navigateToLogin()">
+              <strong>Iniciar Sesión</strong>
+            </a>
+          </div>
+        </li>
+
       </ul>
     </div>
   </div>
 </header>
+
 
 <main class="container-fluid main-background">
   <div class="text-center-titulo mt-5">
@@ -141,198 +143,93 @@
     </div>
   </div>
 </section>
+<!-- footer -->
+<footer class="container-fluid mt-4 bg-light text-white text-dark">
+  <div class="row px-4 py-5 text-dark">
+    <!-- Logo y Descripción -->
+    <div class="col-lg-3 col-md-6 col-12 mb-4">
+      <div class="footer-widget text-center text-md-start">
+        <a href="index.html">
+          <img src="https://res.cloudinary.com/dlrpns8z7/image/upload/v1744124754/logo.png_w4ofbg.png"
+            class="img-fluid mb-3" alt="logo" />
+        </a>
+        <p style="text-align: justify;" >
+          En Freemarket, tu tienda virtual de confianza, ofrecemos calidad y variedad. Con más de 10 años de
+          experiencia, garantizamos una compra excepcional y un servicio al cliente dedicado, siempre enfocados en la
+          ética y la sostenibilidad.
+        </p>
+      </div>
+    </div>
 
-<!-- Footer -->
-<footer class="footer-section bg-light text-dark">
-  <div class="container-fluid">
-    <div class="footer-content pt-5 pb-5">
-      <div class="row">
-        <!-- Logo y Descripción -->
-        <div class="col-xl-3 col-lg-3 mb-3">
-          <div class="footer-widget">
-            <div class="footer-logo">
-              <a href="index.html">
-                <img
-                  src="https://res.cloudinary.com/dlrpns8z7/image/upload/v1744124754/logo.png_w4ofbg.png"
-                  class="img-fluid"
-                  alt="logo"
-                />
-              </a>
-            </div>
-            <div class="footer-text jus" style="text-align: justify">
-              <p>
-                En Freemarket, tu tienda virtual de confianza, ofrecemos calidad
-                y variedad. Con más de 10 años de experiencia, garantizamos una
-                compra excepcional y un servicio al cliente dedicado, siempre
-                enfocados en la ética y la sostenibilidad.
-              </p>
-            </div>
+    <!-- Redes Sociales -->
+    <div class="col-lg-3 col-md-6 col-12 mb-4">
+      <div class="footer-widget text-center">
+        <h3 class="mb-3">Síguenos</h3>
+        <div class="d-flex justify-content-center flex-wrap gap-3">
+          <a class="d-flex align-items-center justify-content-center rounded-circle"
+            style="background-color: #1791e8; width: 60px; height: 60px; color: white;"
+            href="https://www.facebook.com/profile.php?id=100083028147578" aria-label="Facebook">
+            <i class="fab fa-facebook-f fa-2x"></i>
+          </a>
+          <a class="d-flex align-items-center justify-content-center rounded-circle"
+            style="background: linear-gradient(45deg, #f58529, #dd2a7b, #8134af); width: 60px; height: 60px; color: white;"
+            href="#" aria-label="Instagram">
+            <i class="fab fa-instagram fa-2x"></i>
+          </a>
+          <a class="d-flex align-items-center justify-content-center rounded-circle"
+            style="background-color: #25d366; width: 60px; height: 60px; color: white;" href="#" aria-label="WhatsApp">
+            <i class="fab fa-whatsapp fa-2x"></i>
+          </a>
+          <a class="d-flex align-items-center justify-content-center rounded-circle"
+            style="background-color: #000; width: 60px; height: 60px; color: white;" href="#" aria-label="TikTok">
+            <i class="fab fa-tiktok fa-2x"></i>
+          </a>
+          <a class="d-flex align-items-center justify-content-center rounded-circle"
+            style="background-color: #5165f6; width: 60px; height: 60px; color: white;" href="#" aria-label="Discord">
+            <i class="fab fa-discord fa-2x"></i>
+          </a>
+        </div>
+      </div>
+    </div>
+
+    <!-- Información de Contacto -->
+    <div class="col-lg-3 col-md-6 col-12 mb-4">
+      <div class="footer-widget text-center text-md-start">
+        <h3 class="mb-3">Contáctanos</h3>
+        <div class="mb-3 d-flex align-items-center">
+          <i class="bi bi-envelope-fill text-primary fs-4 me-2"></i>
+          <div>
+            <h6 class="mb-0">Escríbenos</h6>
+            <small>benitoandrescalle035&#64;gmail.com</small>
           </div>
         </div>
-
-        <!-- Redes Sociales -->
-        <div class="col-xl-3 col-lg-3 col-md-6 mb-3 text-center">
-          <div class="footer-widget">
-            <div class="footer-widget-heading">
-              <h3>Síguenos</h3>
-            </div>
-            <section class="footer-social-icon mb-4">
-              <a
-                class="btn btn-primary btn-floating m-1"
-                style="background-color: #1791e8"
-                href="#!"
-                role="button"
-                aria-label="Facebook"
-              >
-                <i class="fab fa-facebook-f fa-2x"></i>
-              </a>
-              <a
-                class="btn btn-primary btn-floating m-1"
-                style="background-color: #1d9bf0"
-                href="#!"
-                role="button"
-                aria-label="Twitter"
-              >
-                <i class="fab fa-twitter fa-2x"></i>
-              </a>
-              <a
-                class="btn btn-primary btn-floating m-1"
-                style="background-color: #dd4b39"
-                href="#!"
-                role="button"
-                aria-label="Google"
-              >
-                <i class="fab fa-google fa-2x"></i>
-              </a>
-              <a
-                class="btn btn-primary btn-floating m-1"
-                style="
-                  background: linear-gradient(45deg, #f58529, #dd2a7b, #8134af);
-                "
-                href="#!"
-                role="button"
-                aria-label="Instagram"
-              >
-                <i class="fab fa-instagram fa-2x"></i>
-              </a>
-              <a
-                class="btn btn-primary btn-floating m-1"
-                style="background-color: #0082ca"
-                href="#!"
-                role="button"
-                aria-label="LinkedIn"
-              >
-                <i class="fab fa-linkedin-in fa-2x"></i>
-              </a>
-              <a
-                class="btn btn-primary btn-floating m-1"
-                style="background-color: #333333"
-                href="#!"
-                role="button"
-                aria-label="GitHub"
-              >
-                <i class="fab fa-github fa-2x"></i>
-              </a>
-              <a
-                class="btn btn-primary btn-floating m-1"
-                style="background-color: #25d366"
-                href="#!"
-                role="button"
-                aria-label="WhatsApp"
-              >
-                <i class="fab fa-whatsapp fa-2x"></i>
-              </a>
-              <a
-                class="btn btn-primary btn-floating m-1"
-                style="background-color: #000000"
-                href="#!"
-                role="button"
-                aria-label="TikTok"
-              >
-                <i class="fab fa-tiktok fa-2x"></i>
-              </a>
-              <a
-                class="btn btn-primary btn-floating m-1"
-                style="background-color: #5165f6"
-                href="#!"
-                role="button"
-                aria-label="Discord"
-              >
-                <i class="fab fa-discord fa-2x"></i>
-              </a>
-            </section>
+        <div class="mb-3 d-flex align-items-center">
+          <i class="bi bi-telephone-fill text-success fs-4 me-2"></i>
+          <div>
+            <h6 class="mb-0">Llámame</h6>
+            <small>+591 72937437</small>
           </div>
         </div>
-
-        <!-- Información de Contacto -->
-        <div class="col-xl-3 col-lg-3 col-md-6 mb-3" id="contacto">
-          <div class="footer-widget">
-            <div class="footer-widget-heading">
-              <h3>Contáctanos</h3>
-            </div>
-            <div class="contact-info">
-              <div class="single-cta d-flex align-items-center mb-3">
-                <i
-                  class="bi bi-envelope-fill text-primary me-2"
-                  style="font-size: 1.5rem"
-                ></i>
-                <!-- Ejemplo de cómo mostrar el correo electrónico -->
-                <div>
-                  <h4>Escríbenos</h4>
-                  <span>benitoandrescalle035&#64;gmail.com</span>
-                </div>
-              </div>
-              <div class="single-cta d-flex align-items-center mb-3">
-                <i
-                  class="bi bi-telephone-fill text-success me-2"
-                  style="font-size: 1.5rem"
-                ></i>
-                <div class="cta-text">
-                  <h4>Llámame</h4>
-                  <span>+591 72937437</span>
-                </div>
-              </div>
-              <div class="single-cta d-flex align-items-center">
-                <i
-                  class="bi bi-geo-alt-fill text-danger me-2"
-                  style="font-size: 1.5rem"
-                ></i>
-                <div class="cta-text">
-                  <h4>Encuéntranos</h4>
-                  <span>1010 Avenida, SW 54321, Chandigarh</span>
-                </div>
-              </div>
-            </div>
-          </div>
-        </div>
-        <!-- Mapa de Ubicación -->
-        <div class="col-xl-3 col-lg-3 mb-3">
-          <div class="footer-widget">
-            <div class="footer-widget-heading">
-              <h3>Nuestra Ubicación</h3>
-            </div>
-            <div class="map-container">
-              <iframe
-                src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d635.9553212006339!2d-67.03540545407371!3d-15.14618889537657!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x93dfe7ba3963fe3b%3A0xd0b0ff015e9c6a00!2sYucumo!5e1!3m2!1ses-419!2sbo!4v1731749227930!5m2!1ses-419!2sbo"
-                width="100%"
-                height="300"
-                style="border: 0"
-                allowfullscreen=""
-                loading="lazy"
-                referrerpolicy="no-referrer-when-downgrade"
-              ></iframe>
-            </div>
+        <div class="d-flex align-items-center">
+          <i class="bi bi-geo-alt-fill text-danger fs-4 me-2"></i>
+          <div>
+            <h6 class="mb-0">Encuéntranos</h6>
+            <small>1010 Avenida, SW 54321, Chandigarh</small>
           </div>
         </div>
       </div>
     </div>
 
-    <div class="copyright-area bg-light text-light py-3 text-black">
-      <div class="container text-center">
-        <p>
-          Copyright &copy; 2025, Todos los derechos reservados Freemarket.
-          <a href="https://codepen.io/anupkumar92/" class="text-light">Anup</a>
-        </p>
+    <!-- Mapa de Ubicación -->
+    <div class="col-lg-3 col-md-6 col-12 mb-4">
+      <div class="footer-widget text-center text-md-start">
+        <h3 class="mb-3">Nuestra Ubicación</h3>
+        <div class="map-container">
+          <iframe
+            src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d635.9553212006339!2d-67.03540545407371!3d-15.14618889537657!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x93dfe7ba3963fe3b%3A0xd0b0ff015e9c6a00!2sYucumo!5e1!3m2!1ses-419!2sbo!4v1731749227930!5m2!1ses-419!2sbo"
+            width="100%" height="300" style="border: 0" allowfullscreen="" loading="lazy"
+            referrerpolicy="no-referrer-when-downgrade"></iframe>
+        </div>
       </div>
     </div>
   </div>
