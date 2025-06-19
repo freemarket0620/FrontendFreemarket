@@ -30,7 +30,7 @@ interface LoginResponse {
   providedIn: 'root',
 })
 export class ServicesService {
-  private apiUrl = 'https://backenddj-cc4p.onrender.com/api/';
+  private apiUrl = 'https://backendfreemarket.onrender.com/api/';
 
  /*  private apiUrl = 'http://localhost:8000/api/'; */
  /*  private apiUrl =
