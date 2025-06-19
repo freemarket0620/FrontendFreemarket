@@ -1,3 +1,8 @@
-.rotate-left {
-  transform: rotateY(180deg);
+.fondo {
+  background-image: url("https://images.unsplash.com/photo-1483181957632-8bda974cbc91?q=80&w=1740&auto=format&fit=crop&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D");
+  background-size: cover;
+  background-repeat: no-repeat;
+  background-position: center center;
+  background-attachment: fixed;
+  image-rendering: auto;
 }

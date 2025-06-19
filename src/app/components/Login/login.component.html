@@ -1,141 +1,70 @@
-<div
-  class="container-fluid vh-100 d-flex align-items-center justify-content-center"
->
-  <a
-    class="btn btn-primary position-absolute top-0 end-0 m-4 btn-lg"
-    (click)="navigateToHome()"
-    title="Volver a Inicio"
-  >
-    <span class="d-flex align-items-center">
-      <i class="bi bi-person-walking fs-5"></i>
-      <i class="bi bi-door-open fs-2 rotate-left"></i>
-    </span>
-  </a>
+<div class="container-fluid vh-100 d-flex align-items-center justify-content-center fondo">
+
   <div class="row w-100 justify-content-center g-0">
     <!-- Formulario de inicio de sesión -->
-    <div class="col-md-1 col-lg-2 d-flex align-items-center">
-      <div class="card p-4 rounded w-100 d-flex flex-column">
-        <h2 class="text-center mb-4">Iniciar Sesión</h2>
-        <p class="text-center">
-          ¿Aún no tienes una cuenta?
-          <a href="#" class="text-primary">Regístrate</a>
-        </p>
-        <form (ngSubmit)="onSubmit()" #loginForm="ngForm" class="mt-4">
+    <div class="col-10 col-md-6 col-lg-4 col-xl-3 d-flex align-items-center position-relative">
+      <div class="card p-4 rounded w-100 d-flex flex-column bg-light bg-opacity-75 shadow">
+        <a class="btn btn-sm btn-primary position-absolute top-0 end-0 m-2 z-1" (click)="navigateToHome()"
+          title="Volver a Inicio">
+          <i class="bi bi-door-open me-1"></i>
+          Inicio
+        </a>
+        <!-- Logo si quieres agregarlo -->
+        <div class="d-flex justify-content-center mb-3">
+          <img src="https://www.bancodelaustro.com/portals/0/RegresoAClases/assets/images/gente.png" alt="Logo Barraca"
+            class="img-fluid" style="max-width: 120px; height: auto" />
+        </div>
+    
+        <h2 class="text-center mb-2">Iniciar Sesión</h2>
+    
+        <form (ngSubmit)="onSubmit()" #loginForm="ngForm" class="mt-3">
+          <!-- Campo Correo -->
           <div class="mb-3">
             <label for="correo" class="form-label">Correo Electrónico</label>
-            <input
-              type="email"
-              class="form-control form-control-lg"
-              id="correo"
-              name="correo"
-              placeholder="you@example.com"
-              required
-              [(ngModel)]="correo"
-              [ngClass]="{
+            <input type="email" class="form-control rounded-3" id="correo" name="correo" placeholder="you@example.com" required
+              [(ngModel)]="correo" [ngClass]="{
                 'is-invalid':
                   loginForm.controls['correo'] &&
                   loginForm.controls['correo'].invalid &&
                   loginForm.controls['correo'].touched
-              }"
-            />
-            <div
-              *ngIf="
-                loginForm.controls['correo'] &&
-                loginForm.controls['correo'].invalid &&
-                loginForm.controls['correo'].touched
-              "
-              class="invalid-feedback"
-            >
+              }" />
+            <div *ngIf="loginForm.controls['correo']?.invalid && loginForm.controls['correo']?.touched"
+              class="invalid-feedback">
               Por favor, ingrese su correo electrónico.
             </div>
           </div>
+          <!-- Campo Contraseña -->
           <div class="mb-3">
             <label for="password" class="form-label">Contraseña</label>
             <div class="input-group">
-              <input
-                [type]="showPassword ? 'text' : 'password'"
-                class="form-control form-control-lg"
-                id="password"
-                name="password"
-                placeholder="Ingrese su contraseña"
-                [(ngModel)]="password"
-                required
-                [ngClass]="{
+              <input [type]="showPassword ? 'text' : 'password'" class="form-control rounded-start-3" id="password" name="password"
+                placeholder="Ingrese su contraseña" [(ngModel)]="password" required [ngClass]="{
                   'is-invalid':
                     loginForm.controls['password'] &&
                     loginForm.controls['password'].invalid &&
                     loginForm.controls['password'].touched
-                }"
-              />
-              <button
-                type="button"
-                class="btn btn-outline-secondary"
-                (click)="togglePasswordVisibility()"
-              >
-                <i
-                  [ngClass]="showPassword ? 'bi bi-eye' : 'bi bi-eye-slash'"
-                ></i>
+                }" />
+              <button type="button" class="btn rounded-end-3" [ngClass]="showPassword ? 'btn-success' : 'btn-danger'"
+                (click)="togglePasswordVisibility()">
+                <i [ngClass]="showPassword ? 'bi bi-eye' : 'bi bi-eye-slash'"></i>
               </button>
             </div>
-            <div
-              *ngIf="
-                loginForm.controls['password'] &&
-                loginForm.controls['password'].invalid &&
-                loginForm.controls['password'].touched
-              "
-              class="invalid-feedback"
-            >
+            <div *ngIf="loginForm.controls['password']?.invalid && loginForm.controls['password']?.touched"
+              class="invalid-feedback">
               Por favor, ingrese su contraseña.
             </div>
           </div>
-          <small class="form-text"
-            ><a href="#" class="text-primary"
-              >¿Has olvidado tu contraseña comuniquese con el Admistrador?</a
-            ></small
-          >
-
-          <button
-            type="submit"
-            class="btn w-100 mt-3"
-            [ngClass]="{
+          <!-- Botón Iniciar Sesión -->
+          <button type="submit" class="btn w-100 mt-3 fw-bold rounded-3" [ngClass]="{
               'btn-danger': !isFormValid(),
               'btn-success': isFormValid()
-            }"
-            [disabled]="!isFormValid() || isLoading"
-          >
-            <span
-              *ngIf="isLoading"
-              class="spinner-border spinner-border-sm"
-              role="status"
-              aria-hidden="true"
-            ></span>
+            }" [disabled]="!isFormValid() || isLoading">
+            <span *ngIf="isLoading" class="spinner-border spinner-border-sm me-2" role="status"
+              aria-hidden="true"></span>
             Iniciar Sesión
           </button>
         </form>
-        <hr class="my-4" />
-
-        <p class="text-center">o inicia sesión con</p>
-        <div class="d-flex justify-content-around">
-          <button class="btn" style="background-color: #ff4800; color: white">
-            <!-- Google Button -->
-            <i class="bi bi-google"></i> Google
-          </button>
-          <button class="btn btn-primary border">
-            <i class="bi bi-facebook"></i> Facebook
-          </button>
-        </div>
       </div>
-    </div>
-
-    <!-- Imagen lateral -->
-    <div
-      class="col-md-3 d-none d-md-flex justify-content-center align-items-center"
-    >
-      <img
-        src="https://www.bancodelaustro.com/portals/0/RegresoAClases/assets/images/gente.png"
-        class="img-fluid"
-        alt="E-commerce illustration"
-      />
     </div>
   </div>
 
@@ -151,7 +80,7 @@
       Continuar
     </button>
   </div>
-  
+
   <!-- Ventana emergente de error -->
   <div *ngIf="error"
     class="alert alert-danger position-fixed top-50 start-50 translate-middle text-center p-3 p-sm-4 shadow rounded"
@@ -164,5 +93,4 @@
       Intentar de nuevo
     </button>
   </div>
-
 </div>

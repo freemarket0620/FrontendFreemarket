@@ -31,13 +31,9 @@ interface LoginResponse {
 })
 export class ServicesService {
   private apiUrl = 'https://backendfreemarket.onrender.com/api/';
-  /* https://backendfreemarket.onrender.com */
 
- /*  private apiUrl = 'http://localhost:8000/api/'; */
- /*  private apiUrl =
-  window.location.hostname.includes('localhost')
-    ? 'http://localhost:8000/api/'
-    : 'https://backenddj-cc4p.onrender.com/api/'; */
+ /*  private apiUrl = 'http://localhost:8000/api/';
+  */
 
   private productosSubject = new BehaviorSubject<Producto[]>([]);
   productos$ = this.productosSubject.asObservable();
