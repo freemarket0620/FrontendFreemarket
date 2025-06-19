@@ -31,6 +31,7 @@ interface LoginResponse {
 })
 export class ServicesService {
   private apiUrl = 'https://backendfreemarket.onrender.com/api/';
+  /* https://backendfreemarket.onrender.com */
 
  /*  private apiUrl = 'http://localhost:8000/api/'; */
  /*  private apiUrl =
