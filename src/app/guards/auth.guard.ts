@@ -58,35 +58,3 @@ export const authGuard: CanActivateFn = (route, state) => {
     return false;
   }
 };
-/* export const authGuard: CanActivateFn = (route, state) => {
-  const router = inject(Router);
-  const storageService = inject(StorageService);
-
-  // Verifica si estamos en un entorno del navegador
-  if (typeof window !== 'undefined') {
-    const token = storageService.getItem('token');
-
-    const roles = JSON.parse(localStorage.getItem('roles') || '[]');
-    const permisos = JSON.parse(localStorage.getItem('permisos') || '[]');
-
-    if (token && roles.length > 0 && permisos.length > 0) {
-      // Si hay un token y el usuario tiene roles y permisos, permite el acceso a la ruta
-      return true;
-    } else {
-      // Si no hay token o no tiene roles/permisos, redirige al usuario a la página de login
-      router.navigate(['/index']);
-      return false;
-    }
-    if (!token) {
-      router.navigate(['/index']);
-      return false;
-    }
-
-    // Si hay token, permite el acceso a la ruta
-    return true;
-  } else {
-    // Si no estamos en un entorno del navegador, redirige o maneja el acceso de otra manera
-    router.navigate(['/index']);
-    return false;
-  }
-}; */

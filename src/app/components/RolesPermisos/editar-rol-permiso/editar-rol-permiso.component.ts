@@ -12,6 +12,7 @@ import { ServicesService } from '../../../Services/services.service';
 import { CommonModule } from '@angular/common';
 import { OkComponent } from '../../Mensajes/ok/ok.component';
 import { ErrorComponent } from '../../Mensajes/error/error.component';
+import { ActivatedRoute, Router } from '@angular/router';
 
 @Component({
   selector: 'app-editar-rol-permiso',
@@ -34,18 +35,17 @@ export class EditarRolPermisoComponent implements OnInit {
   manejarModal: boolean = false; // Controla la visibilidad del modal
   mensajeModal: string = ''; // Mensaje para el modal
   errorModal: string = ''; // Mensaje de error para el modal
-  @Input() rolPermisoId: number | null = null; // ID del RolPermiso a editar
-  @Output() listarRolPermisoEditado = new EventEmitter<void>(); // Evento para notificar que se ha editado un RolPermiso
-
-  constructor(private rolPermisoService: ServicesService) {}
+  
+  constructor(private rolPermisoService: ServicesService,private route: ActivatedRoute,
+      private router: Router) {}
 
   ngOnInit(): void {
     this.loadRoles(); // Cargar roles
     this.loadPermisos(); // Cargar permisos
-    if (this.rolPermisoId !== null) {
-      this.loadRolPermisoData(this.rolPermisoId); // Cargar datos del RolPermiso si el ID es válido
-    } else {
-      console.error('rolPermisoId es nulo o no definido');
+    
+    const id = Number(this.route.snapshot.paramMap.get('id'));
+    if (id) {
+      this.loadRolPermisoData(id);
     }
   }
 
@@ -107,11 +107,13 @@ export class EditarRolPermisoComponent implements OnInit {
     }
   }
 
-  manejarOk() {
-    this.mensajeModal = ''; // Cerrar el modal
-    this.listarRolPermisoEditado.emit(); // Emitir el evento para listar categorías
+  manejarOk(): void {
+    this.mensajeModal = '';
+    this.router.navigate(['panel-control/listar-roles-permisos']);
   }
-
+  volver(): void {
+    this.router.navigate(['panel-control/listar-roles-permisos']);
+  }
   manejarError() {
     this.errorModal = '';
   }

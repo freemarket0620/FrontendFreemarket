@@ -11,6 +11,7 @@ import { Categoria } from '../../../Models/models';
 import { CommonModule } from '@angular/common';
 import { OkComponent } from '../../Mensajes/ok/ok.component';
 import { ErrorComponent } from '../../Mensajes/error/error.component';
+import { Router } from '@angular/router';
 
 @Component({
   selector: 'app-registrar-categoria',
@@ -32,7 +33,7 @@ export class RegistrarCategoriaComponent {
   manejarModal: boolean = false;
   mensajeModal: string = '';
 
-  constructor(private fb: FormBuilder, private userService: ServicesService) {
+  constructor(private fb: FormBuilder, private userService: ServicesService, private router: Router) {
     this.categoriasForm = this.fb.group({
       nombreCategoria: ['', Validators.required],
       descripcion: ['', Validators.required],
@@ -40,10 +41,9 @@ export class RegistrarCategoriaComponent {
   }
 
   register() {
-    // Validar el campo de nombreCategoria
     if (this.categoriasForm.get('nombreCategoria')?.invalid) {
       this.errorModal = 'El campo de nombre de la categoría es obligatorio';
-      return; // No necesitas manejar el modal aquí, ya que se mostrará automáticamente
+      return; 
     }
 
     if (this.categoriasForm.valid) {
@@ -68,11 +68,13 @@ export class RegistrarCategoriaComponent {
     }
   }
 
-  manejarOk() {
-    this.mensajeModal = ''; // Ocultar el modal de éxito
-    this.listarCategorias.emit();
+  manejarOk(): void {
+    this.mensajeModal = '';
+    this.router.navigate(['panel-control/listar-categorias']);
   }
-
+  volver(): void {
+    this.router.navigate(['panel-control/listar-categorias']);
+  }
   manejarError() {
     this.errorModal = ''; // Ocultar el modal de error
   }

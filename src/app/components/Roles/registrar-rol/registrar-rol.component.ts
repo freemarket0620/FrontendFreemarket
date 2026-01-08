@@ -11,6 +11,7 @@ import { Role } from '../../../Models/models';
 import { CommonModule } from '@angular/common';
 import { OkComponent } from '../../Mensajes/ok/ok.component';
 import { ErrorComponent } from '../../Mensajes/error/error.component';
+import { Router } from '@angular/router';
 
 @Component({
   selector: 'app-registrar-rol',
@@ -27,11 +28,10 @@ import { ErrorComponent } from '../../Mensajes/error/error.component';
 })
 export class RegistrarRolComponent {
   rolesForm: FormGroup;
-  @Output() listarRoles = new EventEmitter<void>();
   errorModal: string = '';
   mensajeModal: string = '';
 
-  constructor(private fb: FormBuilder, private userService: ServicesService) {
+  constructor(private fb: FormBuilder, private userService: ServicesService, private router: Router) {
     this.rolesForm = this.fb.group({
       nombreRol: ['', Validators.required],
     });
@@ -63,10 +63,12 @@ export class RegistrarRolComponent {
       this.errorModal = 'Formulario no válido';
     }
   }
-
+  volver(): void {
+    this.router.navigate(['panel-control/listar-roles']);
+  }
   manejarOk() {
     this.mensajeModal = '';
-    this.listarRoles.emit();
+    this.router.navigate(['panel-control/listar-roles']);
   }
 
   manejarError() {

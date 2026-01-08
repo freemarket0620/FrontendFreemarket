@@ -1,16 +1,21 @@
 <div class="container">
   <h2 class="text-center">Lista de Permisos</h2>
-
   <!-- Campos de búsqueda -->
   <label class="fw-bold">Campo de búsqueda</label>
   <div class="row mb-4 gy-3">
     <div class="col-12 col-md-10">
-      <label for="nombreInput" class="form-label text-start d-block">Nombre del Permiso</label>
-      <input type="text" class="form-control" placeholder="Buscar por nombre" [(ngModel)]="searchNombrePermiso" />
+      <input
+        type="text"
+        class="form-control"
+        placeholder="Buscar por nombre"
+        [(ngModel)]="searchNombrePermiso"
+      />
     </div>
     <div class="col-12 col-md-2 d-flex align-items-end">
-      <button class="btn btn-success w-100 d-flex align-items-center justify-content-center"
-        (click)="registrarPermiso()">
+      <button
+        class="btn btn-success w-100 d-flex align-items-center justify-content-center"
+        (click)="registrarPermiso()"
+      >
         <i class="bi bi-journal-plus fs-5 me-2"></i>
         Registrar
       </button>
@@ -29,10 +34,13 @@
         </tr>
       </thead>
       <tbody>
-        <tr *ngFor="let permiso of filteredPermisos()" [ngClass]="{
+        <tr
+          *ngFor="let permiso of filteredPermisos()"
+          [ngClass]="{
             'table-danger': !permiso.estado_Permiso,
             'table-success': permiso.estado_Permiso
-          }">
+          }"
+        >
           <td class="text-start">{{ permiso.nombre_permiso }}</td>
           <td class="text-start">{{ permiso.descripcion }}</td>
           <td class="text-center">
@@ -40,12 +48,27 @@
           </td>
           <td class="text-center">
             <div class="d-flex flex-wrap gap-2 justify-content-center">
-              <button class="btn btn-primary" (click)="editarPermiso(permiso.id)">
+              <button
+                class="btn btn-primary"
+                (click)="editarPermiso(permiso.id)"
+              >
                 <i class="bi bi-pencil-square me-1"></i>Editar
               </button>
-              <button class="btn" [ngClass]="permiso.estado_Permiso ? 'btn-danger' : 'btn-success'"
-                (click)="togglePermisoActivo(permiso)">
-                <i [ngClass]="permiso.estado_Permiso ? 'fas fa-toggle-off' : 'fas fa-toggle-on'" class="me-1"></i>
+              <button
+                class="btn"
+                [ngClass]="
+                  permiso.estado_Permiso ? 'btn-danger' : 'btn-success'
+                "
+                (click)="togglePermisoActivo(permiso)"
+              >
+                <i
+                  [ngClass]="
+                    permiso.estado_Permiso
+                      ? 'fas fa-toggle-off'
+                      : 'fas fa-toggle-on'
+                  "
+                  class="me-1"
+                ></i>
                 {{ permiso.estado_Permiso ? "Desactivar" : "Activar" }}
               </button>
             </div>
@@ -57,12 +80,21 @@
 
   <!-- Paginación -->
   <div
-    class="d-flex flex-wrap justify-content-center justify-content-md-between align-items-center mt-3 gap-2 text-center">
-    <button class="btn btn-secondary" (click)="previousPage()" [disabled]="page === 1">
+    class="d-flex flex-wrap justify-content-center justify-content-md-between align-items-center mt-3 gap-2 text-center"
+  >
+    <button
+      class="btn btn-secondary"
+      (click)="previousPage()"
+      [disabled]="page === 1"
+    >
       Anterior
     </button>
     <span class="px-2">Página {{ page }}</span>
-    <button class="btn btn-secondary" (click)="nextPage()" [disabled]="page * pageSize >= permisos.length">
+    <button
+      class="btn btn-secondary"
+      (click)="nextPage()"
+      [disabled]="page * pageSize >= permisos.length"
+    >
       Siguiente
     </button>
   </div>

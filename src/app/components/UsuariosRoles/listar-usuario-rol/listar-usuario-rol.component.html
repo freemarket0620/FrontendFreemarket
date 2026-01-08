@@ -5,12 +5,18 @@
   <label class="fw-bold">Campo de búsqueda</label>
   <div class="row mb-4 gy-3">
     <div class="col-12 col-md-10">
-      <label for="nombreInput" class="form-label text-start d-block">Nombre del Usuario</label>
-      <input type="text" class="form-control" placeholder="Buscar por nombre" [(ngModel)]="searchNombreUsuario" />
+      <input
+        type="text"
+        class="form-control"
+        placeholder="Buscar por nombre"
+        [(ngModel)]="searchNombreUsuario"
+      />
     </div>
     <div class="col-12 col-md-2 d-flex align-items-end">
-      <button class="btn btn-success w-100 d-flex align-items-center justify-content-center"
-        (click)="registrarUsuarioRole()">
+      <button
+        class="btn btn-success w-100 d-flex align-items-center justify-content-center"
+        (click)="registrarUsuarioRole()"
+      >
         <i class="bi bi-journal-plus fs-5 me-2"></i>
         Registrar
       </button>
@@ -39,7 +45,10 @@
           <td class="text-start">{{ usuarioRol.usuario.nombre_usuario }}</td>
           <td class="text-start">{{ usuarioRol.rol.nombre_rol }}</td>
           <td class="text-center">
-            <button class="btn btn-primary" (click)="editarUsuarioRole(usuarioRol.id)">
+            <button
+              class="btn btn-primary"
+              (click)="editarUsuarioRole(usuarioRol.id)"
+            >
               <i class="bi bi-pencil-square me-1"></i>Editar
             </button>
           </td>
@@ -51,12 +60,21 @@
   <!-- Paginación -->
   <div
     class="d-flex flex-wrap justify-content-center justify-content-md-between align-items-center mt-3 gap-2 text-center"
-    *ngIf="usuarioRoles.length > 0">
-    <button class="btn btn-secondary" (click)="previousPage()" [disabled]="page === 1">
+    *ngIf="usuarioRoles.length > 0"
+  >
+    <button
+      class="btn btn-secondary"
+      (click)="previousPage()"
+      [disabled]="page === 1"
+    >
       Anterior
     </button>
     <span class="px-2">Página {{ page }}</span>
-    <button class="btn btn-secondary" (click)="nextPage()" [disabled]="page * pageSize >= usuarioRoles.length">
+    <button
+      class="btn btn-secondary"
+      (click)="nextPage()"
+      [disabled]="page * pageSize >= usuarioRoles.length"
+    >
       Siguiente
     </button>
   </div>

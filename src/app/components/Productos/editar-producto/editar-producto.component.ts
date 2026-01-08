@@ -11,6 +11,7 @@ import { ServicesService } from '../../../Services/services.service';
 import { CommonModule } from '@angular/common';
 import { OkComponent } from '../../Mensajes/ok/ok.component';
 import { ErrorComponent } from '../../Mensajes/error/error.component';
+import { ActivatedRoute, Router } from '@angular/router';
 
 @Component({
   selector: 'app-editar-producto',
@@ -28,15 +29,15 @@ export class EditarProductoComponent implements OnInit {
   imagenPreview: string | ArrayBuffer | null = null;
   imagenFile: File | null = null;
 
-  @Input() productoId: number | null = null;
-  @Output() listarProductoEditado = new EventEmitter<void>();
-
-  constructor(private productosService: ServicesService) {}
+  constructor(private productosService: ServicesService,    private route: ActivatedRoute,
+      private router: Router) {}
 
   ngOnInit(): void {
-    if (this.productoId !== null) {
-      this.loadProductoData(this.productoId);
-      this.loadCategorias();
+
+    const id = Number(this.route.snapshot.paramMap.get('id'));
+    if (id) {
+      this.loadProductoData(id);
+       this.loadCategorias();
     }
   }
 
@@ -163,11 +164,13 @@ export class EditarProductoComponent implements OnInit {
     }
   }
 
-  manejarOk() {
+  manejarOk(): void {
     this.mensajeModal = '';
-    this.listarProductoEditado.emit();
+    this.router.navigate(['panel-control/listar-productos']);
   }
-
+  volver(): void {
+    this.router.navigate(['panel-control/listar-productos']);
+  }
   manejarError() {
     this.errorModal = '';
   }

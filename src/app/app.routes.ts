@@ -31,192 +31,84 @@ import { DashboardComponent } from './components/Dashboard/dashboard/dashboard.c
 import { PerfilComponent } from './components/Usuarios/perfil/perfil.component';
 import { TargetasComponent } from './components/CalculoTargetas/targetas/targetas.component';
 import { EjBarraComponent } from './components/ej-barra/ej-barra.component';
+import { RegistrarRecargaProductoComponent } from './components/juegos/registrar-recarga-producto/registrar-recarga-producto.component';
+import { EditarRecargaProductoComponent } from './components/juegos/editar-recarga-producto/editar-recarga-producto.component';
+import { ListarRecargaProductoComponent } from './components/juegos/listar-recarga-producto/listar-recarga-producto.component';
+import { RegistrarDetalleVentaRecargaComponent } from './components/juegos/registrar-detalle-venta-recarga/registrar-detalle-venta-recarga.component';
+import { EditarDetalleVentaRecargaComponent } from './components/juegos/editar-detalle-venta-recarga/editar-detalle-venta-recarga.component';
+import { ListarDetalleVentaRecargaComponent } from './components/juegos/listar-detalle-venta-recarga/listar-detalle-venta-recarga.component';
+
 
 export const routes: Routes = [
   { path: '', component: IndexComponent },
-  { path: 'login', component: LoginComponent },
   { path: 'index', component: IndexComponent },
+  { path: 'login', component: LoginComponent },
+
   {
     path: 'panel-control',
     component: PanelControlComponent,
-    canActivate: [authGuard],
-  },
+    canActivate: [authGuard],  // Agregado: Protege toda la ruta del panel
+    children: [
+      /* ================= USUARIOS ================= */
+      { path: 'registrar-usuarios', component: RegistrarUsuarioComponent },
+      { path: 'editar-usuarios/:id', component: EditarUsuarioComponent },
+      { path: 'listar-usuarios', component: ListarUsuarioComponent },
 
-  {
-    path: 'registrar-usuarios',
-    component: RegistrarUsuarioComponent,
-    canActivate: [authGuard],
-    data: { roles: ['admin540'], permisos: ['permiso540'] },
-  },
-  {
-    path: 'editar-usuarios/:id',
-    component: EditarUsuarioComponent,
-    canActivate: [authGuard],
-    data: { roles: ['admin540'], permisos: ['permiso540'] },
-  },
-  {
-    path: 'listar-usuarios',
-    component: ListarUsuarioComponent,
-    canActivate: [authGuard],
-    data: { roles: ['admin540'], permisos: ['permiso540'] },
-  },
+      /* ================= ROLES ================= */
+      { path: 'registrar-roles', component: RegistrarRolComponent },
+      { path: 'editar-roles/:id', component: EditarRolComponent },
+      { path: 'listar-roles', component: ListarRolComponent },
 
-  {
-    path: 'registrar-roles',
-    component: RegistrarRolComponent,
-    canActivate: [authGuard],
-    data: { roles: ['admin540'], permisos: ['permiso540'] },
-  },
-  {
-    path: 'editar-roles',
-    component: EditarRolComponent,
-    canActivate: [authGuard],
-    data: { roles: ['admin540'], permisos: ['permiso540'] },
-  },
-  {
-    path: 'listar-roles',
-    component: ListarRolComponent,
-    canActivate: [authGuard],
-    data: { roles: ['admin540'], permisos: ['permiso540'] },
-  },
+      /* ================= PERMISOS ================= */
+      { path: 'registrar-permisos', component: RegistrarPermisoComponent },
+      { path: 'editar-permisos/:id', component: EditarPermisoComponent },
+      { path: 'listar-permisos', component: ListarPermisoComponent },
 
-  {
-    path: 'registrar-permisos',
-    component: RegistrarPermisoComponent,
-    canActivate: [authGuard],
-    data: { roles: ['admin540'], permisos: ['permiso540'] },
-  },
-  {
-    path: 'editar-permisos',
-    component: EditarPermisoComponent,
-    canActivate: [authGuard],
-    data: { roles: ['admin540'], permisos: ['permiso540'] },
-  },
-  {
-    path: 'listar-permisos',
-    component: ListarPermisoComponent,
-    canActivate: [authGuard],
-    data: { roles: ['admin540'], permisos: ['permiso540'] },
-  },
+      /* ========== USUARIO - ROLES ========== */
+      { path: 'registrar-usuarios-roles', component: RegistrarUsuarioRolComponent },
+      { path: 'editar-usuarios-roles/:id', component: EditarUsuarioRolComponent },
+      { path: 'listar-usuarios-roles', component: ListarUsuarioRolComponent },
 
-  {
-    path: 'registrar-usuarios-roles',
-    component: RegistrarUsuarioRolComponent,
-    canActivate: [authGuard],
-    data: { roles: ['admin540'], permisos: ['permiso540'] },
-  },
-  {
-    path: 'editar-usuarios-roles',
-    component: EditarUsuarioRolComponent,
-    canActivate: [authGuard],
-    data: { roles: ['admin540'], permisos: ['permiso540'] },
-  },
-  {
-    path: 'listar-usuarios-roles',
-    component: ListarUsuarioRolComponent,
-    canActivate: [authGuard],
-    data: { roles: ['admin540'], permisos: ['permiso540'] },
-  },
+      /* ========== ROLES - PERMISOS ========== */
+      { path: 'registrar-roles-permisos', component: RegistrarRolPermisoComponent },
+      { path: 'editar-roles-permisos/:id', component: EditarRolPermisoComponent },
+      { path: 'listar-roles-permisos', component: ListarRolPermisoComponent },
 
-  {
-    path: 'registrar-roles-permisos',
-    component: RegistrarRolPermisoComponent,
-    canActivate: [authGuard],
-    data: { roles: ['admin540'], permisos: ['permiso540'] },
-  },
-  {
-    path: 'editar-roles-permisos',
-    component: EditarRolPermisoComponent,
-    canActivate: [authGuard],
-    data: { roles: ['admin540'], permisos: ['permiso540'] },
-  },
-  {
-    path: 'listar-roles-permisos',
-    component: ListarRolPermisoComponent,
-    canActivate: [authGuard],
-    data: { roles: ['admin540'], permisos: ['permiso540'] },
-  },
-  /* seccion de ventas de los productos  */
-  {
-    path: 'registrar-categorias',
-    component: RegistrarCategoriaComponent,
-    canActivate: [authGuard],
-    data: { roles: ['admin540'], permisos: ['permiso540'] },
-  },
-  {
-    path: 'editar-categorias',
-    component: EditarCategoriaComponent,
-    canActivate: [authGuard],
-    data: { roles: ['admin540'], permisos: ['permiso540'] },
-  },
-  {
-    path: 'listar-categorias',
-    component: ListarCategoriaComponent,
-    canActivate: [authGuard],
-    data: { roles: ['admin540'], permisos: ['permiso540'] },
-  },
+      /* ================= CATEGORÍAS ================= */
+      { path: 'registrar-categorias', component: RegistrarCategoriaComponent },
+      { path: 'editar-categorias/:id', component: EditarCategoriaComponent },
+      { path: 'listar-categorias', component: ListarCategoriaComponent },
 
-  {
-    path: 'registrar-productos',
-    component: RegistrarProductoComponent,
-    canActivate: [authGuard],
-    data: { roles: ['admin540'], permisos: ['permiso540'] },
-  },
-  {
-    path: 'editar-productos',
-    component: EditarProductoComponent,
-    canActivate: [authGuard],
-    data: { roles: ['admin540'], permisos: ['permiso540'] },
-  },
-  {
-    path: 'listar-productos',
-    component: ListarProductoComponent,
-    canActivate: [authGuard],
-    data: { roles: ['admin540'], permisos: ['permiso540'] },
-  },
+      /* ================= PRODUCTOS ================= */
+      { path: 'registrar-productos', component: RegistrarProductoComponent },
+      { path: 'editar-productos/:id', component: EditarProductoComponent },
+      { path: 'listar-productos', component: ListarProductoComponent },
+      { path: 'listar-productos-empleado', component: ListarProductosEmpleadoComponent },
 
-  {
-    path: 'listar-productos-empleado',
-    component: ListarProductosEmpleadoComponent,
-    canActivate: [authGuard],
-    data: { roles: ['admin540'], permisos: ['permiso540'] },
-  },
 
-  {
-    path: 'listar-ventas',
-    component: ListarVentaComponent,
-    canActivate: [authGuard],
-    data: { roles: ['admin540'], permisos: ['permiso540'] },
-  },
+      /* ================= JUEGOS ================= */
+      { path: 'registrar-RecargaProducto', component: RegistrarRecargaProductoComponent },
+      { path: 'editar-RecargaProducto/:id', component: EditarRecargaProductoComponent },
+      { path: 'listar-RecargaProducto', component: ListarRecargaProductoComponent },
+      
+      /* ================= JUEGOS ================= */
+      { path: 'registrar-DetalleVentaRecarga', component: RegistrarDetalleVentaRecargaComponent },
+      { path: 'editar-DetalleVentaRecarga/:id', component: EditarDetalleVentaRecargaComponent },
+      { path: 'listar-DetalleVentaRecarga', component: ListarDetalleVentaRecargaComponent },
 
-  
-  {
-    path: 'listar-detalle-ventas',
-    component: ListarDetalleVentaComponent,
-    canActivate: [authGuard],
-    data: { roles: ['admin540'], permisos: ['permiso540'] },
-  },
-  /* seccion de perfil y dashboard */
-  {
-    path: 'dashboardComponent',
-    component: DashboardComponent,
-    canActivate: [authGuard],
-    data: { roles: ['admin540'], permisos: ['permiso540'] },
-  },
-  {
-    path: 'perfil',
-    component: PerfilComponent,
-    canActivate: [authGuard],
-    data: { roles: ['admin540'], permisos: ['permiso540'] },
-  },
-  /* esta es la seccio  de prestamos  */
+      /* ================= VENTAS ================= */
+      { path: 'listar-ventas', component: ListarVentaComponent },
+      { path: 'listar-detalle-ventas', component: ListarDetalleVentaComponent },
 
-  {
-    path: 'targetas',
-    component: TargetasComponent,
-    canActivate: [authGuard],
-    data: { roles: ['admin540'], permisos: ['permiso540'] },
+      /* ================= DASHBOARD / PERFIL ================= */
+      { path: 'dashboardComponent', component: DashboardComponent },
+      { path: 'perfil', component: PerfilComponent },
+
+      /* ================= TARJETAS ================= */
+      { path: 'targetas', component: TargetasComponent },
+
+      /* ================= DEFAULT ================= */
+      { path: '', component: DashboardComponent },  // Cambiado: Usa DashboardComponent como default (asegúrate de que exista)
+    ],
   },
-   { path: '', component: EjBarraComponent, canActivate: [authGuard],
-    data: { roles: ['admin540'], permisos: ['permiso540'] }, }, 
 ];

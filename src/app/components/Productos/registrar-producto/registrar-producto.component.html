@@ -154,11 +154,12 @@
         <!-- Botón de Enviar -->
         <button
           type="submit"
-          class="btn btn-primary"
+          class="btn btn-primary me-2"
           [disabled]="productoForm.invalid"
         >
           Registrar Producto
         </button>
+        <button class="btn btn-success" (click)="volver()">Volver</button>
       </div>
       <div class="col-md-4 text-center">
         <div class="form-group">

@@ -11,6 +11,7 @@ import { Permiso } from '../../../Models/models';
 import { CommonModule } from '@angular/common';
 import { OkComponent } from '../../Mensajes/ok/ok.component';
 import { ErrorComponent } from '../../Mensajes/error/error.component';
+import { Router } from '@angular/router';
 
 @Component({
   selector: 'app-registrar-permiso',
@@ -27,11 +28,10 @@ import { ErrorComponent } from '../../Mensajes/error/error.component';
 })
 export class RegistrarPermisoComponent {
   permisosForm: FormGroup;
-  @Output() listarPermisos = new EventEmitter<void>();
   errorModal: string = '';
   mensajeModal: string = '';
 
-  constructor(private fb: FormBuilder, private userService: ServicesService) {
+  constructor(private fb: FormBuilder, private userService: ServicesService, private router: Router) {
     this.permisosForm = this.fb.group({
       nombrePermiso: ['', Validators.required],
       descripcion: ['', Validators.required],
@@ -66,9 +66,12 @@ export class RegistrarPermisoComponent {
       this.errorModal = 'Formulario no válido';
     }
   }
+  volver(): void {
+    this.router.navigate(['panel-control/listar-permisos']);
+  }
   manejarOk() {
     this.mensajeModal = '';
-    this.listarPermisos.emit();
+    this.router.navigate(['panel-control/listar-permisos']);
   }
   manejarError() {
     this.errorModal = '';

@@ -1,0 +1,637 @@
+import { CommonModule } from '@angular/common';
+import { NgbDropdownModule } from '@ng-bootstrap/ng-bootstrap';
+import {
+  Component,
+  HostListener,
+  OnInit,
+  ViewChild
+} from '@angular/core';
+import { Router } from '@angular/router';
+import { HttpClientModule } from '@angular/common/http';
+import { NgForm } from '@angular/forms';
+
+import { ServicesService } from '../../Services/services.service';
+import { StorageService } from '../../Services/Storage.service';
+
+/* ===== Usuarios ===== */
+import { EditarUsuarioComponent } from '../Usuarios/editar-usuario/editar-usuario.component';
+import { RegistrarUsuarioComponent } from '../Usuarios/registrar-usuario/registrar-usuario.component';
+import { ListarUsuarioComponent } from '../Usuarios/listar-usuario/listar-usuario.component';
+import { PerfilComponent } from '../Usuarios/perfil/perfil.component';
+
+/* ===== Roles ===== */
+import { ListarRolComponent } from '../Roles/listar-rol/listar-rol.component';
+import { RegistrarRolComponent } from '../Roles/registrar-rol/registrar-rol.component';
+import { EditarRolComponent } from '../Roles/editar-rol/editar-rol.component';
+
+/* ===== Permisos ===== */
+import { ListarPermisoComponent } from '../Permisos/listar-permiso/listar-permiso.component';
+import { RegistrarPermisoComponent } from '../Permisos/registrar-permiso/registrar-permiso.component';
+import { EditarPermisoComponent } from '../Permisos/editar-permiso/editar-permiso.component';
+
+/* ===== Usuarios Roles ===== */
+import { ListarUsuarioRolComponent } from '../UsuariosRoles/listar-usuario-rol/listar-usuario-rol.component';
+import { RegistrarUsuarioRolComponent } from '../UsuariosRoles/registrar-usuario-rol/registrar-usuario-rol.component';
+import { EditarUsuarioRolComponent } from '../UsuariosRoles/editar-usuario-rol/editar-usuario-rol.component';
+
+/* ===== Roles Permisos ===== */
+import { ListarRolPermisoComponent } from '../RolesPermisos/listar-rol-permiso/listar-rol-permiso.component';
+import { RegistrarRolPermisoComponent } from '../RolesPermisos/registrar-rol-permiso/registrar-rol-permiso.component';
+import { EditarRolPermisoComponent } from '../RolesPermisos/editar-rol-permiso/editar-rol-permiso.component';
+
+/* ===== Categorías ===== */
+import { ListarCategoriaComponent } from '../Categorias/listar-categoria/listar-categoria.component';
+import { RegistrarCategoriaComponent } from '../Categorias/registrar-categoria/registrar-categoria.component';
+import { EditarCategoriaComponent } from '../Categorias/editar-categoria/editar-categoria.component';
+
+/* ===== Productos ===== */
+import { ListarProductoComponent } from '../Productos/listar-producto/listar-producto.component';
+import { RegistrarProductoComponent } from '../Productos/registrar-producto/registrar-producto.component';
+import { EditarProductoComponent } from '../Productos/editar-producto/editar-producto.component';
+import { ListarProductosEmpleadoComponent } from '../Productos/listar-productos-empleado/listar-productos-empleado.component';
+
+/* ===== Ventas ===== */
+import { ListarDetalleVentaComponent } from '../DetalleVentas/listar-detalle-venta/listar-detalle-venta.component';
+import { ListarVentaComponent } from '../Ventas/listar-venta/listar-venta.component';
+
+/* ===== Dashboard / Otros ===== */
+import { DashboardComponent } from '../Dashboard/dashboard/dashboard.component';
+import { TargetasComponent } from '../CalculoTargetas/targetas/targetas.component';
+
+@Component({
+  selector: 'app-panel-control',
+  standalone: true,
+  imports: [
+    CommonModule,
+    HttpClientModule,
+    NgbDropdownModule,
+
+    RegistrarUsuarioComponent,
+    EditarUsuarioComponent,
+    ListarUsuarioComponent,
+
+    ListarRolComponent,
+    RegistrarRolComponent,
+    EditarRolComponent,
+
+    ListarPermisoComponent,
+    RegistrarPermisoComponent,
+    EditarPermisoComponent,
+
+    ListarUsuarioRolComponent,
+    RegistrarUsuarioRolComponent,
+    EditarUsuarioRolComponent,
+
+    ListarRolPermisoComponent,
+    RegistrarRolPermisoComponent,
+    EditarRolPermisoComponent,
+
+    ListarCategoriaComponent,
+    RegistrarCategoriaComponent,
+    EditarCategoriaComponent,
+
+    RegistrarProductoComponent,
+    EditarProductoComponent,
+    ListarProductoComponent,
+
+    ListarDetalleVentaComponent,
+    ListarVentaComponent,
+    ListarProductosEmpleadoComponent,
+
+    DashboardComponent,
+    PerfilComponent,
+    TargetasComponent
+  ],
+  templateUrl: './panel-control.component.html',
+  styleUrl: './panel-control.component.css',
+})
+export class PanelControlComponent implements OnInit {
+
+  permisos: string[] = [];
+  roles: string[] = [];
+
+  nombre_usuario: string = '';
+  apellido: string | null = '';
+  imagenUrl: string | null = '';
+  usuario_id: number = 0;
+
+  componenteActual: string = 'app-dashboard';
+  idParaEditar: number = 0;
+
+  isSidebarOpen = false;
+  iconClass: string = 'fas fa-bars';
+  windowWidth: number = 0;
+
+  private openSubmenu: string | null = null;
+
+  constructor(
+    private storageService: StorageService,
+    private router: Router,
+    private authService: ServicesService
+  ) {}
+
+  /* =================== RESIZE =================== */
+  @HostListener('window:resize')
+  onResize() {
+    this.windowWidth = window.innerWidth;
+    this.isSidebarOpen = this.windowWidth >= 768;
+    this.iconClass = this.isSidebarOpen ? 'fas fa-times' : 'fas fa-bars';
+  }
+
+  /* =================== INIT =================== */
+  ngOnInit(): void {
+    const storedSidebarState = localStorage.getItem('isSidebarOpen');
+    this.isSidebarOpen = storedSidebarState === 'true';
+    this.iconClass = this.isSidebarOpen ? 'fas fa-times' : 'fas fa-bars';
+
+    if (typeof window === 'undefined') {
+      console.warn('localStorage no disponible');
+      return;
+    }
+
+    const token = this.storageService.getItem('token');
+    if (!token) {
+      this.router.navigate(['/index']);
+      return;
+    }
+
+    this.windowWidth = window.innerWidth;
+    this.isSidebarOpen = this.windowWidth >= 768;
+
+    const usuario = this.getUsuarioLocalStorage();
+    if (usuario) {
+      this.nombre_usuario = usuario.nombre_usuario || '';
+      this.apellido = usuario.apellido || '';
+      this.permisos = usuario.permisos || [];
+      this.roles = usuario.roles || [];
+      this.imagenUrl = usuario.imagen_url || '';
+      this.usuario_id = usuario.usuario_id || 0;
+    }
+
+    this.roles = JSON.parse(localStorage.getItem('roles') || '[]');
+    this.permisos = JSON.parse(localStorage.getItem('permisos') || '[]');
+  }
+
+  private getUsuarioLocalStorage() {
+    try {
+      const usuario = localStorage.getItem('usuario');
+      return usuario ? JSON.parse(usuario) : null;
+    } catch (error) {
+      console.error('Error al leer usuario', error);
+      return null;
+    }
+  }
+
+  /* =================== PERMISOS =================== */
+  puedeVer(permiso: string | string[]): boolean {
+    if (Array.isArray(permiso)) {
+      return permiso.some(p => this.permisos.includes(p));
+    }
+    return this.permisos.includes(permiso);
+  }
+
+  tieneRol(rol: string): boolean {
+    return this.roles.includes(rol);
+  }
+
+  /* =================== SESIÓN =================== */
+  logout(): void {
+    this.storageService.removeItem('token');
+    localStorage.removeItem('usuario');
+    localStorage.removeItem('roles');
+    localStorage.removeItem('permisos');
+    this.router.navigate(['/index']);
+  }
+
+  confirmarCerrarSesion() {
+    if (window.confirm('¿Está seguro de que desea cerrar sesión?')) {
+      this.logout();
+    }
+  }
+
+  onSelectChange(action: string) {
+    if (action === 'cerrarSesion') {
+      this.confirmarCerrarSesion();
+    }
+  }
+
+  /* =================== SIDEBAR =================== */
+  toggleSidebar() {
+    this.isSidebarOpen = !this.isSidebarOpen;
+    localStorage.setItem('isSidebarOpen', this.isSidebarOpen.toString());
+  }
+
+  toggleSubmenu(menu: string) {
+    this.openSubmenu = this.openSubmenu === menu ? null : menu;
+  }
+
+  isSubmenuOpen(menu: string): boolean {
+    return this.openSubmenu === menu;
+  }
+
+  mostrarComponente(componente: string, id?: number) {
+    this.componenteActual = componente;
+    if (id) this.idParaEditar = id;
+
+    if (componente.includes('Usuario')) {
+      this.openSubmenu = 'usuarios';
+    } else if (componente.includes('Ventas')) {
+      this.openSubmenu = 'VentasProductos';
+    }
+  }
+
+  handleItemClick() {
+    this.openSubmenu = null;
+  }
+}
+<aside
+  class="sidebar position-fixed top-0 left-0 overflow-auto h-100"
+  [ngClass]="{ 'sidebar-hidden': !isSidebarOpen }"
+>
+  <div class="p-3 text-center content p-0 bounce-content">
+    <hr class="text-dark" />
+    <hr class="text-dark" />
+    <p class="text-dark">Nombre: {{ nombre_usuario }} {{ apellido }}</p>
+    <div *ngIf="roles.length > 0">
+      <p class="text-dark" *ngFor="let rol of roles">Rol: {{ rol }}</p>
+    </div>
+    <hr class="text-dark" />
+    <hr class="text-dark" />
+    <ul class="list-group">
+      <!-- Menú desplegable para la gestión de usuarios -->
+      <li
+        *ngIf="tieneRol('Administrador')"
+        class="d-flex align-items-center"
+        (click)="toggleSubmenu('usuarios')"
+      >
+        <div class="col-auto text-center pe-2">
+          <i class="bi bi-person fs-2 text-dark"></i>
+        </div>
+        <div class="col text-start">
+          <span class="text-dark">Gestión de Usuarios</span>
+        </div>
+        <div class="col-auto text-center pe-2">
+          <i class="bi bi-chevron-right text-dark"></i>
+        </div>
+      </li>
+      <ul *ngIf="isSubmenuOpen('usuarios')" class="list-group ps-3">
+        <li
+          *ngIf="puedeVer('registrarUsuarios')"
+          class="d-flex align-items-center"
+          (click)="mostrarComponente('VerUsuario')"
+        >
+          <div class="col-auto text-center pe-2">
+            <i class="bi bi-person-plus fs-2 text-dark"></i>
+          </div>
+          <div class="col text-start">
+            <span class="text-dark">Usuarios</span>
+          </div>
+        </li>
+        <li
+          *ngIf="puedeVer('registrarRoles')"
+          class="d-flex align-items-center"
+          (click)="mostrarComponente('VerRoles')"
+        >
+          <div class="col-auto text-center pe-2">
+            <i class="bi bi-people fs-2 text-dark"></i>
+          </div>
+          <div class="col text-start"><span class="text-dark">Roles</span></div>
+        </li>
+        <li
+          *ngIf="puedeVer('registrarPermisos')"
+          class="d-flex align-items-center"
+          (click)="mostrarComponente('VerPermisos')"
+        >
+          <div class="col-auto text-center pe-2">
+            <i class="bi bi-lock fs-2 text-dark"></i>
+          </div>
+          <div class="col text-start">
+            <span class="text-dark">Permisos</span>
+          </div>
+        </li>
+        <li
+          *ngIf="puedeVer('registrarUsuarioRoles')"
+          class="d-flex align-items-center"
+          (click)="mostrarComponente('VerUsuarioRoles')"
+        >
+          <div class="col-auto text-center pe-2">
+            <i class="bi bi-person-check fs-2 text-dark"></i>
+          </div>
+          <div class="col text-start">
+            <span class="text-dark">Usuario Roles</span>
+          </div>
+        </li>
+        <li
+          *ngIf="puedeVer('registrarRolesPermisos')"
+          class="d-flex align-items-center"
+          (click)="mostrarComponente('VerRolesPermisos')"
+        >
+          <div class="col-auto text-center pe-2">
+            <i class="bi bi-person-lock fs-2 text-dark"></i>
+          </div>
+          <div class="col text-start">
+            <span class="text-dark">Roles Permisos</span>
+          </div>
+        </li>
+      </ul>
+      <!-- sección de ventas y productos -->
+      <li
+        class="d-flex align-items-center"
+        (click)="toggleSubmenu('VentasProductos')"
+      >
+        <div class="col-auto text-center pe-2">
+          <i class="bi bi-shop fs-2 text-dark"></i>
+        </div>
+        <div class="col text-start">
+          <span class="text-dark">Productos y Ventas</span>
+        </div>
+        <div class="col-auto text-center pe-2">
+          <i class="bi bi-chevron-right text-dark"></i>
+        </div>
+      </li>
+      <ul *ngIf="isSubmenuOpen('VentasProductos')" class="list-group ps-3">
+        <li
+          *ngIf="puedeVer('registrarCategorias')"
+          class="d-flex align-items-center"
+          (click)="mostrarComponente('VerCategorias')"
+        >
+          <div class="col-auto text-center pe-2">
+            <i class="bi bi-tags fs-2 text-dark"></i>
+          </div>
+          <div class="col text-start">
+            <span class="text-dark">Categorías</span>
+          </div>
+        </li>
+        <li
+          *ngIf="puedeVer('registrarProductos')"
+          class="d-flex align-items-center"
+          (click)="mostrarComponente('VerProductos')"
+        >
+          <div class="col-auto text-center pe-2">
+            <i class="bi bi-shop fs-2 text-dark"></i>
+          </div>
+          <div class="col text-start">
+            <span class="text-dark">Productos</span>
+          </div>
+        </li>
+        <li
+          *ngIf="puedeVer(['registrarVenta', 'registrarVenta-Empleado'])"
+          class="d-flex align-items-center"
+          (click)="mostrarComponente('VerVenta')"
+        >
+          <div class="col-auto text-center pe-2">
+            <i class="bi bi-cart-check fs-2 text-dark"></i>
+          </div>
+          <div class="col text-start">
+            <span class="text-dark">Ver Venta</span>
+          </div>
+        </li>
+        <li
+          *ngIf="
+            puedeVer([
+              'registrarDetalleVenta',
+              'registrar-DetalleVenta-Empleado'
+            ])
+          "
+          class="d-flex align-items-center"
+          (click)="mostrarComponente('VerDetalleVenta')"
+        >
+          <div class="col-auto text-center pe-2">
+            <i class="bi bi-journal-bookmark fs-2 text-dark"></i>
+          </div>
+          <div class="col text-start">
+            <span class="text-dark">Detalle Ventas</span>
+          </div>
+        </li>
+        <li
+          *ngIf="
+            puedeVer([
+              'registrarVenta-DetalleVenta-Admistrador',
+              'registrarVenta-DetalleVenta-Empleado'
+            ])
+          "
+          class="d-flex align-items-center"
+          (click)="mostrarComponente('VerVenta-DetalleVenta')"
+        >
+          <div class="col-auto text-center pe-2">
+            <i class="bi bi-cart4 fs-2 text-dark"></i>
+          </div>
+          <div class="col text-start">
+            <span class="text-dark">Vender</span>
+          </div>
+        </li>
+        <li
+          *ngIf="puedeVer('PedidoTarjetas')"
+          class="d-flex align-items-center"
+          (click)="mostrarComponente('Tarjetas')"
+        >
+          <div class="col-auto text-center pe-2">
+            <i class="bi bi-postcard-heart fs-2 text-dark"></i>
+          </div>
+          <div class="col text-start">
+            <span class="text-dark">Tarjetas</span>
+          </div>
+        </li>
+      </ul>
+    </ul>
+  </div>
+</aside>
+<!-- Overlay para pantallas pequeñas -->
+<div
+  class="overlay"
+  (click)="toggleSidebar()"
+  [ngClass]="{ show: isSidebarOpen && windowWidth < 768 }"
+></div>
+<!-- Contenido principal -->
+<section id="wrapper" [ngClass]="{ shrink: isSidebarOpen }">
+  <nav
+    class="navbar navbar-expand-md sticky-top shadow-sm"
+    style="background-color: #e7e7e7; z-index: 1030"
+  >
+    <div class="container-fluid mx-2">
+      <!-- Botón para abrir/cerrar el sidebar -->
+      <button
+        class="btn btn-secondary d-flex justify-content-center align-items-center me-2"
+        style="width: 40px; height: 40px; font-size: 1.5rem"
+        (click)="toggleSidebar()"
+        title="Abrir/Cerrar menú"
+      >
+        <i class="fas fa-bars"></i>
+      </button>
+      <!-- Botones de acciones a la derecha -->
+      <div class="ms-auto d-flex align-items-center gap-2">
+        <!-- Botón con imagen como ícono SIN borde azul -->
+        <button
+          class="btn rounded-circle d-flex justify-content-center align-items-center p-0"
+          style="
+            width: 40px;
+            height: 40px;
+            outline: none;
+            box-shadow: none;
+            background: transparent;
+          "
+          title="Ver Perfil"
+          (click)="mostrarComponente('VerPerfil')"
+        >
+          <img
+            *ngIf="imagenUrl"
+            [src]="imagenUrl"
+            alt="Foto de usuario"
+            class="rounded-circle"
+            style="
+              width: 100%;
+              height: 100%;
+              object-fit: cover;
+              object-position: top;
+            "
+          />
+        </button>
+        <!-- Icono de Inicio -->
+        <button
+          class="btn rounded-circle d-flex justify-content-center align-items-center"
+          style="width: 40px; height: 40px"
+          title="Inicio"
+          (click)="mostrarComponente('app-dashboard'); handleItemClick()"
+        >
+          <i class="fas fa-home text-success fs-4"></i>
+        </button>
+        <!-- Icono de Cerrar Sesión -->
+        <button
+          class="btn rounded-circle d-flex justify-content-center align-items-center"
+          style="width: 40px; height: 40px"
+          title="Cerrar Sesión"
+          (click)="onSelectChange('cerrarSesion')"
+        >
+          <i class="fas fa-power-off text-danger fs-4"></i>
+          <!-- Cambiado a un icono de apagado -->
+        </button>
+      </div>
+    </div>
+  </nav>
+  <div
+    class="content d-flex justify-content-center align-items-center"
+    style="min-height: calc(100vh - 70px)"
+  >
+    <div class="text-center" style="margin-top: 10px; width: 100%">
+      <ng-container [ngSwitch]="componenteActual">
+        <app-dashboard *ngSwitchDefault />
+        <app-listar-usuario
+          *ngSwitchCase="'VerUsuario'"
+          (registrar)="mostrarComponente('registrarUsuarios')"
+          (editar)="mostrarComponente('EditarUsuario', $event)"
+        />
+        <app-registrar-usuario
+          *ngSwitchCase="'registrarUsuarios'"
+          (listarUsuario)="mostrarComponente('VerUsuario')"
+        />
+        <app-editar-usuario
+          *ngSwitchCase="'EditarUsuario'"
+          [usuarioId]="idParaEditar"
+          (listarUsuarioEditado)="mostrarComponente('VerUsuario')"
+        />
+        <!-- secccion de roles -->
+        <app-listar-rol
+          *ngSwitchCase="'VerRoles'"
+          (registrarRoles)="mostrarComponente('registrarRoles')"
+          (editarRoles)="mostrarComponente('EditarRoles', $event)"
+        />
+        <app-registrar-rol
+          *ngSwitchCase="'registrarRoles'"
+          (listarRoles)="mostrarComponente('VerRoles')"
+        />
+        <app-editar-rol
+          *ngSwitchCase="'EditarRoles'"
+          [roleId]="idParaEditar"
+          (listarRoleEditado)="mostrarComponente('VerRoles')"
+        />
+        <!-- seccion de permisos -->
+        <app-listar-permiso
+          *ngSwitchCase="'VerPermisos'"
+          (registrarPermisos)="mostrarComponente('registrarPermisos')"
+          (editarPermisos)="mostrarComponente('EditarPermisos', $event)"
+        />
+        <app-registrar-permiso
+          *ngSwitchCase="'registrarPermisos'"
+          (listarPermisos)="mostrarComponente('VerPermisos')"
+        />
+        <app-editar-permiso
+          *ngSwitchCase="'EditarPermisos'"
+          [permisoId]="idParaEditar"
+          (listarPermisoEditado)="mostrarComponente('VerPermisos')"
+        />
+        <!-- seccion de usuario roles -->
+        <app-listar-usuario-rol
+          *ngSwitchCase="'VerUsuarioRoles'"
+          (registrarUsuarioRol)="mostrarComponente('registrarUsuarioRoles')"
+          (editarUsuarioRol)="mostrarComponente('EditarUsuarioRoles', $event)"
+        />
+        <app-registrar-usuario-rol
+          *ngSwitchCase="'registrarUsuarioRoles'"
+          (listarUsuarioRoles)="mostrarComponente('VerUsuarioRoles')"
+        />
+        <app-editar-usuario-rol
+          *ngSwitchCase="'EditarUsuarioRoles'"
+          [usuarioRolId]="idParaEditar"
+          (listarUsuarioRolEditado)="mostrarComponente('VerUsuarioRoles')"
+        />
+        <!-- seccion de roles permisos-->
+        <app-listar-rol-permiso
+          *ngSwitchCase="'VerRolesPermisos'"
+          (registrarRolePermisos)="mostrarComponente('registrarRolesPermisos')"
+          (editarRolePermisos)="
+            mostrarComponente('EditarRolesPermisos', $event)
+          "
+        />
+        <app-registrar-rol-permiso
+          *ngSwitchCase="'registrarRolesPermisos'"
+          (listarRolPermisos)="mostrarComponente('VerRolesPermisos')"
+        />
+        <app-editar-rol-permiso
+          *ngSwitchCase="'EditarRolesPermisos'"
+          [rolPermisoId]="idParaEditar"
+          (listarRolPermisoEditado)="mostrarComponente('VerRolesPermisos')"
+        />
+        <!-- seccion de categorias -->
+        <app-listar-categoria
+          *ngSwitchCase="'VerCategorias'"
+          (registrarCategoria)="mostrarComponente('registrarCategorias')"
+          (editarCategoria)="mostrarComponente('EditarCategorias', $event)"
+        />
+        <app-registrar-categoria
+          *ngSwitchCase="'registrarCategorias'"
+          (listarCategorias)="mostrarComponente('VerCategorias')"
+        />
+        <app-editar-categoria
+          *ngSwitchCase="'EditarCategorias'"
+          [categoriaId]="idParaEditar"
+          (listarCategoriaEditada)="mostrarComponente('VerCategorias')"
+        />
+        <!-- seccion de productos -->
+        <app-listar-producto
+          *ngSwitchCase="'VerProductos'"
+          (registrarProductos)="mostrarComponente('registrarProductos')"
+          (editarProductos)="mostrarComponente('EditarProductos', $event)"
+        />
+        <app-registrar-producto
+          *ngSwitchCase="'registrarProductos'"
+          (listarProductos)="mostrarComponente('VerProductos')"
+        />
+        <app-editar-producto
+          *ngSwitchCase="'EditarProductos'"
+          [productoId]="idParaEditar"
+          (listarProductoEditado)="mostrarComponente('VerProductos')"
+        />
+        <!-- estas la seecionde ventas -->
+        <app-listar-venta *ngSwitchCase="'VerVenta'" />
+        <!-- seccion de detalles vetnas -->
+        <app-listar-detalle-venta *ngSwitchCase="'VerDetalleVenta'" />
+        <app-listar-productos-empleado
+          *ngSwitchCase="'VerVenta-DetalleVenta'"
+        />
+        <app-targetas *ngSwitchCase="'Tarjetas'" />
+        <!-- Sección para ver el perfil -->
+        <app-perfil *ngSwitchCase="'VerPerfil'" />
+      </ng-container>
+    </div>
+  </div>
+</section>

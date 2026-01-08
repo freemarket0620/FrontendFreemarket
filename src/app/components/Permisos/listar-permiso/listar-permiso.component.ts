@@ -3,6 +3,7 @@ import { Permiso } from '../../../Models/models';
 import { ServicesService } from '../../../Services/services.service';
 import { CommonModule } from '@angular/common';
 import { FormsModule, ReactiveFormsModule } from '@angular/forms';
+import { Router } from '@angular/router';
 
 @Component({
   selector: 'app-listar-permiso',
@@ -18,29 +19,25 @@ export class ListarPermisoComponent implements OnInit {
   pageSize: number = 5; // Tamaño de la página
   paginatedPermisos: Permiso[] = []; // Permisos paginados
 
-  @Output() editarPermisos = new EventEmitter<number>(); // Emit an event when editing
-  @Output() registrarPermisos = new EventEmitter<number>(); // Emit an event to register a new permission
-
-  constructor(private servicesService: ServicesService) {}
+  constructor(private servicesService: ServicesService, private router: Router) {}
 
   ngOnInit(): void {
-    this.getPermisos(); // Obtener los permisos al inicializar el componente
+    this.getPermisos(); 
   }
 
   getPermisos() {
     this.servicesService.getPermisos().subscribe((data) => {
-      this.permisos = data; // Asignar los permisos obtenidos
-      this.updatePaginatedPermisos(); // Actualizar los permisos paginados
+      this.permisos = data; 
+      this.updatePaginatedPermisos(); 
     });
   }
 
   editarPermiso(id: number) {
-    this.editarPermisos.emit(id); // Emit the ID of the permission to be edited
-    this.getPermisos(); // Obtener los permisos
+    this.router.navigate(['panel-control/editar-permisos', id]);
   }
 
   registrarPermiso() {
-    this.registrarPermisos.emit(); // Emit an event to register a new permission
+    this.router.navigate(['panel-control/registrar-permisos']); // Emit an event to register a new permission
   }
 
   filteredPermisos(): Permiso[] {
@@ -57,7 +54,7 @@ export class ListarPermisoComponent implements OnInit {
     return filtered.slice(
       (this.page - 1) * this.pageSize,
       this.page * this.pageSize
-    ); // Mostramos solo la página actual
+    );
   }
 
   updatePaginatedPermisos() {
@@ -79,10 +76,7 @@ export class ListarPermisoComponent implements OnInit {
   }
 
   togglePermisoActivo(permiso: Permiso) {
-    // Invertir el estado de 'estado_Permiso' del permiso
-    permiso.estado_Permiso = !permiso.estado_Permiso; // Cambiar el estado del permiso
-
-    // Llamar a un servicio que actualice el estado del permiso en el servidor
+    permiso.estado_Permiso = !permiso.estado_Permiso; 
     this.servicesService
       .actualizarEstadoPermisos(permiso.id, permiso.estado_Permiso)
       .subscribe(
@@ -93,8 +87,7 @@ export class ListarPermisoComponent implements OnInit {
         },
         (error) => {
           console.error('Error al actualizar el estado del permiso:', error);
-          // Si hay un error, revertir el cambio de estado
-          permiso.estado_Permiso = !permiso.estado_Permiso; // Revertir el estado
+          permiso.estado_Permiso = !permiso.estado_Permiso; 
         }
       );
   }

@@ -4,42 +4,79 @@
       <h2 class="text-center mb-4">Ventas</h2>
 
       <!-- Campos de búsqueda -->
-    <div class="row mb-4">
-     
-      <div class="col-md-2 mb-2">
-        <input id="idInput" type="text" class="form-control" placeholder="Busqueda Por ID" [(ngModel)]="searchID" />
-      </div>
-      <div class="col-md-2 mb-2">
-        <input id="usuarioInput" type="text" class="form-control" placeholder="Busqueda Por Usuario" [(ngModel)]="searchUsuario" />
-      </div>
+      <div class="row mb-4">
+        <div class="col-md-2 mb-2">
+          <input
+            id="idInput"
+            type="text"
+            class="form-control"
+            placeholder="Busqueda Por ID"
+            [(ngModel)]="searchID"
+          />
+        </div>
+        <div class="col-md-2 mb-2">
+          <input
+            id="usuarioInput"
+            type="text"
+            class="form-control"
+            placeholder="Busqueda Por Usuario"
+            [(ngModel)]="searchUsuario"
+          />
+        </div>
 
-      <div class="col-md-2 mb-2">
-        <input id="totalInput" type="text" class="form-control" placeholder="Busqueda Por Total" [(ngModel)]="searchTotal" />
-      </div>
+        <div class="col-md-2 mb-2">
+          <input
+            id="totalInput"
+            type="text"
+            class="form-control"
+            placeholder="Busqueda Por Total"
+            [(ngModel)]="searchTotal"
+          />
+        </div>
 
-      <div class="col-md-2 mb-2">
-        <input id="estadoInput" type="text" class="form-control" placeholder="Busqueda Por Estado" [(ngModel)]="searchEstado" />
-      </div>
-      <div class="col-md-2 mb-2">
-        <p class="text-start">Fecha Inicio</p>
-        <input id="fechaInicioInput" type="date" class="form-control" [(ngModel)]="searchFechaInicio" />
-      </div>
-      
-      <div class="col-md-2 mb-2">
-        <p class="text-start">Fecha Fin</p>
-        <input id="fechaFinInput" type="date" class="form-control" [(ngModel)]="searchFechaFin" />
-      </div>
-      <div class="col-md-2 mb-2 d-flex align-items-end">
-        <button class="btn btn-success w-100 d-flex align-items-center justify-content-center" (click)="updateList()">
-          <i class="bi bi-arrow-clockwise me-2"></i> Actualizar
-        </button>
-      </div>
-    </div>
+        <div class="col-md-2 mb-2">
+          <input
+            id="estadoInput"
+            type="text"
+            class="form-control"
+            placeholder="Busqueda Por Estado"
+            [(ngModel)]="searchEstado"
+          />
+        </div>
+        <div class="col-md-2 mb-2">
+          <p class="text-start">Fecha Inicio</p>
+          <input
+            id="fechaInicioInput"
+            type="date"
+            class="form-control"
+            [(ngModel)]="searchFechaInicio"
+          />
+        </div>
 
+        <div class="col-md-2 mb-2">
+          <p class="text-start">Fecha Fin</p>
+          <input
+            id="fechaFinInput"
+            type="date"
+            class="form-control"
+            [(ngModel)]="searchFechaFin"
+          />
+        </div>
+        <div class="col-md-2 mb-2 d-flex align-items-end">
+          <button
+            class="btn btn-success w-100 d-flex align-items-center justify-content-center"
+            (click)="updateList()"
+          >
+            <i class="bi bi-arrow-clockwise me-2"></i> Actualizar
+          </button>
+        </div>
+      </div>
 
       <!-- Tabla de ventas -->
       <div class="table-responsive">
-        <table class="table table-bordered table-hover align-middle text-center">
+        <table
+          class="table table-bordered table-hover align-middle text-center"
+        >
           <thead class="table-responsive">
             <tr>
               <th>ID</th>
@@ -56,7 +93,9 @@
               <td>
                 {{ venta.usuario.nombre_usuario }} {{ venta.usuario.apellido }}
               </td>
-              <td class="text-start">{{ venta.total | currency:'Bs. ':true }}</td>
+              <td class="text-start">
+                {{ venta.total | currency : "Bs. " : true }}
+              </td>
               <td>{{ venta.estado }}</td>
             </tr>
           </tbody>
@@ -65,11 +104,19 @@
 
       <!-- Paginación -->
       <div class="d-flex justify-content-between align-items-center mt-3">
-        <button class="btn btn-outline-secondary" (click)="previousPage()" [disabled]="page === 1">
+        <button
+          class="btn btn-outline-secondary"
+          (click)="previousPage()"
+          [disabled]="page === 1"
+        >
           Anterior
         </button>
         <span class="fw-semibold">Página {{ page }}</span>
-        <button class="btn btn-outline-secondary" (click)="nextPage()" [disabled]="page * pageSize >= ventas.length">
+        <button
+          class="btn btn-outline-secondary"
+          (click)="nextPage()"
+          [disabled]="page * pageSize >= ventas.length"
+        >
           Siguiente
         </button>
       </div>

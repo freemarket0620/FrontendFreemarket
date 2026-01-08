@@ -1,0 +1,70 @@
+<div class="container mt-4" *ngIf="recarga">
+  <h3>Editar Recarga Producto</h3>
+
+  <form [formGroup]="form" (ngSubmit)="onSubmit()">
+    <div class="mb-3">
+      <label for="nombre" class="form-label">Nombre</label>
+      <input
+        id="nombre"
+        type="text"
+        class="form-control"
+        formControlName="nombre"
+      />
+    </div>
+
+    <div class="mb-3">
+      <label for="categoria" class="form-label">Categoría</label>
+      <select id="categoria" class="form-select" formControlName="categoria">
+        <option value="">Seleccione</option>
+        <option *ngFor="let cat of categorias" [value]="cat.id">
+          {{ cat.nombre_categoria }}
+        </option>
+      </select>
+    </div>
+
+    <div class="row">
+      <div class="col-md-4 mb-3">
+        <label for="cantidad" class="form-label">Cantidad</label>
+        <input
+          id="cantidad"
+          type="number"
+          class="form-control"
+          formControlName="cantidad"
+        />
+      </div>
+      <div class="col-md-4 mb-3">
+        <label for="precio_compra" class="form-label">Precio Compra</label>
+        <input
+          id="precio_compra"
+          type="number"
+          class="form-control"
+          formControlName="precio_compra"
+        />
+      </div>
+      <div class="col-md-4 mb-3">
+        <label for="precio_venta" class="form-label">Precio Venta</label>
+        <input
+          id="precio_venta"
+          type="number"
+          class="form-control"
+          formControlName="precio_venta"
+        />
+      </div>
+    </div>
+
+    <div class="d-flex gap-2">
+      <button type="submit" class="btn btn-warning" [disabled]="form.invalid">
+        Actualizar
+      </button>
+      <button type="button" class="btn btn-secondary" (click)="volver()">
+        Cancelar
+      </button>
+    </div>
+  </form>
+
+  <!-- Mensajes de modal -->
+  <div *ngIf="mensajeModal" class="alert alert-success mt-3">
+    {{ mensajeModal }}
+  </div>
+  <div *ngIf="errorModal" class="alert alert-danger mt-3">{{ errorModal }}</div>
+</div>

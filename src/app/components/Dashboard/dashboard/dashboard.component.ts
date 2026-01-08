@@ -1,5 +1,4 @@
 import { Component, OnInit } from '@angular/core';
-import { DetalleVentas, Productos, Ventas } from '../../../Models/model-panel';
 import { ServicesService } from '../../../Services/services.service';
 import { CommonModule } from '@angular/common';
 import { FormsModule, ReactiveFormsModule } from '@angular/forms';
@@ -15,8 +14,9 @@ import { HostListener } from '@angular/core';
   styleUrls: ['./dashboard.component.css'],
   
 })
-export class DashboardComponent implements OnInit {
-
+export class DashboardComponent {
+/* 
+implements OnInit
   productos: Productos[] = [];
   ventas: Ventas[] = [];
   detallesVenta: DetalleVentas[] = [];
@@ -252,5 +252,5 @@ private procesarVentas(ventas: Ventas[]): void {
 
   private mapToArray(map: Map<string, number>): { name: string, value: number }[] {
     return Array.from(map.entries()).map(([key, value]) => ({ name: key, value }));
-  }
+  } */
 }

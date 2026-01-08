@@ -1,0 +1,84 @@
+<div class="container mt-4">
+  <div class="d-flex justify-content-between align-items-center mb-3">
+    <h3>Listado de Recargas</h3>
+    <button class="btn btn-primary" (click)="registrarRecarga()">
+      Registrar Nueva
+    </button>
+  </div>
+
+  <div class="row mb-3">
+    <div class="col-md-4">
+      <input
+        type="text"
+        class="form-control"
+        placeholder="Buscar por nombre"
+        [(ngModel)]="searchNombre"
+      />
+    </div>
+    <div class="col-md-4">
+      <input
+        type="text"
+        class="form-control"
+        placeholder="Buscar por categoría"
+        [(ngModel)]="searchCategoria"
+      />
+    </div>
+  </div>
+
+  <table class="table table-striped table-hover">
+    <thead>
+      <tr>
+        <th>Nombre</th>
+        <th>Categoría</th>
+        <th>Cantidad</th>
+        <th>Precio Compra</th>
+        <th>Precio Venta</th>
+        <th>Estado</th>
+        <th>Acciones</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr *ngFor="let recarga of filteredRecargas()">
+        <td>{{ recarga.nombre }}</td>
+        <td>{{ recarga.categoria.nombre_categoria }}</td>
+        <td>{{ recarga.cantidad }}</td>
+        <td>{{ recarga.precio_compra | currency }}</td>
+        <td>{{ recarga.precio_venta | currency }}</td>
+        <td>
+          <span
+            class="badge"
+            [ngClass]="recarga.estado ? 'bg-success' : 'bg-danger'"
+            style="cursor: pointer"
+            (click)="toggleEstado(recarga)"
+            >{{ recarga.estado ? "Activo" : "Inactivo" }}</span
+          >
+        </td>
+        <td>
+          <button
+            class="btn btn-sm btn-warning me-2"
+            (click)="editarRecarga(recarga.id)"
+          >
+            Editar
+          </button>
+        </td>
+      </tr>
+    </tbody>
+  </table>
+
+  <div class="d-flex justify-content-between mt-3">
+    <button
+      class="btn btn-secondary"
+      (click)="previousPage()"
+      [disabled]="page === 1"
+    >
+      Anterior
+    </button>
+    <button
+      class="btn btn-secondary"
+      (click)="nextPage()"
+      [disabled]="filteredRecargas().length < pageSize"
+    >
+      Siguiente
+    </button>
+  </div>
+</div>

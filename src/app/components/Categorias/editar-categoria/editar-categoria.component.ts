@@ -10,6 +10,7 @@ import { ServicesService } from '../../../Services/services.service'; // Asegúr
 import { Categoria } from '../../../Models/models';
 import { OkComponent } from '../../Mensajes/ok/ok.component';
 import { ErrorComponent } from '../../Mensajes/error/error.component'; // Importa el modelo adecuado para Categoria
+import { ActivatedRoute, Router } from '@angular/router';
 
 @Component({
   selector: 'app-editar-categoria',
@@ -22,24 +23,23 @@ export class EditarCategoriaComponent implements OnInit {
   categoria!: Categoria;
   editarForm!: FormGroup;
 
-  @Input() set categoriaId(id: number | null) {
-    if (id) {
-      this.loadCategoriaData(id);
-    }
-  }
-  @Output() listarCategoriaEditada = new EventEmitter<void>();
 
   manejarModal: boolean = false;
   mensajeModal: string = '';
   errorModal: string = '';
 
-  constructor(private servicesService: ServicesService) {}
+  constructor(private servicesService: ServicesService,    private route: ActivatedRoute,
+      private router: Router) {}
 
   ngOnInit(): void {
     this.editarForm = new FormGroup({
       nombre_categoria: new FormControl('', Validators.required),
       descripcion: new FormControl('', Validators.required),
     });
+    const id = Number(this.route.snapshot.paramMap.get('id'));
+    if (id) {
+      this.loadCategoriaData(id);
+    }
   }
 
   loadCategoriaData(id: number) {
@@ -84,10 +84,12 @@ export class EditarCategoriaComponent implements OnInit {
         },
       });
   }
-
-  manejarOk() {
-    this.mensajeModal = ''; // Cerrar el modal
-    this.listarCategoriaEditada.emit(); // Emitir el evento para listar categorías
+  manejarOk(): void {
+    this.mensajeModal = '';
+    this.router.navigate(['panel-control/listar-categorias']);
+  }
+  volver(): void {
+    this.router.navigate(['panel-control/listar-categorias']);
   }
 
   manejarError() {

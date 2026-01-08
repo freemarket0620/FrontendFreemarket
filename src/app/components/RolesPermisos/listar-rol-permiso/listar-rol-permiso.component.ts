@@ -3,6 +3,7 @@ import { RolePermiso } from './../../../Models/models';
 import { Component, EventEmitter, OnInit, Output } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule, ReactiveFormsModule } from '@angular/forms';
+import { Router } from '@angular/router';
 
 @Component({
   selector: 'app-listar-rol-permiso',
@@ -19,10 +20,7 @@ export class ListarRolPermisoComponent implements OnInit {
   paginatedRolePermisos: RolePermiso[] = []; // RolePermisos paginados
   loading: boolean = true; // Propiedad para manejar el estado de carga
 
-  @Output() editarRolePermisos = new EventEmitter<number>(); // Emit an event when editing
-  @Output() registrarRolePermisos = new EventEmitter<void>(); // Emit an event to register a new role-permission
-
-  constructor(private servicesService: ServicesService) {}
+  constructor(private servicesService: ServicesService, private router: Router) {}
 
   ngOnInit(): void {
     this.getRolePermisos(); // Obtener los roles y permisos al inicializar el componente
@@ -43,11 +41,11 @@ export class ListarRolPermisoComponent implements OnInit {
   }
 
   editarRolePermiso(id: number) {
-    this.editarRolePermisos.emit(id); // Emitir el ID del rol-permiso a editar
+    this.router.navigate(['panel-control/editar-roles-permisos', id]);
   }
 
   registrarRolePermiso() {
-    this.registrarRolePermisos.emit(); // Emit an event to register a new role-permission
+    this.router.navigate(['panel-control/registrar-roles-permisos']);
   }
 
   filteredRolePermisos(): RolePermiso[] {

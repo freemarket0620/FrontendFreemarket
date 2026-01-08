@@ -82,4 +82,26 @@ export interface DetalleVenta {
   tipo_venta: string; // Tipo de venta (detalle o mayor)
 }
 
-/* dato de estaditicas */
+/* dato de ventas de jeugos completar */
+export interface RecargaProducto {
+  id: number;
+  nombre: string;
+  cantidad: number;
+  precio_compra: number; // lo que cuesta a la empresa
+  precio_venta: number; // lo que paga el cliente
+  estado: boolean;
+  categoria: Categoria;
+}
+
+export interface DetalleVentaRecarga {
+  id: number;
+  venta: Venta;
+  recarga: RecargaProducto;
+  usuario_juego_id: string;
+  nombre_jugador?: string;
+  password_jugador?: string;
+  cantidad: number;
+  precio: number;
+  subtotal: number;
+  estado: string; // PENDIENTE | COMPLETADO | CANCELADO
+}

@@ -11,6 +11,7 @@ import {
 import { CommonModule } from '@angular/common';
 import { OkComponent } from '../../Mensajes/ok/ok.component';
 import { ErrorComponent } from '../../Mensajes/error/error.component';
+import { Router } from '@angular/router';
 
 @Component({
   selector: 'app-registrar-rol-permiso',
@@ -29,13 +30,13 @@ export class RegistrarRolPermisoComponent {
   rolPermisoForm: FormGroup;
   roles: Role[] = [];
   permisos: Permiso[] = [];
-  @Output() listarRolPermisos = new EventEmitter<void>();
   errorModal: string = '';
   mensajeModal: string = '';
 
   constructor(
     private fb: FormBuilder,
     private servicesService: ServicesService
+    , private router: Router
   ) {
     this.rolPermisoForm = this.fb.group({
       rol: ['', Validators.required],
@@ -80,9 +81,12 @@ export class RegistrarRolPermisoComponent {
     }
   }
 
+  volver(): void {
+    this.router.navigate(['panel-control/listar-roles-permisos']);
+  }
   manejarOk() {
-    this.mensajeModal = ''; // Cerrar el modal
-    this.listarRolPermisos.emit(); // Emitir evento para listar los roles y permisos
+    this.mensajeModal = '';
+    this.router.navigate(['panel-control/listar-roles-permisos']);
   }
 
   manejarError() {

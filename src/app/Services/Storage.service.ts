@@ -37,4 +37,9 @@ export class StorageService {
   private isBrowser(): boolean {
     return typeof window !== 'undefined';
   }
+  clear(): void {
+    if (this.isBrowser()) {
+      localStorage.clear();
+    }
+  }
 }

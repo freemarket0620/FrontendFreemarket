@@ -1,320 +1,360 @@
-<aside
-  class="sidebar position-fixed top-0 left-0 overflow-auto h-100"
-  [ngClass]="{ 'sidebar-hidden': !isSidebarOpen }"
->
-  <div class="p-3 text-center content p-0 bounce-content">
-    <hr class="text-dark" />
-    <hr class="text-dark" />
-    <p class="text-dark">Nombre: {{ nombre_usuario }} {{ apellido }}</p>
-    <div *ngIf="roles.length > 0">
-      <p class="text-dark" *ngFor="let rol of roles">Rol: {{ rol }}</p>
-    </div>
-    <hr class="text-dark" />
-    <hr class="text-dark" />
-
-    <ul class="list-group">
-      <!-- Menú desplegable para la gestión de usuarios -->
-      <li *ngIf="tieneRol('Administrador')" class="d-flex align-items-center" (click)="toggleSubmenu('usuarios')">
-        <div class="col-auto text-center pe-2">
-          <i class="bi bi-person fs-2 text-dark"></i>
-        </div>
-        <div class="col text-start">
-          <span class="text-dark">Gestión de Usuarios</span>
-        </div>
-        <div class="col-auto text-center pe-2">
-          <i class="bi bi-chevron-right text-dark"></i>
-        </div>
-      </li>
-      <ul *ngIf="isSubmenuOpen('usuarios')" class="list-group ps-3">
-        <li *ngIf="puedeVer('registrarUsuarios')" class="d-flex align-items-center" (click)="mostrarComponente('VerUsuario')">
-          <div class="col-auto text-center pe-2">
-            <i class="bi bi-person-plus fs-2 text-dark"></i>
-          </div>
-          <div class="col text-start">
-            <span class="text-dark">Usuarios</span>
-          </div>
-        </li>
-
-        <li *ngIf="puedeVer('registrarRoles')" class="d-flex align-items-center" (click)="mostrarComponente('VerRoles')">
-          <div class="col-auto text-center pe-2">
-            <i class="bi bi-people fs-2 text-dark"></i>
-          </div>
-          <div class="col text-start">
-            <span class="text-dark">Roles</span>
-          </div>
-        </li>
-
-        <li *ngIf="puedeVer('registrarPermisos')" class="d-flex align-items-center"
-          (click)="mostrarComponente('VerPermisos')">
-          <div class="col-auto text-center pe-2">
-            <i class="bi bi-lock fs-2 text-dark"></i>
-          </div>
-          <div class="col text-start">
-            <span class="text-dark">Permisos</span>
-          </div>
-        </li>
-
-        <li *ngIf="puedeVer('registrarUsuarioRoles')" class="d-flex align-items-center"
-          (click)="mostrarComponente('VerUsuarioRoles')">
-          <div class="col-auto text-center pe-2">
-            <i class="bi bi-person-check fs-2 text-dark"></i>
-          </div>
-          <div class="col text-start">
-            <span class="text-dark">Usuario Roles</span>
-          </div>
-        </li>
-
-        <li *ngIf="puedeVer('registrarRolesPermisos')" class="d-flex align-items-center"
-          (click)="mostrarComponente('VerRolesPermisos')">
-          <div class="col-auto text-center pe-2">
-            <i class="bi bi-person-lock fs-2 text-dark"></i>
-          </div>
-          <div class="col text-start">
-            <span class="text-dark">Roles Permisos</span>
-          </div>
-        </li>
-      </ul>
-      <!-- sección de ventas y productos -->
-      <li class="d-flex align-items-center" (click)="toggleSubmenu('VentasProductos')">
-        <div class="col-auto text-center pe-2">
-          <i class="bi bi-shop fs-2 text-dark"></i>
-        </div>
-        <div class="col text-start">
-          <span class="text-dark">Productos y Ventas</span>
-        </div>
-        <div class="col-auto text-center pe-2">
-          <i class="bi bi-chevron-right text-dark"></i>
-        </div>
-
-      </li>
-      <ul *ngIf="isSubmenuOpen('VentasProductos')" class="list-group ps-3">
-        <li *ngIf="puedeVer('registrarCategorias')" class="d-flex align-items-center"
-          (click)="mostrarComponente('VerCategorias')">
-          <div class="col-auto text-center pe-2">
-            <i class="bi bi-tags fs-2 text-dark"></i>
-          </div>
-          <div class="col text-start">
-            <span class="text-dark">Categorías</span>
-          </div>
-        </li>
-        <li *ngIf="puedeVer('registrarProductos')" class="d-flex align-items-center"
-          (click)="mostrarComponente('VerProductos')">
-          <div class="col-auto text-center pe-2">
-            <i class="bi bi-shop fs-2 text-dark"></i>
-          </div>
-          <div class="col text-start">
-            <span class="text-dark">Productos</span>
-          </div>
-        </li>
-        <li *ngIf="puedeVer(['registrarVenta','registrarVenta-Empleado'])" class="d-flex align-items-center" (click)="mostrarComponente('VerVenta')">
-          <div class="col-auto text-center pe-2">
-            <i class="bi bi-cart-check fs-2 text-dark"></i>
-          </div>
-          <div class="col text-start">
-            <span class="text-dark">Ver Venta</span>
-          </div>
-        </li>
-        <li *ngIf="puedeVer(['registrarDetalleVenta', 'registrar-DetalleVenta-Empleado'])" class="d-flex align-items-center"
-          (click)="mostrarComponente('VerDetalleVenta')">
-          <div class="col-auto text-center pe-2">
-            <i class="bi bi-journal-bookmark fs-2 text-dark"></i>
-          </div>
-          <div class="col text-start">
-            <span class="text-dark">Detalle Ventas</span>
-          </div>
-        </li>
-      
-        <li *ngIf="puedeVer(['registrarVenta-DetalleVenta-Admistrador', 'registrarVenta-DetalleVenta-Empleado'])"
-          class="d-flex align-items-center" (click)="mostrarComponente('VerVenta-DetalleVenta')">
-          <div class="col-auto text-center pe-2">
-            <i class="bi bi-cart4 fs-2 text-dark"></i>
-          </div>
-          <div class="col text-start">
-            <span class="text-dark">Vender</span>
-          </div>
-        </li>
-        <li *ngIf="puedeVer('PedidoTarjetas')" class="d-flex align-items-center" (click)="mostrarComponente('Tarjetas')">
-          <div class="col-auto text-center pe-2">
-            <i class="bi bi-postcard-heart fs-2 text-dark"></i>
-          </div>
-          <div class="col text-start">
-            <span class="text-dark">Tarjetas</span>
-          </div>
-        </li>
-      </ul>
-    </ul>
-  </div>
-</aside>
-
-<!-- Overlay para pantallas pequeñas -->
-<div
-  class="overlay"
-  (click)="toggleSidebar()"
-  [ngClass]="{ show: isSidebarOpen && windowWidth < 768 }"
-></div>
-
-<!-- Contenido principal -->
-<section id="wrapper" [ngClass]="{ shrink: isSidebarOpen }">
-  <nav class="navbar navbar-expand-md sticky-top shadow-sm" style="background-color: #e7e7e7; z-index: 1030;">
+<section class="layout">
+  <!-- Navbar -->
+  <nav class="navbar navbar-expand-md sticky-top bg-light shadow-sm">
     <div class="container-fluid mx-2">
-      <!-- Botón para abrir/cerrar el sidebar -->
-      <button class="btn btn-secondary d-flex justify-content-center align-items-center me-2"
-        style="width: 40px; height: 40px; font-size: 1.5rem;" (click)="toggleSidebar()" title="Abrir/Cerrar menú">
-        <i class="fas fa-bars"></i>
+      <button class="btn me-2 toggle-button" (click)="toggleSidebar()">
+        <i [ngClass]="isSidebarOpen ? 'fas fa-times' : 'fas fa-bars'"></i>
       </button>
-      <!-- Botones de acciones a la derecha -->
+
       <div class="ms-auto d-flex align-items-center gap-2">
-        <!-- Botón con imagen como ícono SIN borde azul -->
-        <button class="btn rounded-circle d-flex justify-content-center align-items-center p-0"
-          style="width: 40px; height: 40px; outline: none; box-shadow: none; background: transparent;" title="Ver Perfil"
-          (click)="mostrarComponente('VerPerfil')">
-          <img *ngIf="imagenUrl" [src]="imagenUrl" alt="Foto de usuario" class="rounded-circle"
-            style="width: 100%; height: 100%; object-fit: cover; object-position: top;" />
+        <button class="btn rounded-circle p-0" (click)="verPerfil()">
+          <img
+            *ngIf="imagen_url"
+            [src]="imagen_url"
+            class="rounded-circle"
+            style="width: 40px; height: 40px; object-fit: cover"
+            alt="Perfil"
+          />
+          <i
+            *ngIf="!imagen_url"
+            class="fas fa-user-circle fa-2x text-secondary"
+          ></i>
         </button>
-        <!-- Icono de Inicio -->
-        <button class="btn rounded-circle d-flex justify-content-center align-items-center"
-          style="width: 40px; height: 40px;" title="Inicio"
-          (click)="mostrarComponente('app-dashboard'); handleItemClick()">
-          <i class="fas fa-home text-success fs-4"></i>
+
+        <button class="btn rounded-circle" (click)="confirmarCerrarSesion()">
+          <i class="fas fa-power-off text-danger"></i>
         </button>
-        <!-- Icono de Cerrar Sesión -->
-        <button class="btn rounded-circle d-flex justify-content-center align-items-center"
-          style="width: 40px; height: 40px;" title="Cerrar Sesión" (click)="onSelectChange('cerrarSesion')">
-          <i class="fas fa-power-off text-danger fs-4"></i> <!-- Cambiado a un icono de apagado -->
+        <button class="btn rounded-circle" (click)="panelDeControl()">
+          <i class="bi bi-house"></i>
         </button>
       </div>
     </div>
   </nav>
 
-
-  <div
-    class="content d-flex justify-content-center align-items-center"
-    style="min-height: calc(100vh - 70px)"
+  <!-- Sidebar -->
+  <aside
+    class="leftSide"
+    [class.sidebar-open]="isSidebarOpen"
+    [class.sidebar-closed]="!isSidebarOpen"
   >
-    <div class="text-center" style="margin-top: 10px; width: 100%">
-      <ng-container [ngSwitch]="componenteActual">
-        <app-dashboard *ngSwitchDefault />
+    <div class="p-3 text-start content p-0 bounce-content">
+      <hr class="text-dark" />
+      <hr class="text-dark" />
+      <img
+        *ngIf="imagen_url"
+        [src]="imagen_url"
+        class="rounded-circle"
+        style="width: 200px; height: 200px; object-fit: cover"
+        alt="Perfil"
+      />
 
-        <app-listar-usuario
-          *ngSwitchCase="'VerUsuario'"
-          (registrar)="mostrarComponente('registrarUsuarios')"
-          (editar)="mostrarComponente('EditarUsuario', $event)"
-        />
-        <app-registrar-usuario
-          *ngSwitchCase="'registrarUsuarios'"
-          (listarUsuario)="mostrarComponente('VerUsuario')"
-        />
-        <app-editar-usuario
-          *ngSwitchCase="'EditarUsuario'"
-          [usuarioId]="idParaEditar"
-          (listarUsuarioEditado)="mostrarComponente('VerUsuario')"
-        />
-        <!-- secccion de roles  -->
-        <app-listar-rol
-          *ngSwitchCase="'VerRoles'"
-          (registrarRoles)="mostrarComponente('registrarRoles')"
-          (editarRoles)="mostrarComponente('EditarRoles', $event)"
-        />
-        <app-registrar-rol
-          *ngSwitchCase="'registrarRoles'"
-          (listarRoles)="mostrarComponente('VerRoles')"
-        />
-        <app-editar-rol
-          *ngSwitchCase="'EditarRoles'"
-          [roleId]="idParaEditar"
-          (listarRoleEditado)="mostrarComponente('VerRoles')"
-        />
+      <p class="text-dark">Nombre: {{ nombre_usuario }} {{ apellido }}</p>
+      <p class="text-dark">Rol: {{ roles }}</p>
+      <!-- Agregado: Muestra el primer rol debajo del nombre -->
 
-        <!-- seccion de permisos  -->
-        <app-listar-permiso
-          *ngSwitchCase="'VerPermisos'"
-          (registrarPermisos)="mostrarComponente('registrarPermisos')"
-          (editarPermisos)="mostrarComponente('EditarPermisos', $event)"
-        />
-        <app-registrar-permiso
-          *ngSwitchCase="'registrarPermisos'"
-          (listarPermisos)="mostrarComponente('VerPermisos')"
-        />
-        <app-editar-permiso
-          *ngSwitchCase="'EditarPermisos'"
-          [permisoId]="idParaEditar"
-          (listarPermisoEditado)="mostrarComponente('VerPermisos')"
-        />
-        <!-- seccion de  usuario roles -->
-        <app-listar-usuario-rol
-          *ngSwitchCase="'VerUsuarioRoles'"
-          (registrarUsuarioRol)="mostrarComponente('registrarUsuarioRoles')"
-          (editarUsuarioRol)="mostrarComponente('EditarUsuarioRoles', $event)"
-        />
-        <app-registrar-usuario-rol
-          *ngSwitchCase="'registrarUsuarioRoles'"
-          (listarUsuarioRoles)="mostrarComponente('VerUsuarioRoles')"
-        />
-        <app-editar-usuario-rol
-          *ngSwitchCase="'EditarUsuarioRoles'"
-          [usuarioRolId]="idParaEditar"
-          (listarUsuarioRolEditado)="mostrarComponente('VerUsuarioRoles')"
-        />
-        <!-- seccion de roles permisos-->
-        <app-listar-rol-permiso
-          *ngSwitchCase="'VerRolesPermisos'"
-          (registrarRolePermisos)="mostrarComponente('registrarRolesPermisos')"
-          (editarRolePermisos)="
-            mostrarComponente('EditarRolesPermisos', $event)
-          "
-        />
-        <app-registrar-rol-permiso
-          *ngSwitchCase="'registrarRolesPermisos'"
-          (listarRolPermisos)="mostrarComponente('VerRolesPermisos')"
-        />
-        <app-editar-rol-permiso
-          *ngSwitchCase="'EditarRolesPermisos'"
-          [rolPermisoId]="idParaEditar"
-          (listarRolPermisoEditado)="mostrarComponente('VerRolesPermisos')"
-        />
-        <!-- seccion de categorias -->
-        <app-listar-categoria
-          *ngSwitchCase="'VerCategorias'"
-          (registrarCategoria)="mostrarComponente('registrarCategorias')"
-          (editarCategoria)="mostrarComponente('EditarCategorias', $event)"
-        />
-        <app-registrar-categoria
-          *ngSwitchCase="'registrarCategorias'"
-          (listarCategorias)="mostrarComponente('VerCategorias')"
-        />
-        <app-editar-categoria
-          *ngSwitchCase="'EditarCategorias'"
-          [categoriaId]="idParaEditar"
-          (listarCategoriaEditada)="mostrarComponente('VerCategorias')"
-        />
-        <!-- seccion de productos  -->
-        <app-listar-producto
-          *ngSwitchCase="'VerProductos'"
-          (registrarProductos)="mostrarComponente('registrarProductos')"
-          (editarProductos)="mostrarComponente('EditarProductos', $event)"
-        />
-        <app-registrar-producto
-          *ngSwitchCase="'registrarProductos'"
-          (listarProductos)="mostrarComponente('VerProductos')"
-        />
-        <app-editar-producto
-          *ngSwitchCase="'EditarProductos'"
-          [productoId]="idParaEditar"
-          (listarProductoEditado)="mostrarComponente('VerProductos')"
-        />
+      <hr class="text-dark" />
+      <hr class="text-dark" />
 
-        <!-- estas la seecionde  ventas  -->
-        <app-listar-venta *ngSwitchCase="'VerVenta'" />
+      <ul class="list-group">
+        <!-- Gestión de Usuarios -->
+        <li
+          *ngIf="tieneRol('Administrador')"
+          class="d-flex align-items-center"
+          (click)="toggleSubmenu('usuarios')"
+        >
+          <i class="bi bi-person fs-2 text-dark pe-2"></i>
+          <span class="text-dark flex-grow-1">Gestión de Usuarios</span>
+          <i class="bi bi-chevron-right text-dark"></i>
+        </li>
 
-        <!-- seccion de detalles vetnas   -->
-        <app-listar-detalle-venta *ngSwitchCase="'VerDetalleVenta'" />
-        <app-listar-productos-empleado
-          *ngSwitchCase="'VerVenta-DetalleVenta'"
-        />
-        <app-targetas *ngSwitchCase="'Tarjetas'" />
-        <!-- Sección para ver el perfil -->
-        <app-perfil *ngSwitchCase="'VerPerfil'" />
-      </ng-container>
+        <ul class="list-group ps-3" *ngIf="isSubmenuOpen('usuarios')">
+          <!-- USUARIOS - ROLES -->
+          <li
+            class="d-flex align-items-center p-2 rounded"
+            *ngIf="puedeVer('registrarRoles')"
+          >
+            <div style="flex-shrink: 0">
+              <i class="bi bi-person-check fs-2 text-dark"></i>
+            </div>
+            <div class="flex-grow-1 text-start ms-2">
+              <a
+                routerLink="/panel-control/listar-roles"
+                class="text-dark text-decoration-none"
+              >
+                Roles
+              </a>
+            </div>
+          </li>
+
+          <!-- USUARIOS - PERMISOS -->
+          <li
+            class="d-flex align-items-center p-2 rounded"
+            *ngIf="puedeVer('registrarPermisos')"
+          >
+            <div style="flex-shrink: 0">
+              <i class="bi bi-person-check fs-2 text-dark"></i>
+            </div>
+            <div class="flex-grow-1 text-start ms-2">
+              <a
+                routerLink="/panel-control/listar-permisos"
+                class="text-dark text-decoration-none"
+              >
+                permisos
+              </a>
+            </div>
+          </li>
+
+          <!-- USUARIOS -->
+          <li
+            class="d-flex align-items-center p-2 rounded"
+            *ngIf="puedeVer('registrarUsuarios')"
+          >
+            <div style="flex-shrink: 0">
+              <i class="bi bi-person-lines-fill fs-2 text-dark"></i>
+            </div>
+            <div class="flex-grow-1 text-start ms-2">
+              <a
+                routerLink="/panel-control/listar-usuarios"
+                class="text-dark text-decoration-none"
+              >
+                Usuarios
+              </a>
+            </div>
+          </li>
+
+          <!-- USUARIOS - ROLES (RELACIÓN) -->
+          <li
+            class="d-flex align-items-center p-2 rounded"
+            *ngIf="puedeVer('registrarUsuarioRoles')"
+          >
+            <div style="flex-shrink: 0">
+              <i class="bi bi-diagram-3 fs-2 text-dark"></i>
+            </div>
+            <div class="flex-grow-1 text-start ms-2">
+              <a
+                routerLink="/panel-control/listar-usuarios-roles"
+                class="text-dark text-decoration-none"
+              >
+                Usuarios - Roles
+              </a>
+            </div>
+          </li>
+
+          <!-- ROLES - PERMISOS (RELACIÓN) -->
+          <li
+            class="d-flex align-items-center p-2 rounded"
+            *ngIf="puedeVer('registrarRolesPermisos')"
+          >
+            <div style="flex-shrink: 0">
+              <i class="bi bi-diagram-2 fs-2 text-dark"></i>
+            </div>
+            <div class="flex-grow-1 text-start ms-2">
+              <a
+                routerLink="/panel-control/listar-roles-permisos"
+                class="text-dark text-decoration-none"
+              >
+                Roles - Permisos
+              </a>
+            </div>
+          </li>
+        </ul>
+
+        <!-- Productos y Ventas -->
+        <li
+          class="d-flex align-items-center"
+          (click)="toggleSubmenu('productos')"
+        >
+          <i class="bi bi-shop fs-2 text-dark pe-2"></i>
+          <span class="text-dark flex-grow-1">Productos y Ventas</span>
+          <i class="bi bi-chevron-right text-dark"></i>
+        </li>
+
+        <ul class="list-group ps-3" *ngIf="isSubmenuOpen('productos')">
+          <!-- CATEGORÍAS -->
+          <li
+            class="d-flex align-items-center p-2 rounded"
+            *ngIf="puedeVer('registrarCategorias')"
+          >
+            <div style="flex-shrink: 0">
+              <i class="bi bi-tags fs-2 text-dark"></i>
+            </div>
+            <div class="flex-grow-1 text-start ms-2">
+              <a
+                routerLink="/panel-control/listar-categorias"
+                class="text-dark text-decoration-none"
+              >
+                Categorías
+              </a>
+            </div>
+          </li>
+
+          <!-- PRODUCTOS -->
+          <li
+            class="d-flex align-items-center p-2 rounded"
+            *ngIf="puedeVer('registrarProductos')"
+          >
+            <div style="flex-shrink: 0">
+              <i class="bi bi-shop fs-2 text-dark"></i>
+            </div>
+            <div class="flex-grow-1 text-start ms-2">
+              <a
+                routerLink="/panel-control/listar-productos"
+                class="text-dark text-decoration-none"
+              >
+                Productos
+              </a>
+            </div>
+          </li>
+
+          <!-- PRODUCTOS (EMPLEADO) -->
+          <li
+            class="d-flex align-items-center p-2 rounded"
+            *ngIf="puedeVer('listarProductosEmpleado')"
+          >
+            <div style="flex-shrink: 0">
+              <i class="bi bi-box-seam fs-2 text-dark"></i>
+            </div>
+            <div class="flex-grow-1 text-start ms-2">
+              <a
+                routerLink="/panel-control/listar-productos-empleado"
+                class="text-dark text-decoration-none"
+              >
+                Productos (Empleado)
+              </a>
+            </div>
+          </li>
+
+          <!-- VENTAS -->
+          <li
+            class="d-flex align-items-center p-2 rounded"
+            *ngIf="puedeVer(['registrarVenta', 'registrarVenta-Empleado'])"
+          >
+            <div style="flex-shrink: 0">
+              <i class="bi bi-cart-check fs-2 text-dark"></i>
+            </div>
+            <div class="flex-grow-1 text-start ms-2">
+              <a
+                routerLink="/panel-control/listar-ventas"
+                class="text-dark text-decoration-none"
+              >
+                Ventas
+              </a>
+            </div>
+          </li>
+
+          <!-- DETALLE VENTAS -->
+          <li
+            class="d-flex align-items-center p-2 rounded"
+            *ngIf="
+              puedeVer([
+                'registrarDetalleVenta',
+                'registrar-DetalleVenta-Empleado'
+              ])
+            "
+          >
+            <div style="flex-shrink: 0">
+              <i class="bi bi-journal-bookmark fs-2 text-dark"></i>
+            </div>
+            <div class="flex-grow-1 text-start ms-2">
+              <a
+                routerLink="/panel-control/listar-detalle-ventas"
+                class="text-dark text-decoration-none"
+              >
+                Detalle Ventas
+              </a>
+            </div>
+          </li>
+
+          <!-- VENDER -->
+          <li
+            class="d-flex align-items-center p-2 rounded"
+            *ngIf="
+              puedeVer([
+                'registrarVenta-DetalleVenta-Administrador',
+                'registrarVenta-DetalleVenta-Empleado'
+              ])
+            "
+          >
+            <div style="flex-shrink: 0">
+              <i class="bi bi-cart4 fs-2 text-dark"></i>
+            </div>
+            <div class="flex-grow-1 text-start ms-2">
+              <a
+                routerLink="/panel-control/listar-productos-empleado"
+                class="text-dark text-decoration-none"
+              >
+                Vender
+              </a>
+            </div>
+          </li>
+
+          <!-- TARJETAS -->
+          <li
+            class="d-flex align-items-center p-2 rounded"
+            *ngIf="puedeVer('PedidoTarjetas')"
+          >
+            <div style="flex-shrink: 0">
+              <i class="bi bi-postcard-heart fs-2 text-dark"></i>
+            </div>
+            <div class="flex-grow-1 text-start ms-2">
+              <a
+                routerLink="/panel-control/targetas"
+                class="text-dark text-decoration-none"
+              >
+                Tarjetas
+              </a>
+            </div>
+          </li>
+          <li
+            class="d-flex align-items-center p-2 rounded"
+            *ngIf="puedeVer('PedidoTarjetas')"
+          >
+            <div style="flex-shrink: 0">
+              <i class="bi bi-postcard-heart fs-2 text-dark"></i>
+            </div>
+            <div class="flex-grow-1 text-start ms-2">
+              <a
+                routerLink="/panel-control/listar-RecargaProducto"
+                class="text-dark text-decoration-none"
+              >
+                Recarga Producto
+              </a>
+            </div>
+          </li>
+          <li
+            class="d-flex align-items-center p-2 rounded"
+            *ngIf="puedeVer('PedidoTarjetas')"
+          >
+            <div style="flex-shrink: 0">
+              <i class="bi bi-postcard-heart fs-2 text-dark"></i>
+            </div>
+            <div class="flex-grow-1 text-start ms-2">
+              <a
+                routerLink="/panel-control/listar-DetalleVentaRecarga"
+                class="text-dark text-decoration-none"
+              >
+                Detalle Venta Recarga
+              </a>
+            </div>
+          </li>
+        </ul>
+      </ul>
     </div>
-  </div>
+  </aside>
+
+  <!-- Overlay -->
+  <div
+    class="overlay"
+    *ngIf="windowWidth < 768"
+    [class.overlay-visible]="isSidebarOpen"
+    (click)="toggleSidebar()"
+  ></div>
+
+  <!-- Contenido Principal -->
+  <main
+    class="main-content"
+    [class.content-shifted]="isSidebarOpen && windowWidth >= 768"
+  >
+    <router-outlet></router-outlet>
+  </main>
 </section>

@@ -3,6 +3,7 @@ import { UsuarioRol } from './../../../Models/models';
 import { Component, EventEmitter, OnInit, Output } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule, ReactiveFormsModule } from '@angular/forms';
+import { Router } from '@angular/router';
 
 @Component({
   selector: 'app-listar-usuario-rol',
@@ -19,37 +20,32 @@ export class ListarUsuarioRolComponent implements OnInit {
   paginatedUsuarioRoles: UsuarioRol[] = []; // UsuarioRoles paginados
   loading: boolean = true; // Propiedad para manejar el estado de carga
 
-  @Output() editarUsuarioRol = new EventEmitter<number>(); // Emit an event when editing
-  @Output() registrarUsuarioRol = new EventEmitter<void>(); // Emit an event to register a new user-role
-
-  constructor(private servicesService: ServicesService) {}
+  
+  constructor(private servicesService: ServicesService, private router: Router) {}
 
   ngOnInit(): void {
     this.getUsuarioRoles(); // Obtener los usuarios y roles al inicializar el componente
   }
 
   getUsuarioRoles() {
-    this.loading = true; // Iniciar el estado de carga
+    this.loading = true; 
     this.servicesService.getUsuariosRoles().subscribe(
       (data) => {
-        this.usuarioRoles = data; // Asignar los usuarios y roles obtenidos
-        this.updatePaginatedUsuarioRoles(); // Actualizar los usuarios y roles paginados
-        this.loading = false; // Finalizar el estado de carga
+        this.usuarioRoles = data; 
+        this.updatePaginatedUsuarioRoles(); 
+        this.loading = false; 
       },
       () => {
-        this.loading = false; // Finalizar el estado de carga en caso de error
+        this.loading = false; 
       }
     );
   }
-
-  /*   editarUsuarioRole(id: number) {
-    this.editarUsuarioRol.emit(id); // Emit the ID of the user-role to be edited
-  } */
   editarUsuarioRole(id: number) {
-    this.editarUsuarioRol.emit(id); // Emitir el ID del usuario-rol a editar
+    this.router.navigate(['panel-control/editar-usuarios-roles', id]);
+
   }
   registrarUsuarioRole() {
-    this.registrarUsuarioRol.emit(); // Emit an event to register a new user-role
+    this.router.navigate(['panel-control/registrar-usuarios-roles']);
   }
 
   filteredUsuarioRoles(): UsuarioRol[] {

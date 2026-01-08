@@ -3,16 +3,18 @@ import { Injectable } from '@angular/core';
 import {
   Categoria,
   DetalleVenta,
+  DetalleVentaRecarga,
   Permiso,
   Producto,
+  RecargaProducto,
   Role,
   RolePermiso,
   Usuario,
   UsuarioRol,
   Venta,
 } from '../Models/models';
-import { Ventas,Productos,DetalleVentas } from '../Models/model-panel';
-import { BehaviorSubject, catchError, Observable, tap, throwError } from 'rxjs';
+
+import { BehaviorSubject, Observable, tap } from 'rxjs';
 import { Router } from '@angular/router';
 
 // Define una interfaz para la respuesta del login
@@ -30,10 +32,7 @@ interface LoginResponse {
   providedIn: 'root',
 })
 export class ServicesService {
-  private apiUrl = 'https://backendfreemarket.onrender.com/api/';
-
- /*  private apiUrl = 'http://localhost:8000/api/';
-  */
+  private apiUrl = 'http://localhost:8000/api/';
 
   private productosSubject = new BehaviorSubject<Producto[]>([]);
   productos$ = this.productosSubject.asObservable();
@@ -371,23 +370,81 @@ export class ServicesService {
     const roles = this.getRolesFromLocalStorage();
     return roles.includes('AdministraciónYucumo'); // Verifica si el usuario tiene el rol de AdministraciónYucumo
   }
+  /* ---------------------------- SERVICIOS DE RECARGAS ---------------------------- */
 
-  /* seccion de mis graficos */
-  /* Sección de mis gráficos */
-    getProductosPanel(): Observable<Productos[]> {
-      return this.http.get<Productos[]>(`${this.apiUrl}productos/`);
-    }
+  getRecargaProductos(): Observable<RecargaProducto[]> {
+    return this.http.get<RecargaProducto[]>(`${this.apiUrl}RecargaProducto/`);
+  }
 
-    getVentasPanel(): Observable<Ventas[]> {
-      return this.http.get<Ventas[]>(`${this.apiUrl}ventas/`);
-    }
-    getVentaByIdPanel(id: number): Observable<Ventas> {
-      return this.http.get<Ventas>(`${this.apiUrl}ventas/${id}/`);
-    }
-    getDetallesPanel(): Observable<DetalleVentas[]> {
-      return this.http.get<DetalleVentas[]>(`${this.apiUrl}detallesventas/`);
-    }
-    getDetalleVentasPanel(): Observable<DetalleVentas[]> {
-      return this.http.get<DetalleVentas[]>(`${this.apiUrl}detallesventas/`);
-    }
+  getRecargaProductoById(id: number): Observable<RecargaProducto> {
+    return this.http.get<RecargaProducto>(`${this.apiUrl}RecargaProducto/${id}/`);
+  }
+
+  crearRecargaProducto(recarga: RecargaProducto): Observable<RecargaProducto> {
+    return this.http.post<RecargaProducto>(`${this.apiUrl}RecargaProducto/`, recarga);
+  }
+
+  actualizarRecargaProducto(
+    id: number,
+    recarga: RecargaProducto
+  ): Observable<RecargaProducto> {
+    return this.http.put<RecargaProducto>(`${this.apiUrl}RecargaProducto/${id}/`, recarga);
+  }
+
+  actualizarEstadoRecargaProducto(id: number, estado: boolean): Observable<any> {
+    return this.http.put(`${this.apiUrl}RecargaProducto/${id}/`, {
+      estado: estado ? 'true' : 'false',
+    });
+  }
+
+  /* ---------------------------- DETALLES DE VENTAS DE RECARGA ---------------------------- */
+
+  getDetalleVentasRecarga(): Observable<DetalleVentaRecarga[]> {
+    return this.http.get<DetalleVentaRecarga[]>(`${this.apiUrl}DetalleVentaRecarga/`);
+  }
+
+  getDetalleVentaRecargaById(id: number): Observable<DetalleVentaRecarga> {
+    return this.http.get<DetalleVentaRecarga>(`${this.apiUrl}DetalleVentaRecarga/${id}/`);
+  }
+/* 
+  crearDetalleVentaRecarga(detalle: DetalleVentaRecarga): Observable<DetalleVentaRecarga> {
+    return this.http.post<DetalleVentaRecarga>(`${this.apiUrl}DetalleVentaRecarga/`, {
+      ...detalle,
+      recarga: detalle.recarga.id, // enviar solo el ID de la recarga
+    });
+  } */
+
+  crearDetalleVentaRecarga(detalle: any) {
+  // Enviar solo los IDs numéricos
+  const payload = {
+    ...detalle,
+    recarga: detalle.recarga,
+    venta: detalle.venta
+  };
+  return this.http.post<DetalleVentaRecarga>(`${this.apiUrl}DetalleVentaRecarga/`, payload);
+}
+
+
+
+  actualizarDetalleVentaRecarga(
+    id: number,
+    detalle: DetalleVentaRecarga
+  ): Observable<DetalleVentaRecarga> {
+    return this.http.put<DetalleVentaRecarga>(
+      `${this.apiUrl}DetalleVentaRecarga/${id}/`,
+      detalle
+    );
+  }
+  
+
+  /* ---------------------------- FUNCIONES AUXILIARES ---------------------------- */
+
+  // Buscar recarga por usuario_juego_id o nombre_jugador
+  buscarDetalleRecarga(usuario_juego_id?: string, nombre_jugador?: string): Observable<DetalleVentaRecarga[]> {
+    let query = '';
+    if (usuario_juego_id) query += `usuario_juego_id=${usuario_juego_id}&`;
+    if (nombre_jugador) query += `nombre_jugador=${nombre_jugador}&`;
+    return this.http.get<DetalleVentaRecarga[]>(`${this.apiUrl}DetalleVentaRecarga/?${query}`);
+  }
+    
 }

@@ -3,6 +3,7 @@ import { Categoria } from '../../../Models/models'; // Asegúrate de importar el
 import { ServicesService } from '../../../Services/services.service'; // Asegúrate de tener el servicio para las categorías
 import { CommonModule } from '@angular/common';
 import { FormsModule, ReactiveFormsModule } from '@angular/forms';
+import { Router } from '@angular/router';
 
 @Component({
   selector: 'app-listar-categoria',
@@ -19,10 +20,8 @@ export class ListarCategoriaComponent implements OnInit {
   paginatedCategorias: Categoria[] = []; // Categorías paginadas
   loading: boolean = true;
 
-  @Output() editarCategoria = new EventEmitter<number>(); // Emitir evento para editar categoría
-  @Output() registrarCategoria = new EventEmitter<number>(); // Emitir evento para registrar una nueva categoría
-
-  constructor(private servicesService: ServicesService) {}
+  constructor(private servicesService: ServicesService,    private router: Router
+  ) {}
 
   ngOnInit(): void {
     this.getCategorias(); // Obtener las categorías al inicializar el componente
@@ -43,12 +42,11 @@ export class ListarCategoriaComponent implements OnInit {
   }
 
   editarCategoriaClick(id: number) {
-    this.editarCategoria.emit(id); // Emitir el ID de la categoría a editar
-    this.getCategorias(); // Obtener las categorías después de editar
+    this.router.navigate(['panel-control/editar-categorias', id]);
   }
 
   registrarCategoriaClick() {
-    this.registrarCategoria.emit(); // Emitir el evento para registrar una nueva categoría
+    this.router.navigate(['panel-control/registrar-categorias']);
   }
 
   filteredCategorias(): Categoria[] {

@@ -11,6 +11,7 @@ import { Usuario } from '../../../Models/models';
 import { CommonModule } from '@angular/common';
 import { OkComponent } from "../../Mensajes/ok/ok.component";
 import { ErrorComponent } from "../../Mensajes/error/error.component";
+import { Router } from '@angular/router';
 
 @Component({
   selector: 'app-registrar-usuario',
@@ -55,9 +56,7 @@ export class RegistrarUsuarioComponent {
   mensajeModal: string = ''; // Mensaje para el modal
   errorModal: string = '';
 
-  @Output() listarUsuario = new EventEmitter<void>();
-
-  constructor(private fb: FormBuilder, private userService: ServicesService) {
+  constructor(private fb: FormBuilder, private userService: ServicesService,private router: Router) {
     this.usuarioForm = this.fb.group({
       nombre_usuario: ['', Validators.required],
       apellido: ['', Validators.required],
@@ -127,7 +126,11 @@ export class RegistrarUsuarioComponent {
   }
   manejarOk() {
     this.mensajeModal = '';
-    this.listarUsuario.emit();
+    this.router.navigate(['panel-control/listar-usuarios']);
+
+  }
+  volver(): void {
+    this.router.navigate(['panel-control/listar-usuarios']);
   }
   manejarError() {
     this.errorModal = '';

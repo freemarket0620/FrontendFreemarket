@@ -12,6 +12,7 @@ import { UsuarioRol } from '../../../Models/models';
 import { CommonModule } from '@angular/common';
 import { OkComponent } from '../../Mensajes/ok/ok.component';
 import { ErrorComponent } from '../../Mensajes/error/error.component';
+import { Router } from '@angular/router';
 
 @Component({
   selector: 'app-registrar-usuario-rol',
@@ -30,11 +31,10 @@ export class RegistrarUsuarioRolComponent {
   usuarioRolForm: FormGroup;
   usuario: Usuario[] = [];
   roles: Role[] = [];
-  @Output() listarUsuarioRoles = new EventEmitter<void>();
   errorModal: string = '';
   mensajeModal: string = '';
 
-  constructor(private fb: FormBuilder, private userService: ServicesService) {
+  constructor(private fb: FormBuilder, private userService: ServicesService, private router: Router) {
     this.usuarioRolForm = this.fb.group({
       usuario: ['', Validators.required],
       rol: ['', Validators.required],
@@ -78,11 +78,13 @@ export class RegistrarUsuarioRolComponent {
     }
   }
 
-  manejarOk() {
-    this.mensajeModal = ''; // Cerrar el modal
-    this.listarUsuarioRoles.emit(); // Emitir evento para listar los usuarios y roles
+  manejarOk(): void {
+    this.mensajeModal = '';
+    this.router.navigate(['panel-control/listar-usuarios-roles']);
   }
-
+  volver(): void {
+    this.router.navigate(['panel-control/listar-usuarios-roles']);
+  }
   manejarError() {
     this.errorModal = ''; // Cerrar el modal en caso de error
   }

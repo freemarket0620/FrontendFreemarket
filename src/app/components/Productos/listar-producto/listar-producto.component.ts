@@ -8,7 +8,7 @@ import {
   FormsModule,
   ReactiveFormsModule,
 } from '@angular/forms';
-import { RouterModule } from '@angular/router';
+import { Router, RouterModule } from '@angular/router';
 
 @Component({
   selector: 'app-listar-producto',
@@ -27,10 +27,8 @@ export class ListarProductoComponent implements OnInit {
   pageSize: number = 6;
   ordenarAscendente: boolean = true;
 
-  @Output() editarProductos = new EventEmitter<number>();
-  @Output() registrarProductos = new EventEmitter<void>();
-
-  constructor(private productoService: ServicesService) {}
+  constructor(private productoService: ServicesService,    private router: Router
+  ) {}
 
   ngOnInit(): void {
     this.getProductos();
@@ -50,18 +48,18 @@ export class ListarProductoComponent implements OnInit {
   }
 
   editarProducto(id: number) {
-    this.editarProductos.emit(id);
+    this.router.navigate(['panel-control/editar-productos', id]);
+
   }
 
   registrarProducto() {
-    this.registrarProductos.emit();
+    this.router.navigate(['panel-control/registrar-productos']);
   }
   ordenarPorStock() {
     this.ordenarAscendente = !this.ordenarAscendente; // Cambiar el estado de orden
 
     this.productos.sort((a, b) => {
       if (this.ordenarAscendente) {
-        // Ordenar de menor a mayor
         if (a.stock === 0) return -1; // Colocar productos con stock 0 al principio
         if (b.stock === 0) return 1; // Colocar productos con stock 0 al principio
         return a.stock - b.stock; // Ordenar normalmente

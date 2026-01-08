@@ -2,7 +2,7 @@ import { ServicesService } from './../../../Services/services.service';
 import { Component, EventEmitter, OnInit, Output } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule, ReactiveFormsModule } from '@angular/forms';
-import { RouterModule } from '@angular/router';
+import { Router, RouterModule } from '@angular/router';
 import { Usuario } from '../../../Models/models';
 
 @Component({
@@ -24,10 +24,7 @@ export class ListarUsuarioComponent implements OnInit {
   pageSize: number = 5;
   paginatedUsuario: Usuario[] = [];
 
-  @Output() editar = new EventEmitter<number>(); // Emit an event when editing
-  @Output() registrar = new EventEmitter<number>(); // Emit an event when editing
-
-  constructor(private servicesService: ServicesService) {}
+  constructor(private servicesService: ServicesService,private router: Router,) {}
 
   ngOnInit(): void {
     this.getUsuarios();
@@ -40,11 +37,10 @@ export class ListarUsuarioComponent implements OnInit {
     });
   }
   editarUsuario(id: number) {
-    this.editar.emit(id); // Emit the ID of the user to be edited
-    this.getUsuarios(); // Volver a obtener la lista después de editar
+    this.router.navigate(['panel-control/editar-usuarios', id]);
   }
   registrarUsuario() {
-    this.registrar.emit(); // Emit an event to register a new user
+    this.router.navigate(['panel-control/registrar-usuarios']);
   }
   filteredUsuarios(): Usuario[] {
     let filtered = this.usuarios;
@@ -79,7 +75,7 @@ export class ListarUsuarioComponent implements OnInit {
     return filtered.slice(
       (this.page - 1) * this.pageSize,
       this.page * this.pageSize
-    ); // Mostramos solo la página actual
+    ); 
   }
   updatePaginatedUsuario() {
     const start = (this.page - 1) * this.pageSize;
@@ -99,11 +95,9 @@ export class ListarUsuarioComponent implements OnInit {
     }
   }
   toggleUsuarioActivo(usuario: any) {
-    // Invertir el estado de 'estado_Usuario' del usuario
-    usuario.estado_Usuario = !usuario.estado_Usuario; // Cambia esto a estado_Usuario
-    // Llamar a un servicio que actualice el estado del usuario en el servidor
+    usuario.estado_Usuario = !usuario.estado_Usuario; 
     this.servicesService
-      .actualizarEstadoUsuario(usuario.id, usuario.estado_Usuario) // Asegúrate de que se esté pasando el estado correcto
+      .actualizarEstadoUsuario(usuario.id, usuario.estado_Usuario) 
       .subscribe(
         (response) => {
           console.log(

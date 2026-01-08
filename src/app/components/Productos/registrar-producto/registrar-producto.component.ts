@@ -11,6 +11,7 @@ import { ServicesService } from '../../../Services/services.service';
 import { CommonModule } from '@angular/common';
 import { OkComponent } from '../../Mensajes/ok/ok.component';
 import { ErrorComponent } from '../../Mensajes/error/error.component';
+import { Router } from '@angular/router';
 
 @Component({
   selector: 'app-registrar-producto',
@@ -36,10 +37,10 @@ export class RegistrarProductoComponent {
   mensajeModal: string = ''; // Mensaje para el modal
   errorModal: string = '';
 
-  @Output() listarProductos = new EventEmitter<void>();
   constructor(
     private fb: FormBuilder,
-    private productosService: ServicesService
+    private productosService: ServicesService,
+    private router: Router
   ) {
     this.productoForm = fb.group({
       nombre_producto: ['', Validators.required],
@@ -111,9 +112,12 @@ export class RegistrarProductoComponent {
         );
     }
   }
+  volver(): void {
+    this.router.navigate(['panel-control/listar-productos']);
+  }
   manejarOk() {
     this.mensajeModal = '';
-    this.listarProductos.emit();
+    this.router.navigate(['panel-control/listar-productos']);
   }
   manejarError() {
     this.errorModal = '';

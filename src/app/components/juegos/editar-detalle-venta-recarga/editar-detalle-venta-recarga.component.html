@@ -1,0 +1,104 @@
+<div class="container mt-4" *ngIf="detalle">
+  <h3 class="mb-4">Editar Detalle de Venta de Recarga</h3>
+
+  <form [formGroup]="form" (ngSubmit)="onSubmit()">
+    <div class="row g-3">
+      <div class="col-md-6">
+        <label for="venta" class="form-label">Venta</label>
+        <select id="venta" class="form-select" formControlName="venta">
+          <option *ngFor="let v of ventas" [value]="v.id">
+            {{ v.id }} - {{ v.usuario.nombre_usuario }}
+          </option>
+        </select>
+      </div>
+      <div class="col-md-6">
+        <label for="recarga" class="form-label">Recarga</label>
+        <select id="recarga" class="form-select" formControlName="recarga">
+          <option *ngFor="let r of productos" [value]="r.id">
+            {{ r.nombre }} - {{ r.cantidad }}
+          </option>
+        </select>
+      </div>
+
+      <div class="col-md-6">
+        <label for="usuario_juego_id" class="form-label"
+          >Usuario Juego ID</label
+        >
+        <input
+          type="text"
+          id="usuario_juego_id"
+          class="form-control"
+          formControlName="usuario_juego_id"
+        />
+      </div>
+      <div class="col-md-6">
+        <label for="nombre_jugador" class="form-label">Nombre Jugador</label>
+        <input
+          type="text"
+          id="nombre_jugador"
+          class="form-control"
+          formControlName="nombre_jugador"
+        />
+      </div>
+      <div class="col-md-6">
+        <label for="password_jugador" class="form-label"
+          >Contraseña Jugador</label
+        >
+        <input
+          type="text"
+          id="password_jugador"
+          class="form-control"
+          formControlName="password_jugador"
+        />
+      </div>
+      <div class="col-md-3">
+        <label for="cantidad" class="form-label">Cantidad</label>
+        <input
+          type="number"
+          id="cantidad"
+          class="form-control"
+          formControlName="cantidad"
+        />
+      </div>
+      <div class="col-md-3">
+        <label for="precio" class="form-label">Precio</label>
+        <input
+          type="number"
+          id="precio"
+          class="form-control"
+          formControlName="precio"
+        />
+      </div>
+      <div class="col-md-6">
+        <label for="subtotal" class="form-label">Subtotal</label>
+        <input
+          type="number"
+          id="subtotal"
+          class="form-control"
+          formControlName="subtotal"
+        />
+      </div>
+      <div class="col-md-6">
+        <label for="estado" class="form-label">Estado</label>
+        <select id="estado" class="form-select" formControlName="estado">
+          <option value="PENDIENTE">PENDIENTE</option>
+          <option value="COMPLETADO">COMPLETADO</option>
+          <option value="CANCELADO">CANCELADO</option>
+        </select>
+      </div>
+    </div>
+
+    <div class="mt-4">
+      <button type="submit" class="btn btn-primary">Guardar Cambios</button>
+      <button type="button" class="btn btn-secondary" (click)="volver()">
+        Cancelar
+      </button>
+    </div>
+  </form>
+
+  <!-- Mensajes -->
+  <div *ngIf="mensajeModal" class="alert alert-success mt-3">
+    {{ mensajeModal }}
+  </div>
+  <div *ngIf="errorModal" class="alert alert-danger mt-3">{{ errorModal }}</div>
+</div>

@@ -10,6 +10,7 @@ import { ServicesService } from '../../../Services/services.service';
 import { CommonModule } from '@angular/common';
 import { OkComponent } from '../../Mensajes/ok/ok.component';
 import { ErrorComponent } from '../../Mensajes/error/error.component';
+import { ActivatedRoute, Router } from '@angular/router';
 
 @Component({
   selector: 'app-editar-permiso',
@@ -22,17 +23,10 @@ export class EditarPermisoComponent implements OnInit {
   permiso!: Permiso;
   editarForm!: FormGroup;
 
-  @Input() set permisoId(id: number | null) {
-    if (id) {
-      this.loadPermisoData(id); // Cargar los datos cuando se recibe un `id`
-    }
-  }
-  @Output() listarPermisoEditado = new EventEmitter<void>();
-
   mensajeModal: string = '';
   errorModal: string = '';
 
-  constructor(private servicesService: ServicesService) {}
+  constructor(private servicesService: ServicesService,private router: Router,    private route: ActivatedRoute,) {}
 
   ngOnInit(): void {
     this.editarForm = new FormGroup({
@@ -40,13 +34,22 @@ export class EditarPermisoComponent implements OnInit {
       descripcion: new FormControl('', Validators.required),
       estado_Permiso: new FormControl(true),
     });
+    const id = Number(this.route.snapshot.paramMap.get('id'));
+    if (id) {
+      this.loadPermisoData(id);
+    }
   }
 
   loadPermisoData(id: number) {
     this.servicesService.getPermisosById(id).subscribe({
       next: (data) => {
         this.permiso = data;
-        this.initializeForm(); // Asegúrate de inicializar el formulario aquí
+         this.editarForm.patchValue({
+          nombre_permiso: data.nombre_permiso,
+          estado_Permiso: data.estado_Permiso,
+          descripcion: data.descripcion
+        });
+        
       },
       error: (error) => {
         console.error('Error al cargar los datos del permiso:', error);
@@ -55,14 +58,7 @@ export class EditarPermisoComponent implements OnInit {
     });
   }
 
-  initializeForm() {
-    this.editarForm.setValue({
-      nombre_permiso: this.permiso.nombre_permiso,
-      descripcion: this.permiso.descripcion,
-      estado_Permiso: this.permiso.estado_Permiso,
-    });
-  }
-
+ 
   onSubmit(): void {
     if (!this.editarForm.valid) {
       this.errorModal = 'Por favor, complete todos los campos requeridos.';
@@ -85,10 +81,13 @@ export class EditarPermisoComponent implements OnInit {
         },
       });
   }
+  volver(): void {
+    this.router.navigate(['panel-control/listar-permisos']);
+  }
 
   manejarOk() {
     this.mensajeModal = ''; // Cerrar el modal de éxito
-    this.listarPermisoEditado.emit(); // Emitir el evento para listar permisos
+    this.router.navigate(['panel-control/listar-permisos']);
   }
 
   manejarError() {

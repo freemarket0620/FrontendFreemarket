@@ -11,6 +11,7 @@ import { ServicesService } from '../../../Services/services.service';
 import { CommonModule } from '@angular/common';
 import { OkComponent } from '../../Mensajes/ok/ok.component';
 import { ErrorComponent } from '../../Mensajes/error/error.component';
+import { ActivatedRoute, Router } from '@angular/router';
 
 @Component({
   selector: 'app-editar-usuario-rol',
@@ -32,18 +33,17 @@ export class EditarUsuarioRolComponent implements OnInit {
   form!: FormGroup; // Formulario reactivo
   mensajeModal: string = ''; // Mensaje para el modal
   errorModal: string = ''; // Mensaje de error para el modal
-  @Input() usuarioRolId: number | null = null; // ID del UsuarioRol a editar
-  @Output() listarUsuarioRolEditado = new EventEmitter<void>(); // Evento para notificar que se ha editado un UsuarioRol
 
-  constructor(private usuarioRolService: ServicesService) {}
+  constructor(private usuarioRolService: ServicesService,    private route: ActivatedRoute,
+      private router: Router) {}
 
   ngOnInit(): void {
     this.loadUsuarios(); // Cargar usuarios
     this.loadRoles(); // Cargar roles
-    if (this.usuarioRolId !== null) {
-      this.loadUsuarioRolData(this.usuarioRolId); // Cargar datos del UsuarioRol si el ID es válido
-    } else {
-      console.error('usuarioRolId es nulo o no definido');
+        
+    const id = Number(this.route.snapshot.paramMap.get('id'));
+    if (id) {
+      this.loadUsuarioRolData(id);
     }
   }
 
@@ -104,9 +104,13 @@ export class EditarUsuarioRolComponent implements OnInit {
     }
   }
 
-  manejarOk() {
+
+  manejarOk(): void {
     this.mensajeModal = '';
-    this.listarUsuarioRolEditado.emit();
+    this.router.navigate(['panel-control/listar-usuarios-roles']);
+  }
+  volver(): void {
+    this.router.navigate(['panel-control/listar-usuarios-roles']);
   }
   manejarError() {
     this.errorModal = '';
