@@ -316,14 +316,42 @@
             class="d-flex align-items-center p-2 rounded"
             *ngIf="puedeVer('VenderJugos')"
           >
-            <i class="bi bi-joystick fs-2 text-dark"></i
-            ><i class="bi bi-cash-coin fs-2 text-dark"></i>
+            <i class="bi bi-joystick fs-2 text-dark"></i>
             <div class="flex-grow-1 text-start ms-2">
               <a
                 routerLink="/panel-control/listar-DetalleVentaRecarga"
                 class="text-dark text-decoration-none"
               >
                 Venta de Juegos
+              </a>
+            </div>
+          </li>
+          <li
+            class="d-flex align-items-center p-2 rounded"
+            *ngIf="puedeVer('Efectivo')"
+          >
+            <i class="bi bi-currency-bitcoin fs-2 text-dark"></i>
+            <div class="flex-grow-1 text-start ms-2">
+              <a
+                routerLink="/panel-control/efectivo"
+                class="text-dark text-decoration-none"
+              >
+                Efectivo
+              </a>
+            </div>
+          </li>
+          <li
+            class="d-flex align-items-center p-2 rounded"
+            *ngIf="puedeVer('RecargaMax')"
+          >
+            <i class="bi bi-phone-flip fs-2 text-dark"></i>
+
+            <div class="flex-grow-1 text-start ms-2">
+              <a
+                routerLink="/panel-control/recargamax"
+                class="text-dark text-decoration-none"
+              >
+                Recarga Max
               </a>
             </div>
           </li>

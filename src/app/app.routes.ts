@@ -37,6 +37,8 @@ import { ListarRecargaProductoComponent } from './components/juegos/listar-recar
 import { RegistrarDetalleVentaRecargaComponent } from './components/juegos/registrar-detalle-venta-recarga/registrar-detalle-venta-recarga.component';
 import { EditarDetalleVentaRecargaComponent } from './components/juegos/editar-detalle-venta-recarga/editar-detalle-venta-recarga.component';
 import { ListarDetalleVentaRecargaComponent } from './components/juegos/listar-detalle-venta-recarga/listar-detalle-venta-recarga.component';
+import { EfectivoComponent } from './components/efectivo/efectivo.component';
+import { RecargamaxComponent } from './components/recargamax/recargamax.component';
 
 
 export const routes: Routes = [
@@ -99,6 +101,9 @@ export const routes: Routes = [
       /* ================= VENTAS ================= */
       { path: 'listar-ventas', component: ListarVentaComponent },
       { path: 'listar-detalle-ventas', component: ListarDetalleVentaComponent },
+
+      { path: 'efectivo', component: EfectivoComponent },
+      { path: 'recargamax', component: RecargamaxComponent },
 
       /* ================= DASHBOARD / PERFIL ================= */
       { path: 'dashboardComponent', component: DashboardComponent },

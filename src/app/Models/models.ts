@@ -104,3 +104,32 @@ export interface DetalleVentaRecarga {
   subtotal: number;
   estado: string; 
 }
+
+/* nuevas tablas: Efectivo y RecargaMax */
+
+export interface Efectivo {
+  id: number;
+  B200Bs: number;
+  B100Bs: number;
+  B50Bs: number;
+  B20Bs: number;
+  B10Bs: number;
+  M5Bs: number;
+  M2Bs: number;
+  M1: number;
+  M0_50Bs: number;
+  M0_20Bs: number;
+  M0_10Bs: number;
+  total: number; // calculado automáticamente en el backend
+  fecha_creacion: Date;
+}
+
+export interface RecargaMax {
+  id: number;
+  numero_origen: string;
+  numero_destino: string;
+  saldo_total: number;
+  monto_carga: number;
+  estado: "PENDIENTE" | "COMPLETADO" | "CANCELADO"; // usar union type de los choices
+  fecha_creacion: Date;
+}

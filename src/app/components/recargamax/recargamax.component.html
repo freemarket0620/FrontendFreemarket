@@ -1,0 +1,267 @@
+<div class="container mt-4">
+  <h2>Recarga Max</h2>
+
+  <!-- 🔍 BUSCADOR -->
+  <div class="row mb-3">
+    <div class="col-md-6">
+      <input
+        type="text"
+        class="form-control"
+        placeholder="Buscar por número origen o destino..."
+        [(ngModel)]="searchText"
+        (input)="filtrar()"
+      />
+    </div>
+
+    <div class="col-md-6 text-end">
+      <button
+        class="btn btn-success"
+        data-bs-toggle="modal"
+        data-bs-target="#modalRegistrar"
+      >
+        + Nueva Recarga
+      </button>
+    </div>
+  </div>
+
+  <!-- 🧮 CALCULADORA 50% -->
+  <div class="card p-3 mb-4">
+    <h5>Calculadora 50%</h5>
+    <div class="row g-2 align-items-center">
+      <div class="col-md-4">
+        <input
+          type="number"
+          class="form-control"
+          placeholder="Ingrese cantidad"
+          [(ngModel)]="cantidad"
+          (input)="calcular50()"
+        />
+      </div>
+      <div class="col-md-8">
+        <strong>Total (cantidad + 50%):</strong>
+        <span class="ms-2 text-success">
+          {{ resultado50 | number : "1.2-2" }} Bs
+        </span>
+      </div>
+    </div>
+  </div>
+
+  <!-- 📋 TABLA -->
+  <table class="table table-bordered table-striped">
+    <thead class="table-info">
+      <tr>
+        <th>ID</th>
+        <th>Número Origen</th>
+        <th>Saldo Total</th>
+        <th>Número Destino</th>
+        <th>Monto</th>
+        <th>Estado</th>
+        <th>Acciones</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr *ngFor="let rec of recargasFiltradas">
+        <td>{{ rec.id }}</td>
+        <td>{{ rec.numero_origen }}</td>
+        <td>{{ rec.saldo_total | number : "1.2-2" }}</td>
+        <td>{{ rec.numero_destino }}</td>
+        <td>{{ rec.monto_carga | number : "1.2-2" }}</td>
+        <td>{{ rec.estado }}</td>
+        <td>
+          <button
+            class="btn btn-outline-primary btn-sm me-1"
+            (click)="openSaldoModal(rec)"
+          >
+            Editar Saldo
+          </button>
+          <button
+            class="btn btn-outline-success btn-sm"
+            (click)="openCargaModal(rec)"
+          >
+            Vender Credito
+          </button>
+        </td>
+      </tr>
+    </tbody>
+  </table>
+</div>
+
+<!-- 🔽 MODALES (sin cambios funcionales) -->
+<!-- (tus modales Registrar, Saldo y Carga van EXACTAMENTE igual que antes) -->
+
+<!-- MODAL REGISTRAR -->
+<div class="modal fade" id="modalRegistrar" tabindex="-1" aria-hidden="true">
+  <div class="modal-dialog">
+    <div class="modal-content">
+      <div class="modal-header bg-success text-white">
+        <h5 class="modal-title">Registrar Nueva Recarga</h5>
+        <button
+          type="button"
+          class="btn-close"
+          data-bs-dismiss="modal"
+        ></button>
+      </div>
+      <div class="modal-body">
+        <form
+          [formGroup]="newRecargaForm"
+          (ngSubmit)="registrarRecarga()"
+          class="row g-2"
+        >
+          <div class="col-6">
+            <label>Número Origen</label>
+            <input
+              type="text"
+              formControlName="numero_origen"
+              class="form-control"
+            />
+          </div>
+          <div class="col-6">
+            <label>Saldo Total (Bs)</label>
+            <input
+              type="number"
+              formControlName="saldo_total"
+              class="form-control"
+            />
+          </div>
+          <div class="col-6">
+            <label>Número Destino</label>
+            <input
+              type="text"
+              formControlName="numero_destino"
+              class="form-control"
+            />
+          </div>
+          <div class="col-6">
+            <label>Monto Carga (Bs)</label>
+            <input
+              type="number"
+              formControlName="monto_carga"
+              class="form-control"
+            />
+          </div>
+          <div class="col-12 mt-3 text-end">
+            <button
+              type="submit"
+              class="btn btn-success"
+              [disabled]="newRecargaForm.invalid"
+            >
+              Registrar
+            </button>
+            <button
+              type="button"
+              class="btn btn-secondary"
+              data-bs-dismiss="modal"
+            >
+              Cancelar
+            </button>
+          </div>
+        </form>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- MODAL EDITAR SALDO -->
+<div class="modal fade" id="modalSaldo" tabindex="-1" aria-hidden="true">
+  <div class="modal-dialog">
+    <div class="modal-content">
+      <div class="modal-header bg-primary text-white">
+        <h5 class="modal-title">Editar Número Origen / Saldo</h5>
+        <button
+          type="button"
+          class="btn-close"
+          data-bs-dismiss="modal"
+        ></button>
+      </div>
+      <div class="modal-body" *ngIf="selectedRecarga">
+        <form [formGroup]="saldoForm" (ngSubmit)="saveSaldo()">
+          <div class="mb-2">
+            <label>Número Origen</label>
+            <input
+              type="text"
+              [value]="selectedRecarga.numero_origen"
+              class="form-control"
+              readonly
+            />
+          </div>
+          <div class="mb-2">
+            <label>Saldo Total (Bs)</label>
+            <input
+              type="number"
+              formControlName="saldo_total"
+              class="form-control"
+            />
+          </div>
+          <div class="text-end">
+            <button
+              type="submit"
+              class="btn btn-primary me-2"
+              [disabled]="saldoForm.invalid"
+            >
+              Guardar
+            </button>
+            <button
+              type="button"
+              class="btn btn-secondary"
+              data-bs-dismiss="modal"
+            >
+              Cancelar
+            </button>
+          </div>
+        </form>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- MODAL EDITAR CARGA -->
+<div class="modal fade" id="modalCarga" tabindex="-1" aria-hidden="true">
+  <div class="modal-dialog">
+    <div class="modal-content">
+      <div class="modal-header bg-success text-white">
+        <h5 class="modal-title">Editar Destino / Monto / Estado</h5>
+        <button
+          type="button"
+          class="btn-close"
+          data-bs-dismiss="modal"
+        ></button>
+      </div>
+      <div class="modal-body" *ngIf="selectedRecarga">
+        <form [formGroup]="cargaForm" (ngSubmit)="saveCarga()">
+          <div class="mb-2">
+            <label>Número Destino</label>
+            <input
+              type="text"
+              formControlName="numero_destino"
+              class="form-control"
+            />
+          </div>
+          <div class="mb-2">
+            <label>Monto de Carga (Bs)</label>
+            <input
+              type="number"
+              formControlName="monto_carga"
+              class="form-control"
+            />
+          </div>
+          <div class="text-end">
+            <button
+              type="submit"
+              class="btn btn-success me-2"
+              [disabled]="cargaForm.invalid"
+            >
+              Guardar
+            </button>
+            <button
+              type="button"
+              class="btn btn-secondary"
+              data-bs-dismiss="modal"
+            >
+              Cancelar
+            </button>
+          </div>
+        </form>
+      </div>
+    </div>
+  </div>
+</div>

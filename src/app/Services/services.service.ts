@@ -4,8 +4,10 @@ import {
   Categoria,
   DetalleVenta,
   DetalleVentaRecarga,
+  Efectivo,
   Permiso,
   Producto,
+  RecargaMax,
   RecargaProducto,
   Role,
   RolePermiso,
@@ -434,4 +436,42 @@ export class ServicesService {
     return this.http.get<DetalleVentaRecarga[]>(`${this.apiUrl}DetalleVentaRecarga/?${query}`);
   }
     
+
+
+  /* ---------------------------- SERVICIOS DE EFECTIVO ---------------------------- */
+
+getEfectivos(): Observable<Efectivo[]> {
+  return this.http.get<Efectivo[]>(`${this.apiUrl}efectivo/`);
+}
+
+getEfectivoById(id: number): Observable<Efectivo> {
+  return this.http.get<Efectivo>(`${this.apiUrl}efectivo/${id}/`);
+}
+
+crearEfectivo(efectivo: Efectivo): Observable<Efectivo> {
+  return this.http.post<Efectivo>(`${this.apiUrl}efectivo/`, efectivo);
+}
+
+actualizarEfectivo(id: number, efectivo: Efectivo): Observable<Efectivo> {
+  return this.http.put<Efectivo>(`${this.apiUrl}efectivo/${id}/`, efectivo);
+}
+
+/* ---------------------------- SERVICIOS DE RECARGA MAX ---------------------------- */
+getRecargaMax(): Observable<RecargaMax[]> {
+  return this.http.get<RecargaMax[]>(`${this.apiUrl}recarga-max/`);
+}
+
+getRecargaMaxById(id: number): Observable<RecargaMax> {
+  return this.http.get<RecargaMax>(`${this.apiUrl}recarga-max/${id}/`);
+}
+
+crearRecargaMax(recarga: RecargaMax): Observable<RecargaMax> {
+  return this.http.post<RecargaMax>(`${this.apiUrl}recarga-max/`, recarga);
+}
+
+actualizarRecargaMax(id: number, recarga: RecargaMax): Observable<RecargaMax> {
+  return this.http.put<RecargaMax>(`${this.apiUrl}recarga-max/${id}/`, recarga);
+}
+
+
 }
