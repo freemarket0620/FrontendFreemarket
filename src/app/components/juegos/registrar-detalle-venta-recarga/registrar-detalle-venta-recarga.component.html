@@ -3,17 +3,6 @@
 
   <form [formGroup]="detalleForm" (ngSubmit)="registrarDetalleVenta()">
     <div class="row g-3">
-      <!-- Selección de Venta -->
-      <div class="col-md-6">
-        <label for="venta" class="form-label">Venta</label>
-        <select id="venta" class="form-select" formControlName="venta" required>
-          <option value="" disabled>Seleccione Venta</option>
-          <option *ngFor="let v of ventas" [value]="v.id">
-            {{ v.id }} - {{ v.usuario.nombre_usuario }}
-          </option>
-        </select>
-      </div>
-
       <!-- Selección de Recarga -->
       <div class="col-md-6">
         <label for="recarga" class="form-label">Recarga</label>
@@ -127,5 +116,7 @@
   <div *ngIf="mensajeModal" class="alert alert-success mt-3">
     {{ mensajeModal }}
   </div>
-  <div *ngIf="errorModal" class="alert alert-danger mt-3">{{ errorModal }}</div>
+  <div *ngIf="errorModal" class="alert alert-danger mt-3">
+    {{ errorModal }}
+  </div>
 </div>

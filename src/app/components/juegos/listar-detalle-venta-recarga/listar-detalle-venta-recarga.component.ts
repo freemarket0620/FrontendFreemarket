@@ -46,6 +46,36 @@ export class ListarDetalleVentaRecargaComponent implements OnInit {
 
     return filtered.slice((this.page - 1) * this.pageSize, this.page * this.pageSize);
   }
+  filteredDetallesForTotals(): DetalleVentaRecarga[] {
+    let filtered = this.detalles;
+
+    if (this.searchUsuario) {
+      filtered = filtered.filter(d =>
+        d.usuario_juego_id.toLowerCase().includes(this.searchUsuario.toLowerCase())
+      );
+    }
+
+    if (this.searchJugador) {
+      filtered = filtered.filter(d =>
+        d.nombre_jugador?.toLowerCase().includes(this.searchJugador.toLowerCase())
+      );
+    }
+
+    return filtered; // 🔹 SIN paginación
+  }
+
+  // 🔹 Total Precio
+  getTotalPrecio(): number {
+    return this.filteredDetallesForTotals()
+      .reduce((sum, d) => sum + Number(d.precio), 0);
+  }
+
+  // 🔹 Total Subtotal
+  getTotalSubtotal(): number {
+    return this.filteredDetallesForTotals()
+      .reduce((sum, d) => sum + Number(d.subtotal), 0);
+  }
+
 
   nextPage() { this.page++; }
   previousPage() { if (this.page > 1) this.page--; }

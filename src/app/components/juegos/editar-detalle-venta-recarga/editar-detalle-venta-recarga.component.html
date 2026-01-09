@@ -4,14 +4,6 @@
   <form [formGroup]="form" (ngSubmit)="onSubmit()">
     <div class="row g-3">
       <div class="col-md-6">
-        <label for="venta" class="form-label">Venta</label>
-        <select id="venta" class="form-select" formControlName="venta">
-          <option *ngFor="let v of ventas" [value]="v.id">
-            {{ v.id }} - {{ v.usuario.nombre_usuario }}
-          </option>
-        </select>
-      </div>
-      <div class="col-md-6">
         <label for="recarga" class="form-label">Recarga</label>
         <select id="recarga" class="form-select" formControlName="recarga">
           <option *ngFor="let r of productos" [value]="r.id">

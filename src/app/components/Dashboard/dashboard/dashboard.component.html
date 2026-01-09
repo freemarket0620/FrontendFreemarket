@@ -1,130 +1,69 @@
-<!--  
-<div class="container-fluid mt-4">
+<div class="container mt-4">
+  <h2 class="mb-3">Ver Imágenes</h2>
+
+  <!-- FILTRO -->
+  <div class="mb-3">
+    <select
+      class="form-select"
+      [(ngModel)]="selectedCategory"
+      (change)="filterImages()"
+    >
+      <option value="">Todas las imágenes</option>
+      <option value="bancos">🏦 Bancos</option>
+      <option value="juegos">🎮 Juegos</option>
+    </select>
+  </div>
+
+  <!-- GRID -->
   <div class="row">
-    <div class="col-md-12">
-      <div class="card-body">
-        <h3 class="card-title text-center mb-3">Dashboard de Ventas</h3>
+    <div
+      class="col-6 col-md-3 mb-4"
+      *ngFor="let img of filteredImages; let i = index"
+    >
+      <img
+        [src]="img.src"
+        [alt]="img.alt"
+        class="img-fluid image-thumb"
+        (click)="openModal(i)"
+      />
+    </div>
+  </div>
+</div>
 
-        <div class="container-fluid mt-4">
+<!-- MODAL -->
+<div
+  class="modal fade show d-block"
+  *ngIf="showModal"
+  style="background: rgba(0, 0, 0, 0.8)"
+>
+  <div class="modal-dialog modal-lg modal-dialog-centered">
+    <div class="modal-content bg-transparent border-0">
+      <div class="modal-body text-center position-relative p-0">
+        <!-- PREV -->
+        <button class="btn btn-light nav-btn start" (click)="prevImage()">
+          ‹
+        </button>
 
+        <!-- IMAGE -->
+        <img
+          [src]="filteredImages[currentIndex].src"
+          [alt]="filteredImages[currentIndex].alt"
+          class="img-fluid modal-image"
+        />
 
-          <div class="row">
-            <div class="col-12 col-md-4 mb-4">
-              <h5 class="text-center">Stock de Productos</h5>
-              <ngx-charts-bar-vertical [view]="view" [legend]="true" [scheme]="colorScheme" [results]="productosVendidos"
-                [gradient]="false" [xAxis]="true" [yAxis]="true" [showXAxisLabel]="true" [showYAxisLabel]="true"
-                [xAxisLabel]="'Productos'" [yAxisLabel]="'Stock'">
-              </ngx-charts-bar-vertical>
-            </div>
-            <div class="col-12 col-md-4 mb-4">
-              <h5 class="text-center">Stock de Productos</h5>
-              <ngx-charts-pie-chart [view]="view" [legend]="true" [scheme]="colorScheme" [results]="productosVendidos"
-                [labels]="true" [doughnut]="false" [explodeSlices]="false">
-              </ngx-charts-pie-chart>
-            </div>
-            <div class="col-12 col-md-4 mb-4">
-              <h5 class="text-center">Distribución de Productos Vendidos</h5>
-              <ngx-charts-bar-horizontal [view]="view" [scheme]="colorScheme" [results]="ventasPorProducto" [xAxis]="true"
-                [yAxis]="true" [showXAxisLabel]="true" [showYAxisLabel]="true" [xAxisLabel]="'Cantidad Vendida'"
-                [yAxisLabel]="'Producto'">
-              </ngx-charts-bar-horizontal>
-            </div>
+        <!-- NEXT -->
+        <button class="btn btn-light nav-btn end" (click)="nextImage()">
+          ›
+        </button>
 
-          </div>
-
-      
-          <div class="row">
-            <div class="col-12 col-md-4 mb-4">
-              <h5 class="text-center">Ventas por Usuario</h5>
-              <ngx-charts-bar-vertical [view]="view" [legend]="true" [scheme]="colorScheme"
-                [results]="ventasPorUsuarioGrafico" [gradient]="false" [xAxis]="true" [yAxis]="true"
-                [showXAxisLabel]="true" [showYAxisLabel]="true" [xAxisLabel]="'Usuario'"
-                [yAxisLabel]="'Cantidad de Ventas'">
-              </ngx-charts-bar-vertical>
-            </div>
-            <div class="col-12 col-md-4 mb-4">
-              <h5 class="text-center">Total Vendido por Usuario</h5>
-              <ngx-charts-pie-chart [view]="view" [legend]="true" [scheme]="colorScheme"
-                [results]="ventasTotalesPorUsuarioGrafico" [labels]="true" [doughnut]="true">
-              </ngx-charts-pie-chart>
-            </div>
-            <div class="col-12 col-md-4 mb-4">
-              <h5 class="text-center">Ventas Totales por Mes</h5>
-              <ngx-charts-line-chart [view]="view" [scheme]="colorScheme" [results]="ventasPorFecha" [xAxis]="true"
-                [yAxis]="true" [showXAxisLabel]="true" [showYAxisLabel]="true" [xAxisLabel]="'Mes'"
-                [yAxisLabel]="'Total Vendido'">
-              </ngx-charts-line-chart>
-            </div>
-          </div>
-
-  
-          <div class="row">
-            <div class="col-12 col-md-4 mb-4">
-              <h5 class="text-center">Ventas por Día de la Semana</h5>
-              <ngx-charts-bar-vertical [view]="view" [legend]="true" [scheme]="colorScheme"
-                [results]="ventasPorDiaSemana" [gradient]="false" [xAxis]="true" [yAxis]="true" [showXAxisLabel]="true"
-                [showYAxisLabel]="true" [xAxisLabel]="'Día'" [yAxisLabel]="'Cantidad de Ventas'">
-              </ngx-charts-bar-vertical>
-            </div>
-            <div class="col-12 col-md-4 mb-4">
-              <h5 class="text-center">Top 5 Productos Más Vendidos</h5>
-              <ngx-charts-pie-chart [view]="view" [legend]="true" [scheme]="colorScheme"
-                [results]="topProductosVendidos" [labels]="true" [doughnut]="false" [explodeSlices]="false">
-              </ngx-charts-pie-chart>
-            </div>
-            <div class="col-12 col-md-4 mb-4">
-              <h5 class="text-center">Stock Total por Categoría</h5>
-              <ngx-charts-pie-chart [view]="view" [legend]="true" [scheme]="colorScheme" [results]="stockPorCategoria"
-                [labels]="true" [doughnut]="false" [explodeSlices]="false">
-              </ngx-charts-pie-chart>
-            </div>
-          </div>
-
-       
-          <div class="row">
-            <div class="col-12 col-md-4 mb-4">
-              <h5 class="text-center">Precio Compra vs Venta</h5>
-              <ngx-charts-bar-vertical-2d [view]="view" [legend]="true" [scheme]="colorScheme"
-                [results]="comparativaPrecio" [gradient]="false" [xAxis]="true" [yAxis]="true" [showXAxisLabel]="true"
-                [showYAxisLabel]="true" [xAxisLabel]="'Producto'" [yAxisLabel]="'Precio'">
-              </ngx-charts-bar-vertical-2d>
-            </div>
-            <div class="col-12 col-md-4 mb-4">
-              <h5 class="text-center">Productos Más Rentables</h5>
-              <ngx-charts-bar-vertical [view]="view" [legend]="true" [scheme]="colorScheme"
-                [results]="productosRentables" [gradient]="false" [xAxis]="true" [yAxis]="true" [showXAxisLabel]="true"
-                [showYAxisLabel]="true" [xAxisLabel]="'Producto'" [yAxisLabel]="'Rentabilidad'">
-              </ngx-charts-bar-vertical>
-            </div>
-            <div class="col-12 col-md-4 mb-4">
-              <h5 class="text-center">Productos con Bajo Stock</h5>
-              <ngx-charts-bar-vertical [view]="view" [legend]="true" [scheme]="colorScheme"
-                [results]="productosBajoStock" [gradient]="false" [xAxis]="true" [yAxis]="true" [showXAxisLabel]="true"
-                [showYAxisLabel]="true" [xAxisLabel]="'Producto'" [yAxisLabel]="'Cantidad Disponible'">
-              </ngx-charts-bar-vertical>
-            </div>
-          </div>
-
-      
-          <div class="row">
-            <div class="col-12 col-md-6 mb-4">
-              <h5 class="text-center">Ingresos por Usuario</h5>
-              <ngx-charts-pie-chart [view]="view" [legend]="true" [scheme]="colorScheme"
-                [results]="ventasTotalesPorUsuarioGrafico" [labels]="true" [doughnut]="true" [explodeSlices]="false">
-              </ngx-charts-pie-chart>
-            </div>
-            <div class="col-12 col-md-6 mb-4">
-              <h5 class="text-center">Ventas por Categoría</h5>
-              <ngx-charts-bar-vertical [view]="view" [scheme]="colorScheme" [results]="ventasPorCategoria" [xAxis]="true"
-                [yAxis]="true" [showXAxisLabel]="true" [showYAxisLabel]="true" [xAxisLabel]="'Categoría'"
-                [yAxisLabel]="'Total Vendido (Bs)'">
-              </ngx-charts-bar-vertical>
-            </div>
-
-          </div>
-
-        </div>
+        <!-- CLOSE -->
+        <button
+          class="btn btn-danger position-absolute top-0 end-0 m-2"
+          (click)="closeModal()"
+        >
+          ✕
+        </button>
       </div>
     </div>
   </div>
-</div>-->
+</div>

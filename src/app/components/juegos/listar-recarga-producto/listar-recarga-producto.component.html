@@ -1,6 +1,6 @@
 <div class="container mt-4">
   <div class="d-flex justify-content-between align-items-center mb-3">
-    <h3>Listado de Recargas</h3>
+    <h3 class="text-center">Listado de Recargas</h3>
     <button class="btn btn-primary" (click)="registrarRecarga()">
       Registrar Nueva
     </button>
@@ -15,24 +15,16 @@
         [(ngModel)]="searchNombre"
       />
     </div>
-    <div class="col-md-4">
-      <input
-        type="text"
-        class="form-control"
-        placeholder="Buscar por categoría"
-        [(ngModel)]="searchCategoria"
-      />
-    </div>
   </div>
 
   <table class="table table-striped table-hover">
-    <thead>
+    <thead class="table-success">
       <tr>
         <th>Nombre</th>
         <th>Categoría</th>
-        <th>Cantidad</th>
-        <th>Precio Compra</th>
-        <th>Precio Venta</th>
+        <th>Cantidad Diamantes 💎</th>
+        <th>Precio Compra Bs 💵</th>
+        <th>Precio Venta Bs 💵</th>
         <th>Estado</th>
         <th>Acciones</th>
       </tr>
@@ -42,16 +34,17 @@
         <td>{{ recarga.nombre }}</td>
         <td>{{ recarga.categoria.nombre_categoria }}</td>
         <td>{{ recarga.cantidad }}</td>
-        <td>{{ recarga.precio_compra | currency }}</td>
-        <td>{{ recarga.precio_venta | currency }}</td>
+        <td>{{ recarga.precio_compra }}</td>
+        <td>{{ recarga.precio_venta }}</td>
         <td>
           <span
             class="badge"
             [ngClass]="recarga.estado ? 'bg-success' : 'bg-danger'"
             style="cursor: pointer"
             (click)="toggleEstado(recarga)"
-            >{{ recarga.estado ? "Activo" : "Inactivo" }}</span
           >
+            {{ recarga.estado ? "Activo" : "Inactivo" }}
+          </span>
         </td>
         <td>
           <button
@@ -63,6 +56,17 @@
         </td>
       </tr>
     </tbody>
+
+    <!-- FILA DE TOTALES -->
+    <tfoot class="table-light fw-bold">
+      <tr>
+        <td colspan="2" class="text-end">Totales:</td>
+        <td>{{ getTotalDiamantes() }}</td>
+        <td>{{ getTotalPrecioCompra() | number : "1.2-2" }}</td>
+        <td>{{ getTotalPrecioVenta() | number : "1.2-2" }}</td>
+        <td colspan="2"></td>
+      </tr>
+    </tfoot>
   </table>
 
   <div class="d-flex justify-content-between mt-3">

@@ -1,9 +1,33 @@
-/* en tu styles.css global o el CSS/SCSS del componente */
-.chart-container {
-    width: 100%;
-    max-width: 100%;
-    height: auto;
-    padding: 0.5rem;
-    display: flex;
-    justify-content: center;
+.image-thumb {
+  height: 200px;
+  width: 100%;
+  object-fit: contain;
+  background: #fff;
+  padding: 10px;
+  cursor: pointer;
+  border-radius: 6px;
+}
+
+.modal-image {
+  max-height: 80vh;
+  object-fit: contain;
+}
+
+.nav-btn {
+  position: absolute;
+  top: 50%;
+  transform: translateY(-50%);
+  width: 50px;
+  height: 50px;
+  border-radius: 50%;
+  font-size: 28px;
+  opacity: 0.8;
+}
+
+.nav-btn.start {
+  left: 10px;
+}
+
+.nav-btn.end {
+  right: 10px;
 }

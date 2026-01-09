@@ -1,18 +1,30 @@
 <section class="layout">
   <!-- Navbar -->
   <nav class="navbar navbar-expand-md sticky-top bg-light shadow-sm">
-    <div class="container-fluid mx-2">
-      <button class="btn me-2 toggle-button" (click)="toggleSidebar()">
-        <i [ngClass]="isSidebarOpen ? 'fas fa-times' : 'fas fa-bars'"></i>
+    <div
+      class="container-fluid mx-2 d-flex justify-content-between align-items-center"
+    >
+      <!-- Botón para toggle sidebar -->
+      <button class="btn btn-outline-secondary me-2" (click)="toggleSidebar()">
+        <i class="bi bi-list"></i>
       </button>
 
-      <div class="ms-auto d-flex align-items-center gap-2">
-        <button class="btn rounded-circle p-0" (click)="verPerfil()">
+      <!-- Título opcional o logo -->
+      <span class="navbar-brand mb-0 h1 d-none d-md-block">Mi Panel</span>
+
+      <!-- Botones de usuario y acciones -->
+      <div class="d-flex align-items-center gap-2">
+        <!-- Perfil -->
+        <button
+          class="btn p-0 border-0 rounded-circle d-flex align-items-center justify-content-center"
+          (click)="verPerfil()"
+          style="width: 45px; height: 45px; overflow: hidden"
+        >
           <img
             *ngIf="imagen_url"
             [src]="imagen_url"
             class="rounded-circle"
-            style="width: 40px; height: 40px; object-fit: cover"
+            style="width: 100%; height: 100%; object-fit: cover"
             alt="Perfil"
           />
           <i
@@ -21,11 +33,20 @@
           ></i>
         </button>
 
-        <button class="btn rounded-circle" (click)="confirmarCerrarSesion()">
-          <i class="fas fa-power-off text-danger"></i>
+        <!-- Cerrar sesión -->
+        <button
+          class="btn btn-outline-danger rounded-circle p-2"
+          (click)="confirmarCerrarSesion()"
+        >
+          <i class="fas fa-power-off"></i>
         </button>
-        <button class="btn rounded-circle" (click)="panelDeControl()">
-          <i class="bi bi-house"></i>
+
+        <!-- Panel de control -->
+        <button
+          class="btn btn-outline-primary rounded-circle p-2"
+          (click)="panelDeControl()"
+        >
+          <i class="bi bi-house-fill"></i>
         </button>
       </div>
     </div>
@@ -40,17 +61,9 @@
     <div class="p-3 text-start content p-0 bounce-content">
       <hr class="text-dark" />
       <hr class="text-dark" />
-      <img
-        *ngIf="imagen_url"
-        [src]="imagen_url"
-        class="rounded-circle"
-        style="width: 200px; height: 200px; object-fit: cover"
-        alt="Perfil"
-      />
 
       <p class="text-dark">Nombre: {{ nombre_usuario }} {{ apellido }}</p>
       <p class="text-dark">Rol: {{ roles }}</p>
-      <!-- Agregado: Muestra el primer rol debajo del nombre -->
 
       <hr class="text-dark" />
       <hr class="text-dark" />
@@ -62,20 +75,18 @@
           class="d-flex align-items-center"
           (click)="toggleSubmenu('usuarios')"
         >
-          <i class="bi bi-person fs-2 text-dark pe-2"></i>
+          <i class="bi bi-people fs-2 text-dark pe-2"></i>
           <span class="text-dark flex-grow-1">Gestión de Usuarios</span>
           <i class="bi bi-chevron-right text-dark"></i>
         </li>
 
         <ul class="list-group ps-3" *ngIf="isSubmenuOpen('usuarios')">
-          <!-- USUARIOS - ROLES -->
+          <!-- ROLES -->
           <li
             class="d-flex align-items-center p-2 rounded"
             *ngIf="puedeVer('registrarRoles')"
           >
-            <div style="flex-shrink: 0">
-              <i class="bi bi-person-check fs-2 text-dark"></i>
-            </div>
+            <i class="bi bi-person-badge fs-2 text-dark"></i>
             <div class="flex-grow-1 text-start ms-2">
               <a
                 routerLink="/panel-control/listar-roles"
@@ -86,20 +97,18 @@
             </div>
           </li>
 
-          <!-- USUARIOS - PERMISOS -->
+          <!-- PERMISOS -->
           <li
             class="d-flex align-items-center p-2 rounded"
             *ngIf="puedeVer('registrarPermisos')"
           >
-            <div style="flex-shrink: 0">
-              <i class="bi bi-person-check fs-2 text-dark"></i>
-            </div>
+            <i class="bi bi-shield-lock fs-2 text-dark"></i>
             <div class="flex-grow-1 text-start ms-2">
               <a
                 routerLink="/panel-control/listar-permisos"
                 class="text-dark text-decoration-none"
               >
-                permisos
+                Permisos
               </a>
             </div>
           </li>
@@ -109,9 +118,7 @@
             class="d-flex align-items-center p-2 rounded"
             *ngIf="puedeVer('registrarUsuarios')"
           >
-            <div style="flex-shrink: 0">
-              <i class="bi bi-person-lines-fill fs-2 text-dark"></i>
-            </div>
+            <i class="bi bi-person-lines-fill fs-2 text-dark"></i>
             <div class="flex-grow-1 text-start ms-2">
               <a
                 routerLink="/panel-control/listar-usuarios"
@@ -122,14 +129,12 @@
             </div>
           </li>
 
-          <!-- USUARIOS - ROLES (RELACIÓN) -->
+          <!-- USUARIOS - ROLES -->
           <li
             class="d-flex align-items-center p-2 rounded"
             *ngIf="puedeVer('registrarUsuarioRoles')"
           >
-            <div style="flex-shrink: 0">
-              <i class="bi bi-diagram-3 fs-2 text-dark"></i>
-            </div>
+            <i class="bi bi-diagram-3 fs-2 text-dark"></i>
             <div class="flex-grow-1 text-start ms-2">
               <a
                 routerLink="/panel-control/listar-usuarios-roles"
@@ -140,14 +145,12 @@
             </div>
           </li>
 
-          <!-- ROLES - PERMISOS (RELACIÓN) -->
+          <!-- ROLES - PERMISOS -->
           <li
             class="d-flex align-items-center p-2 rounded"
             *ngIf="puedeVer('registrarRolesPermisos')"
           >
-            <div style="flex-shrink: 0">
-              <i class="bi bi-diagram-2 fs-2 text-dark"></i>
-            </div>
+            <i class="bi bi-diagram-2 fs-2 text-dark"></i>
             <div class="flex-grow-1 text-start ms-2">
               <a
                 routerLink="/panel-control/listar-roles-permisos"
@@ -164,7 +167,7 @@
           class="d-flex align-items-center"
           (click)="toggleSubmenu('productos')"
         >
-          <i class="bi bi-shop fs-2 text-dark pe-2"></i>
+          <i class="bi bi-basket fs-2 text-dark pe-2"></i>
           <span class="text-dark flex-grow-1">Productos y Ventas</span>
           <i class="bi bi-chevron-right text-dark"></i>
         </li>
@@ -175,9 +178,7 @@
             class="d-flex align-items-center p-2 rounded"
             *ngIf="puedeVer('registrarCategorias')"
           >
-            <div style="flex-shrink: 0">
-              <i class="bi bi-tags fs-2 text-dark"></i>
-            </div>
+            <i class="bi bi-tags fs-2 text-dark"></i>
             <div class="flex-grow-1 text-start ms-2">
               <a
                 routerLink="/panel-control/listar-categorias"
@@ -193,9 +194,7 @@
             class="d-flex align-items-center p-2 rounded"
             *ngIf="puedeVer('registrarProductos')"
           >
-            <div style="flex-shrink: 0">
-              <i class="bi bi-shop fs-2 text-dark"></i>
-            </div>
+            <i class="bi bi-box-seam fs-2 text-dark"></i>
             <div class="flex-grow-1 text-start ms-2">
               <a
                 routerLink="/panel-control/listar-productos"
@@ -211,9 +210,7 @@
             class="d-flex align-items-center p-2 rounded"
             *ngIf="puedeVer('listarProductosEmpleado')"
           >
-            <div style="flex-shrink: 0">
-              <i class="bi bi-box-seam fs-2 text-dark"></i>
-            </div>
+            <i class="bi bi-box2-heart fs-2 text-dark"></i>
             <div class="flex-grow-1 text-start ms-2">
               <a
                 routerLink="/panel-control/listar-productos-empleado"
@@ -229,9 +226,7 @@
             class="d-flex align-items-center p-2 rounded"
             *ngIf="puedeVer(['registrarVenta', 'registrarVenta-Empleado'])"
           >
-            <div style="flex-shrink: 0">
-              <i class="bi bi-cart-check fs-2 text-dark"></i>
-            </div>
+            <i class="bi bi-cart-check fs-2 text-dark"></i>
             <div class="flex-grow-1 text-start ms-2">
               <a
                 routerLink="/panel-control/listar-ventas"
@@ -252,9 +247,7 @@
               ])
             "
           >
-            <div style="flex-shrink: 0">
-              <i class="bi bi-journal-bookmark fs-2 text-dark"></i>
-            </div>
+            <i class="bi bi-journal-text fs-2 text-dark"></i>
             <div class="flex-grow-1 text-start ms-2">
               <a
                 routerLink="/panel-control/listar-detalle-ventas"
@@ -275,15 +268,13 @@
               ])
             "
           >
-            <div style="flex-shrink: 0">
-              <i class="bi bi-cart4 fs-2 text-dark"></i>
-            </div>
+            <i class="bi bi-bag-plus fs-2 text-dark"></i>
             <div class="flex-grow-1 text-start ms-2">
               <a
                 routerLink="/panel-control/listar-productos-empleado"
                 class="text-dark text-decoration-none"
               >
-                Vender
+                Vender Productos
               </a>
             </div>
           </li>
@@ -293,47 +284,46 @@
             class="d-flex align-items-center p-2 rounded"
             *ngIf="puedeVer('PedidoTarjetas')"
           >
-            <div style="flex-shrink: 0">
-              <i class="bi bi-postcard-heart fs-2 text-dark"></i>
-            </div>
+            <i class="bi bi-credit-card-2-front fs-2 text-dark"></i>
             <div class="flex-grow-1 text-start ms-2">
               <a
                 routerLink="/panel-control/targetas"
                 class="text-dark text-decoration-none"
               >
-                Tarjetas
+                Tarjetas Entel, Tigo
               </a>
             </div>
           </li>
+
+          <!-- RECARGA PRODUCTO -->
           <li
             class="d-flex align-items-center p-2 rounded"
-            *ngIf="puedeVer('PedidoTarjetas')"
+            *ngIf="puedeVer('RegistrarJuegos')"
           >
-            <div style="flex-shrink: 0">
-              <i class="bi bi-postcard-heart fs-2 text-dark"></i>
-            </div>
+            <i class="bi bi-controller fs-2 text-dark"></i>
             <div class="flex-grow-1 text-start ms-2">
               <a
                 routerLink="/panel-control/listar-RecargaProducto"
                 class="text-dark text-decoration-none"
               >
-                Recarga Producto
+                Registrar Juegos
               </a>
             </div>
           </li>
+
+          <!-- DETALLE VENTA RECARGA -->
           <li
             class="d-flex align-items-center p-2 rounded"
-            *ngIf="puedeVer('PedidoTarjetas')"
+            *ngIf="puedeVer('VenderJugos')"
           >
-            <div style="flex-shrink: 0">
-              <i class="bi bi-postcard-heart fs-2 text-dark"></i>
-            </div>
+            <i class="bi bi-joystick fs-2 text-dark"></i
+            ><i class="bi bi-cash-coin fs-2 text-dark"></i>
             <div class="flex-grow-1 text-start ms-2">
               <a
                 routerLink="/panel-control/listar-DetalleVentaRecarga"
                 class="text-dark text-decoration-none"
               >
-                Detalle Venta Recarga
+                Venta de Juegos
               </a>
             </div>
           </li>

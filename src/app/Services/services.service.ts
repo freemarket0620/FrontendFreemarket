@@ -406,25 +406,13 @@ export class ServicesService {
   getDetalleVentaRecargaById(id: number): Observable<DetalleVentaRecarga> {
     return this.http.get<DetalleVentaRecarga>(`${this.apiUrl}DetalleVentaRecarga/${id}/`);
   }
-/* 
-  crearDetalleVentaRecarga(detalle: DetalleVentaRecarga): Observable<DetalleVentaRecarga> {
-    return this.http.post<DetalleVentaRecarga>(`${this.apiUrl}DetalleVentaRecarga/`, {
-      ...detalle,
-      recarga: detalle.recarga.id, // enviar solo el ID de la recarga
-    });
-  } */
-
   crearDetalleVentaRecarga(detalle: any) {
-  // Enviar solo los IDs numéricos
-  const payload = {
-    ...detalle,
-    recarga: detalle.recarga,
-    venta: detalle.venta
-  };
-  return this.http.post<DetalleVentaRecarga>(`${this.apiUrl}DetalleVentaRecarga/`, payload);
-}
-
-
+    const payload = {
+      ...detalle,
+      recarga: detalle.recarga // ya es el ID
+    };
+    return this.http.post<DetalleVentaRecarga>(`${this.apiUrl}DetalleVentaRecarga/`, payload);
+  }
 
   actualizarDetalleVentaRecarga(
     id: number,
@@ -436,7 +424,6 @@ export class ServicesService {
     );
   }
   
-
   /* ---------------------------- FUNCIONES AUXILIARES ---------------------------- */
 
   // Buscar recarga por usuario_juego_id o nombre_jugador

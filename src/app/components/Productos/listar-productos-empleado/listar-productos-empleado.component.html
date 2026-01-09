@@ -4,108 +4,195 @@
     <div class="col-md-7 mb-2">
       <h2 class="text-center my-4">Productos</h2>
       <!-- Barra de búsqueda sin label  -->
-        <div class="row mb-4">
-          <app-ej-barra (codigoEscaneado)="buscarPorCodigoEscaneado($event)"></app-ej-barra>
+      <div class="row mb-4">
+        <app-ej-barra
+          (codigoEscaneado)="buscarPorCodigoEscaneado($event)"
+        ></app-ej-barra>
 
-          <div class="col-12 col-sm-6 col-md-3 mb-3">
-            <select id="categoriaSelect" class="form-control" [(ngModel)]="searchCategoria" (change)="filteredProductos()">
-              <option value="">Seleccionar Categoría</option>
-              <option *ngFor="let categoria of categorias" [value]="categoria.nombre_categoria">
-                {{ categoria.nombre_categoria }}
-              </option>
-            </select>
-          </div>
-        
-          <div class="col-12 col-sm-6 col-md-3 mb-3">
-            <input id="nombreInput" type="text" class="form-control" placeholder="Buscar por nombre"
-              [(ngModel)]="searchNombreProducto" />
-          </div>
-        
-          <div class="col-12 col-sm-6 col-md-3 mb-3">
-            <input id="codigoInput" type="text" class="form-control" placeholder="Buscar por Código"
-              [(ngModel)]="searchCodigoProducto" />
-          </div>
-          <div class="col-12 col-sm-6 col-md-3 mb-3 text-center">
-            <div class="d-grid">
-              <button class="btn btn-danger btn-lg" (click)="clearQuantities()">
-                <i class="fas fa-trash-alt me-2"></i>
-                Borrar Cantidades...
-              </button>
-            </div>
+        <div class="col-12 col-sm-6 col-md-3 mb-3">
+          <select
+            id="categoriaSelect"
+            class="form-control"
+            [(ngModel)]="searchCategoria"
+            (change)="filteredProductos()"
+          >
+            <option value="">Seleccionar Categoría</option>
+            <option
+              *ngFor="let categoria of categorias"
+              [value]="categoria.nombre_categoria"
+            >
+              {{ categoria.nombre_categoria }}
+            </option>
+          </select>
+        </div>
+
+        <div class="col-12 col-sm-6 col-md-3 mb-3">
+          <input
+            id="nombreInput"
+            type="text"
+            class="form-control"
+            placeholder="Buscar por nombre"
+            [(ngModel)]="searchNombreProducto"
+          />
+        </div>
+
+        <div class="col-12 col-sm-6 col-md-3 mb-3">
+          <input
+            id="codigoInput"
+            type="text"
+            class="form-control"
+            placeholder="Buscar por Código"
+            [(ngModel)]="searchCodigoProducto"
+          />
+        </div>
+        <div class="col-12 col-sm-6 col-md-3 mb-3 text-center">
+          <div class="d-grid">
+            <button class="btn btn-danger btn-lg" (click)="clearQuantities()">
+              <i class="fas fa-trash-alt me-2"></i>
+              Borrar Cantidades...
+            </button>
           </div>
         </div>
+      </div>
       <!-- Lista de productos en formato de tarjetas (cards) -->
       <div class="row g-3">
-        <ng-container *ngFor="let producto of filteredProductos() | slice:(page-1)*6:(page-1)*6+6; let i = index">
+        <ng-container
+          *ngFor="
+            let producto of filteredProductos()
+              | slice : (page - 1) * 6 : (page - 1) * 6 + 6;
+            let i = index
+          "
+        >
           <div class="col-6 col-sm-4 col-md-4 col-lg-3 mb-3">
-                      
-          <div class="card product-card h-100 position-relative"  
+            <div
+              class="card product-card h-100 position-relative"
               [ngClass]="{
                 
                 'bg-danger': producto.categoria.nombre_categoria === 'Targetas Entel Tigo Viva' && producto.stock < 50,
                 'bg-warning': producto.categoria.nombre_categoria === 'Targetas Entel Tigo Viva' && producto.stock >= 50 && producto.stock < 100,
                 'bg-dangerP': producto.stock === 0 && producto.categoria.nombre_categoria !== 'Targetas Entel Tigo Viva',
                 'bg-warningP': producto.stock > 0 && producto.stock <= 3 && producto.categoria.nombre_categoria !== 'Targetas Entel Tigo Viva',
-              }">
-            <!-- Botón para móvil que despliega detalles con ícono ojo, posicionado en esquina superior derecha -->
-            <button *ngIf="!modalVisible" class="btn btn-link btn-sm d-md-none position-absolute top-0 end-0 m-2 p-1" type="button"
-              (click)="toggleDetalles(i); $event.stopPropagation()" [attr.aria-expanded]="detallesAbiertos[i] ? 'true' : 'false'"
-              [attr.aria-controls]="'detalles-' + i" style="z-index: 10;">
-              <i class="fas" [ngClass]="detallesAbiertos[i] ? 'fa-eye-slash' : 'fa-eye'" aria-hidden="true"></i>
-            </button>
+              }"
+            >
+              <!-- Botón para móvil que despliega detalles con ícono ojo, posicionado en esquina superior derecha -->
+              <button
+                *ngIf="!modalVisible"
+                class="btn btn-link btn-sm d-md-none position-absolute top-0 end-0 m-2 p-1"
+                type="button"
+                (click)="toggleDetalles(i); $event.stopPropagation()"
+                [attr.aria-expanded]="detallesAbiertos[i] ? 'true' : 'false'"
+                [attr.aria-controls]="'detalles-' + i"
+                style="z-index: 10"
+              >
+                <i
+                  class="fas"
+                  [ngClass]="detallesAbiertos[i] ? 'fa-eye-slash' : 'fa-eye'"
+                  aria-hidden="true"
+                ></i>
+              </button>
 
-            <img *ngIf="producto.imagen_productos" [src]="producto.imagen_productos" class="card-img-top"
-              alt="{{ producto.nombre_producto }}" (click)="openModal(producto.imagen_productos)" style="cursor: pointer;" />
+              <img
+                *ngIf="producto.imagen_productos"
+                [src]="producto.imagen_productos"
+                class="card-img-top"
+                alt="{{ producto.nombre_producto }}"
+                (click)="openModal(producto.imagen_productos)"
+                style="cursor: pointer"
+              />
 
-            <div class="card-header text-center p-2 d-flex justify-content-between align-items-center">
-              <h6 class="mb-0 fs-6 fs-sm-5 fs-md-5 fs-lg-5">
-                {{ producto.nombre_producto }}:
-                <span class="text-success">Bs {{ producto.precio_unitario }}</span>
-              </h6>
-            </div>
+              <div
+                class="card-header text-center p-2 d-flex justify-content-between align-items-center"
+              >
+                <h6 class="mb-0 fs-6 fs-sm-5 fs-md-5 fs-lg-5">
+                  {{ producto.nombre_producto }}:
+                  <span class="text-success"
+                    >Bs {{ producto.precio_unitario }}</span
+                  >
+                </h6>
+              </div>
 
-            <!-- Detalles visibles en desktop, colapsables en móvil -->
-            <div class="card-body p-2" [class.d-none]="!detallesAbiertos[i] && isMobile"
-              [class.d-block]="detallesAbiertos[i] || !isMobile" [attr.id]="'detalles-' + i">
-              <p class="card-text mb-1 fs-7 fs-sm-6 fs-md-6 fs-lg-6">
-                <strong>Descripción:</strong> {{ producto.descripcion }}
-              </p>
-              <p class="card-text mb-1 fs-7 fs-sm-6 fs-md-6 fs-lg-6">
-                <strong>Código:</strong> {{ producto.codigo_producto }}
-              </p>
-              <p class="card-text mb-1 fs-7 fs-sm-6 fs-md-6 fs-lg-6">
-                <strong>Stock:</strong> {{ producto.stock }}
-              </p>
-              <p class="card-text mb-1 fs-7 fs-sm-6 fs-md-6 fs-lg-6">
-                <strong>Precio U:</strong> Bs {{ producto.precio_unitario }}
-              </p>
-              <p *ngIf="mostrarPrecioMayor" class="card-text mb-1 fs-7 fs-sm-6 fs-md-6 fs-lg-6">
-                <strong>Precio M:</strong> Bs {{ producto.precio_mayor }}
-              </p>
-            </div>
+              <!-- Detalles visibles en desktop, colapsables en móvil -->
+              <div
+                class="card-body p-2"
+                [class.d-none]="!detallesAbiertos[i] && isMobile"
+                [class.d-block]="detallesAbiertos[i] || !isMobile"
+                [attr.id]="'detalles-' + i"
+              >
+                <p class="card-text mb-1 fs-7 fs-sm-6 fs-md-6 fs-lg-6">
+                  <strong>Descripción:</strong> {{ producto.descripcion }}
+                </p>
+                <p class="card-text mb-1 fs-7 fs-sm-6 fs-md-6 fs-lg-6">
+                  <strong>Código:</strong> {{ producto.codigo_producto }}
+                </p>
+                <p class="card-text mb-1 fs-7 fs-sm-6 fs-md-6 fs-lg-6">
+                  <strong>Stock:</strong> {{ producto.stock }}
+                </p>
+                <p class="card-text mb-1 fs-7 fs-sm-6 fs-md-6 fs-lg-6">
+                  <strong>Precio U:</strong> Bs {{ producto.precio_unitario }}
+                </p>
+                <p
+                  *ngIf="mostrarPrecioMayor"
+                  class="card-text mb-1 fs-7 fs-sm-6 fs-md-6 fs-lg-6"
+                >
+                  <strong>Precio M:</strong> Bs {{ producto.precio_mayor }}
+                </p>
+              </div>
 
-            <div class="card-footer p-2">
-              <div class="d-flex flex-wrap justify-content-center align-items-center gap-2">
-                <div style="max-width: 100px; width: 100%;">
-                  <input type="number" class="form-control sin-flechas" placeholder="Cant." min="1" [max]="producto.stock"
-                    [(ngModel)]="cantidadPorProducto[producto.id]"
-                    (ngModelChange)="actualizarCantidad(getDetalleVenta(producto.id), cantidadPorProducto[producto.id], isCategoriaConBotonUnidad(producto) ? 'mayor' : 'unidad')" />
-                </div>
-                <div class="d-flex gap-2">
-                  <button class="btn btn-success btn-sm flex-grow-1 flex-sm-grow-0"
-                    [disabled]="!isCantidadValida(producto.id, 'unidad')"
-                    (click)="agregarAlCarrito(producto, cantidadPorProducto[producto.id], 'unidad')">
-                    <i class="fas fa-shopping-cart"></i> Unidad
-                  </button>
-                  <button class="btn btn-warning btn-sm flex-grow-1 flex-sm-grow-0" *ngIf="isCategoriaConBotonUnidad(producto)"
-                    [disabled]="!isCantidadValida(producto.id, 'mayor')"
-                    (click)="agregarAlCarrito(producto, cantidadPorProducto[producto.id], 'mayor')">
-                    <i class="fas fa-shopping-cart"></i> Mayor
-                  </button>
+              <div class="card-footer p-2">
+                <div
+                  class="d-flex flex-wrap justify-content-center align-items-center gap-2"
+                >
+                  <div style="max-width: 100px; width: 100%">
+                    <input
+                      type="number"
+                      class="form-control sin-flechas"
+                      placeholder="Cant."
+                      min="1"
+                      [max]="producto.stock"
+                      [(ngModel)]="cantidadPorProducto[producto.id]"
+                      (ngModelChange)="
+                        actualizarCantidad(
+                          getDetalleVenta(producto.id),
+                          cantidadPorProducto[producto.id],
+                          isCategoriaConBotonUnidad(producto)
+                            ? 'mayor'
+                            : 'unidad'
+                        )
+                      "
+                    />
+                  </div>
+                  <div class="d-flex gap-2">
+                    <button
+                      class="btn btn-success btn-sm flex-grow-1 flex-sm-grow-0"
+                      [disabled]="!isCantidadValida(producto.id, 'unidad')"
+                      (click)="
+                        agregarAlCarrito(
+                          producto,
+                          cantidadPorProducto[producto.id],
+                          'unidad'
+                        )
+                      "
+                    >
+                      <i class="fas fa-shopping-cart"></i> Unidad
+                    </button>
+                    <button
+                      class="btn btn-warning btn-sm flex-grow-1 flex-sm-grow-0"
+                      *ngIf="isCategoriaConBotonUnidad(producto)"
+                      [disabled]="!isCantidadValida(producto.id, 'mayor')"
+                      (click)="
+                        agregarAlCarrito(
+                          producto,
+                          cantidadPorProducto[producto.id],
+                          'mayor'
+                        )
+                      "
+                    >
+                      <i class="fas fa-shopping-cart"></i> Mayor
+                    </button>
+                  </div>
                 </div>
               </div>
             </div>
-          </div>
           </div>
         </ng-container>
       </div>
@@ -136,44 +223,78 @@
         <div class="text-center card-header custom-bg-blue-200">
           <h4>Detalle Venta</h4>
         </div>
-          <div class="card-body">
-            <form [formGroup]="ventaForm" (ngSubmit)="registrarVenta()">
-              <div class="row mb-3">
-                <!-- Campo de Usuario (oculto) -->
-                <div class="col-md-4" *ngIf="false"> <!-- Cambia a true si deseas mostrarlo -->
-                  <label for="usuario" class="form-label text-start d-block">Usuario</label>
-                  <input type="text" id="usuario" class="form-control" [value]="nombre_usuario + ' ' + apellido" readonly />
-                  <input type="hidden" formControlName="usuario_id" [value]="usuario_id" />
-                  <div *ngIf="
-                      ventaForm.get('usuario')?.invalid &&
-                      ventaForm.get('usuario')?.touched
-                    " class="text-danger">
-                    El usuario es requerido.
-                  </div>
-                </div>
-
-                <!-- Campo de Estado (visible) -->
-                <div class="col-md-4">
-                  <label for="estado" class="form-label text-start d-block">Estado</label>
-                  <select id="estado" class="form-select" formControlName="estado" required>
-                    <option value="Completada">Completada</option>
-                    <option value="Pendiente">Pendiente</option>
-                    <option value="Cancelada">Cancelada</option>
-                  </select>
-                </div>
-
-                <!-- Campo de Total (oculto) -->
-                <div class="col-md-4" *ngIf="false"> <!-- Cambia a true si deseas mostrarlo -->
-                  <label for="total" class="form-label text-start d-block">Total</label>
-                  <input type="text" id="total" class="form-control" [value]="formatNumber(totalVenta)" readonly />
+        <div class="card-body">
+          <form [formGroup]="ventaForm" (ngSubmit)="registrarVenta()">
+            <div class="row mb-3">
+              <!-- Campo de Usuario (oculto) -->
+              <div class="col-md-4" *ngIf="false">
+                <!-- Cambia a true si deseas mostrarlo -->
+                <label for="usuario" class="form-label text-start d-block"
+                  >Usuario</label
+                >
+                <input
+                  type="text"
+                  id="usuario"
+                  class="form-control"
+                  [value]="nombre_usuario + ' ' + apellido"
+                  readonly
+                />
+                <input
+                  type="hidden"
+                  formControlName="usuario_id"
+                  [value]="usuario_id"
+                />
+                <div
+                  *ngIf="
+                    ventaForm.get('usuario')?.invalid &&
+                    ventaForm.get('usuario')?.touched
+                  "
+                  class="text-danger"
+                >
+                  El usuario es requerido.
                 </div>
               </div>
-            </form>
-          </div>
+
+              <!-- Campo de Estado (visible) -->
+              <div class="col-md-4">
+                <label for="estado" class="form-label text-start d-block"
+                  >Estado</label
+                >
+                <select
+                  id="estado"
+                  class="form-select"
+                  formControlName="estado"
+                  required
+                >
+                  <option value="Completada">Completada</option>
+                  <option value="Pendiente">Pendiente</option>
+                  <option value="Cancelada">Cancelada</option>
+                </select>
+              </div>
+
+              <!-- Campo de Total (oculto) -->
+              <div class="col-md-4" *ngIf="false">
+                <!-- Cambia a true si deseas mostrarlo -->
+                <label for="total" class="form-label text-start d-block"
+                  >Total</label
+                >
+                <input
+                  type="text"
+                  id="total"
+                  class="form-control"
+                  [value]="formatNumber(totalVenta)"
+                  readonly
+                />
+              </div>
+            </div>
+          </form>
+        </div>
         <!-- Tabla para mostrar los detalles de la venta -->
         <div id="detalles-venta">
           <div class="card-body table-responsive">
-            <table class="table table-striped table-bordered table-hover align-middle text-center">
+            <table
+              class="table table-striped table-bordered table-hover align-middle text-center"
+            >
               <thead>
                 <tr>
                   <th>Codigo</th>
@@ -187,14 +308,23 @@
               </thead>
               <tbody>
                 <tr *ngFor="let item of detalleVenta">
-                  <td class="text-start">{{ item.producto.codigo_producto }}</td>
-                  <td class="text-start">{{ item.producto.nombre_producto }}</td>
+                  <td class="text-start">
+                    {{ item.producto.codigo_producto }}
+                  </td>
+                  <td class="text-start">
+                    {{ item.producto.nombre_producto }}
+                  </td>
                   <td>{{ item.cantidad }}</td>
                   <td>Bs {{ item.precio | number : "1.2-2" }}</td>
                   <td>{{ item.tipo_venta }}</td>
                   <td>Bs {{ item.subtotal | number : "1.2-2" }}</td>
                   <td class="accion">
-                    <button class="btn btn-danger btn-sm" (click)="eliminarProducto(item)">Eliminar</button>
+                    <button
+                      class="btn btn-danger btn-sm"
+                      (click)="eliminarProducto(item)"
+                    >
+                      Eliminar
+                    </button>
                   </td>
                 </tr>
                 <tr>
@@ -204,42 +334,60 @@
               </tbody>
             </table>
           </div>
-        
+
           <p class="text-center"><strong>Cambio</strong></p>
           <div class="row mb-3 align-items-center">
             <!-- Monto pagado -->
             <div class="col-6 col-md-4">
-              <input type="text" id="montoPagado" [(ngModel)]="montoPagado" class="form-control" (input)="calcularCambio()"
-                placeholder="Monto Cancelo💸" />
+              <input
+                type="text"
+                id="montoPagado"
+                [(ngModel)]="montoPagado"
+                class="form-control"
+                (input)="calcularCambio()"
+                placeholder="Monto Cancelo💸"
+              />
             </div>
             <!-- Cambio -->
             <div class="col-6 col-md-4 text-center">
               <strong>Cambio:</strong>
-              <span class="text-danger" style="font-size: 1.5rem;">Bs {{ cambio | number: '1.2-2' }}</span>
+              <span class="text-danger" style="font-size: 1.5rem"
+                >Bs {{ cambio | number : "1.2-2" }}</span
+              >
             </div>
           </div>
         </div>
 
-
-      <div class="card-footer d-flex justify-content-between align-items-center">
-        <div class="container my-4">
-          <div class="row justify-content-center g-3">
-            <div class="col-auto">
-              <input type="number" class="form-control" placeholder="Número de teléfono" [(ngModel)]="numeroTelefono" />
-            </div>
-            <div class="col-auto">
-              <button class="btn btn-success" (click)="enviarPorWhatsApp()">
-                <i class="bi bi-whatsapp me-2"></i> Enviar WhatsApp
-              </button>
+        <div
+          class="card-footer d-flex justify-content-between align-items-center"
+        >
+          <div class="container my-4">
+            <div class="row justify-content-center g-3">
+              <div class="col-auto">
+                <input
+                  type="number"
+                  class="form-control"
+                  placeholder="Número de teléfono"
+                  [(ngModel)]="numeroTelefono"
+                />
+              </div>
+              <div class="col-auto">
+                <button class="btn btn-success" (click)="enviarPorWhatsApp()">
+                  <i class="bi bi-whatsapp me-2"></i> Enviar WhatsApp
+                </button>
+              </div>
             </div>
           </div>
+          <!-- Botón para Vender -->
+          <button
+            type="submit"
+            class="btn btn-success"
+            [disabled]="ventaForm.invalid || detalleVenta.length === 0"
+            (click)="registrarVenta()"
+          >
+            💰 Vender
+          </button>
         </div>
-        <!-- Botón para Vender -->
-        <button type="submit" class="btn btn-success" [disabled]="ventaForm.invalid || detalleVenta.length === 0"
-          (click)="registrarVenta()">
-          💰 Vender
-        </button>
-      </div>
         <!-- Modal para mostrar la imagen en tamaño completo -->
         <div
           class="modal"
@@ -259,12 +407,7 @@
       </div>
     </div>
   </div>
-  <app-ok *ngIf="ok"
-    [mensaje]="ok"
-    (close)="manejarOk()">
-  </app-ok>
-  <app-error *ngIf="error"
-    [mensaje]="error"
-    (close)="manejarError()">
+  <app-ok *ngIf="ok" [mensaje]="ok" (close)="manejarOk()"> </app-ok>
+  <app-error *ngIf="error" [mensaje]="error" (close)="manejarError()">
   </app-error>
 </div>

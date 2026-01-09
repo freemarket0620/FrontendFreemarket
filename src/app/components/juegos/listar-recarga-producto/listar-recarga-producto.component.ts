@@ -16,7 +16,6 @@ export class ListarRecargaProductoComponent implements OnInit {
   recargas: RecargaProducto[] = [];
   categorias: Categoria[] = [];
   searchNombre: string = '';
-  searchCategoria: string = '';
   page: number = 1;
   pageSize: number = 6;
 
@@ -59,24 +58,23 @@ export class ListarRecargaProductoComponent implements OnInit {
       });
   }
 
-  filteredRecargas(): RecargaProducto[] {
+  filteredRecargasForTotals(): RecargaProducto[] {
     let filtered = this.recargas;
 
     if (this.searchNombre) {
-      filtered = filtered.filter((r) =>
+      filtered = filtered.filter(r =>
         r.nombre.toLowerCase().includes(this.searchNombre.toLowerCase())
       );
     }
 
-    if (this.searchCategoria) {
-      filtered = filtered.filter((r) =>
-        r.categoria.nombre_categoria
-          .toLowerCase()
-          .includes(this.searchCategoria.toLowerCase())
-      );
-    }
-
-    return filtered.slice((this.page - 1) * this.pageSize, this.page * this.pageSize);
+    return filtered;
+  }
+  filteredRecargas(): RecargaProducto[] {
+    const filtered = this.filteredRecargasForTotals();
+    return filtered.slice(
+      (this.page - 1) * this.pageSize,
+      this.page * this.pageSize
+    );
   }
 
   nextPage() {
@@ -85,5 +83,19 @@ export class ListarRecargaProductoComponent implements OnInit {
 
   previousPage() {
     if (this.page > 1) this.page--;
+  }
+  getTotalDiamantes(): number {
+    return this.filteredRecargasForTotals()
+      .reduce((sum, r) => sum + Number(r.cantidad), 0);
+  }
+
+  getTotalPrecioCompra(): number {
+    return this.filteredRecargasForTotals()
+      .reduce((sum, r) => sum + Number(r.precio_compra), 0);
+  }
+
+  getTotalPrecioVenta(): number {
+    return this.filteredRecargasForTotals()
+      .reduce((sum, r) => sum + Number(r.precio_venta), 0);
   }
 }

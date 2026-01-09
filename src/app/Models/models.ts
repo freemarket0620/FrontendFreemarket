@@ -87,15 +87,14 @@ export interface RecargaProducto {
   id: number;
   nombre: string;
   cantidad: number;
-  precio_compra: number; // lo que cuesta a la empresa
-  precio_venta: number; // lo que paga el cliente
+  precio_compra: number;
+  precio_venta: number;
   estado: boolean;
   categoria: Categoria;
 }
 
 export interface DetalleVentaRecarga {
   id: number;
-  venta: Venta;
   recarga: RecargaProducto;
   usuario_juego_id: string;
   nombre_jugador?: string;
@@ -103,5 +102,5 @@ export interface DetalleVentaRecarga {
   cantidad: number;
   precio: number;
   subtotal: number;
-  estado: string; // PENDIENTE | COMPLETADO | CANCELADO
+  estado: string; 
 }

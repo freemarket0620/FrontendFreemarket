@@ -14,8 +14,6 @@ import { ErrorComponent } from '../../Mensajes/error/error.component';
       CommonModule,
       ReactiveFormsModule,
       FormsModule,
-      OkComponent,
-      ErrorComponent,
     ],
   templateUrl: './registrar-recarga-producto.component.html',
   styleUrl: './registrar-recarga-producto.component.css'

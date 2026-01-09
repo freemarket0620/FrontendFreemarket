@@ -4,8 +4,6 @@ import { FormBuilder, FormGroup, ReactiveFormsModule, Validators } from '@angula
 import { ServicesService } from '../../../Services/services.service';
 import { DetalleVentaRecarga, RecargaProducto, Venta } from '../../../Models/models';
 import { CommonModule } from '@angular/common';
-import { OkComponent } from '../../Mensajes/ok/ok.component';
-import { ErrorComponent } from '../../Mensajes/error/error.component';
 
 @Component({
   selector: 'app-editar-detalle-venta-recarga',
@@ -53,7 +51,6 @@ export class EditarDetalleVentaRecargaComponent implements OnInit {
 
   initializeForm() {
     this.form = this.fb.group({
-      venta: [this.detalle.venta.id, Validators.required],
       recarga: [this.detalle.recarga.id, Validators.required],
       usuario_juego_id: [this.detalle.usuario_juego_id, Validators.required],
       nombre_jugador: [this.detalle.nombre_jugador],
@@ -76,6 +73,6 @@ export class EditarDetalleVentaRecargaComponent implements OnInit {
   }
 
   volver() { this.router.navigate(['panel-control/listar-DetalleVentaRecarga']); }
-  manejarOk() { this.mensajeModal = ''; this.volver(); }
+  manejarOk() { this.mensajeModal = ''; this.router.navigate(['panel-control/listar-DetalleVentaRecarga']); }
   manejarError() { this.errorModal = ''; }
 }

@@ -29,16 +29,15 @@
   <!-- Tabla -->
   <div class="table-responsive">
     <table class="table table-striped table-bordered">
-      <thead class="table-dark">
+      <thead class="table-success">
         <tr>
           <th>ID</th>
-          <th>Venta ID</th>
           <th>Recarga</th>
-          <th>Usuario Juego</th>
+          <th>🆔 Usuario Juego</th>
           <th>Nombre Jugador</th>
           <th>Cantidad</th>
-          <th>Precio</th>
-          <th>Subtotal</th>
+          <th>Precio Bs 💵</th>
+          <th>Subtotal Bs 💵</th>
           <th>Estado</th>
           <th>Acciones</th>
         </tr>
@@ -46,13 +45,12 @@
       <tbody>
         <tr *ngFor="let detalle of filteredDetalles()">
           <td>{{ detalle.id }}</td>
-          <td>{{ detalle.venta.id }}</td>
-          <td>{{ detalle.recarga.nombre }}</td>
+          <td>{{ detalle.recarga.nombre }} {{ detalle.recarga.cantidad }}</td>
           <td>{{ detalle.usuario_juego_id }}</td>
           <td>{{ detalle.nombre_jugador }}</td>
           <td>{{ detalle.cantidad }}</td>
-          <td>{{ detalle.precio | currency : "USD" }}</td>
-          <td>{{ detalle.subtotal | currency : "USD" }}</td>
+          <td>{{ detalle.precio }}</td>
+          <td>{{ detalle.subtotal }}</td>
           <td>
             <span
               class="badge"
@@ -74,6 +72,14 @@
           </td>
         </tr>
       </tbody>
+      <tfoot class="table-light fw-bold">
+        <tr>
+          <td colspan="5" class="text-end">Totales:</td>
+          <td>{{ getTotalPrecio() | number : "1.2-2" }}</td>
+          <td>{{ getTotalSubtotal() | number : "1.2-2" }}</td>
+          <td colspan="2"></td>
+        </tr>
+      </tfoot>
     </table>
   </div>
 

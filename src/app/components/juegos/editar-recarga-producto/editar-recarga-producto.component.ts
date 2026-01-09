@@ -10,7 +10,7 @@ import { ErrorComponent } from '../../Mensajes/error/error.component';
 @Component({
   selector: 'app-editar-recarga-producto',
   standalone: true,
-  imports: [CommonModule, ReactiveFormsModule, OkComponent, ErrorComponent],
+  imports: [CommonModule, ReactiveFormsModule],
   templateUrl: './editar-recarga-producto.component.html',
   styleUrl: './editar-recarga-producto.component.css'
 })
