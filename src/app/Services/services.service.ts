@@ -34,8 +34,8 @@ interface LoginResponse {
   providedIn: 'root',
 })
 export class ServicesService {
-  private apiUrl = 'http://localhost:8000/api/';
-/*   private apiUrl = 'https://backendfreemarket.onrender.com/api/'; */
+/*   private apiUrl = 'http://localhost:8000/api/'; */
+  private apiUrl = 'https://backendfreemarket.onrender.com/api/';
   /* ESTOS SON LOS CAMBIO NUEVOS  */
 
   private productosSubject = new BehaviorSubject<Producto[]>([]);
