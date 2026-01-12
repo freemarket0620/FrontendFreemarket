@@ -1,41 +1,64 @@
 <div class="container mt-4">
   <h2>Efectivo</h2>
-  <button class="btn btn-primary mb-3" (click)="abrirModal()">
+
+  <!-- Mensajes -->
+  <div
+    *ngIf="mensaje"
+    class="alert alert-{{ tipoMensaje }} fade show"
+    role="alert"
+  >
+    {{ mensaje }}
+  </div>
+
+  <!-- Botón nuevo -->
+  <button class="btn btn-primary mb-3 w-100 w-md-auto" (click)="abrirModal()">
     Nuevo Efectivo
   </button>
 
-  <table class="table table-bordered table-striped">
-    <thead class="table-success">
-      <tr>
-        <th>ID</th>
-        <th>Total</th>
-        <th>Fecha</th>
-        <th>Acciones</th>
-      </tr>
-    </thead>
-    <tbody>
-      <tr *ngFor="let e of listaEfectivos">
-        <td>{{ e.id }}</td>
-        <td>{{ e.total | currency : "BOB" }}</td>
-        <td>{{ e.fecha_creacion | date : "short" }}</td>
-        <td>
-          <button class="btn btn-warning btn-sm" (click)="abrirModal(e)">
-            Editar
-          </button>
-        </td>
-      </tr>
-    </tbody>
-  </table>
+  <!-- Tabla listado -->
+  <div class="table-responsive">
+    <table class="table table-bordered table-striped align-middle">
+      <thead class="table-success">
+        <tr>
+          <th>ID</th>
+          <th>Total</th>
+          <th class="d-none d-md-table-cell">Fecha</th>
+          <th class="text-center">Acciones</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr *ngFor="let e of listaEfectivos">
+          <td>{{ e.id }}</td>
+          <td>{{ e.total | currency : "BOB" }}</td>
+          <td class="d-none d-md-table-cell">
+            {{ e.fecha_creacion | date : "short" }}
+          </td>
+          <td class="text-center">
+            <button
+              class="btn btn-warning btn-sm w-100 w-md-auto"
+              (click)="abrirModal(e)"
+            >
+              Editar
+            </button>
+          </td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
 </div>
 
+<!-- MODAL -->
 <div
   class="modal fade"
   [class.show]="modalOpen"
   [style.display]="modalOpen ? 'block' : 'none'"
   tabindex="-1"
 >
-  <div class="modal-dialog modal-dialog-centered modal-lg">
+  <div
+    class="modal-dialog modal-dialog-centered modal-fullscreen-sm-down modal-lg"
+  >
     <div class="modal-content">
+      <!-- Header -->
       <div class="modal-header">
         <h5 class="modal-title">{{ modalTitle }}</h5>
         <button
@@ -45,77 +68,93 @@
         ></button>
       </div>
 
+      <!-- Body -->
       <div class="modal-body">
         <form [formGroup]="formEfectivo">
-          <h5>Billetes</h5>
-          <table class="table table-bordered table-hover mb-3">
-            <thead>
-              <tr class="table-info">
-                <th>Denominación</th>
-                <th class="text-end">Cantidad</th>
-                <th class="text-end">Subtotal</th>
-              </tr>
-            </thead>
-            <tbody>
-              <tr *ngFor="let key of bills">
-                <td>{{ getDenomination(key) | number : "1.0-0" }}</td>
-                <td>
-                  <input
-                    type="number"
-                    min="0"
-                    class="form-control form-control-sm text-end"
-                    [formControlName]="key"
-                    (input)="calcularSubtotal(key)"
-                  />
-                </td>
-                <td class="text-end">
-                  {{ subtotales[key] | number : "1.2-2" }}
-                </td>
-              </tr>
-            </tbody>
-          </table>
+          <!-- Billetes -->
+          <h5 class="mt-2">Billetes</h5>
+          <div class="table-responsive">
+            <table class="table table-bordered table-hover mb-3">
+              <thead class="table-info">
+                <tr>
+                  <th>Denominación</th>
+                  <th class="text-end">Cantidad</th>
+                  <th class="text-end">Subtotal</th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr *ngFor="let key of bills">
+                  <td>{{ getDenomination(key) | number : "1.0-0" }}</td>
+                  <td>
+                    <input
+                      type="number"
+                      min="0"
+                      step="1"
+                      inputmode="numeric"
+                      class="form-control text-end"
+                      [formControlName]="key"
+                    />
+                  </td>
+                  <td class="text-end">
+                    {{ subtotales[key] | number : "1.2-2" }}
+                  </td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
 
+          <!-- Monedas -->
           <h5>Monedas</h5>
-          <table class="table table-bordered table-hover mb-3">
-            <thead>
-              <tr class="table-info">
-                <th>Denominación</th>
-                <th class="text-end">Cantidad</th>
-                <th class="text-end">Subtotal</th>
-              </tr>
-            </thead>
-            <tbody>
-              <tr *ngFor="let key of coins">
-                <td>{{ getDenomination(key) | number : "1.2-2" }}</td>
-                <td>
-                  <input
-                    type="number"
-                    min="0"
-                    class="form-control form-control-sm text-end"
-                    [formControlName]="key"
-                    (input)="calcularSubtotal(key)"
-                  />
-                </td>
-                <td class="text-end">
-                  {{ subtotales[key] | number : "1.2-2" }}
-                </td>
-              </tr>
-            </tbody>
-            <tfoot>
-              <tr class="table-warning">
-                <td colspan="2" class="fw-bold text-end">Total</td>
-                <td class="fw-bold text-end">{{ total | number : "1.2-2" }}</td>
-              </tr>
-            </tfoot>
-          </table>
+          <div class="table-responsive">
+            <table class="table table-bordered table-hover mb-3">
+              <thead class="table-info">
+                <tr>
+                  <th>Denominación</th>
+                  <th class="text-end">Cantidad</th>
+                  <th class="text-end">Subtotal</th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr *ngFor="let key of coins">
+                  <td>{{ getDenomination(key) | number : "1.2-2" }}</td>
+                  <td>
+                    <input
+                      type="number"
+                      min="0"
+                      step="1"
+                      inputmode="numeric"
+                      class="form-control text-end"
+                      [formControlName]="key"
+                    />
+                  </td>
+                  <td class="text-end">
+                    {{ subtotales[key] | number : "1.2-2" }}
+                  </td>
+                </tr>
+              </tbody>
+              <tfoot>
+                <tr class="table-warning">
+                  <td colspan="2" class="fw-bold text-end">Total</td>
+                  <td class="fw-bold text-end">
+                    {{ total | number : "1.2-2" }}
+                  </td>
+                </tr>
+              </tfoot>
+            </table>
+          </div>
         </form>
       </div>
 
-      <div class="modal-footer">
-        <button type="button" class="btn btn-secondary" (click)="cerrarModal()">
+      <!-- Footer -->
+      <div class="modal-footer d-flex flex-column flex-md-row gap-2">
+        <button
+          type="button"
+          class="btn btn-secondary w-100"
+          (click)="cerrarModal()"
+        >
           Cancelar
         </button>
-        <button type="button" class="btn btn-success" (click)="guardar()">
+        <button type="button" class="btn btn-success w-100" (click)="guardar()">
           Guardar
         </button>
       </div>
@@ -123,4 +162,5 @@
   </div>
 </div>
 
+<!-- Backdrop -->
 <div class="modal-backdrop fade show" *ngIf="modalOpen"></div>

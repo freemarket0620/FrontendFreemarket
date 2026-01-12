@@ -1,9 +1,9 @@
 <div class="container mt-4">
-  <h2>Recarga Max</h2>
+  <h2 class="mb-3">Recarga Max</h2>
 
-  <!-- 🔍 BUSCADOR -->
-  <div class="row mb-3">
-    <div class="col-md-6">
+  <!-- 🔍 BUSCADOR + BOTÓN -->
+  <div class="row g-2 mb-3">
+    <div class="col-12 col-md-6">
       <input
         type="text"
         class="form-control"
@@ -13,9 +13,9 @@
       />
     </div>
 
-    <div class="col-md-6 text-end">
+    <div class="col-12 col-md-6 text-md-end">
       <button
-        class="btn btn-success"
+        class="btn btn-success w-100 w-md-auto"
         data-bs-toggle="modal"
         data-bs-target="#modalRegistrar"
       >
@@ -26,18 +26,19 @@
 
   <!-- 🧮 CALCULADORA 50% -->
   <div class="card p-3 mb-4">
-    <h5>Calculadora 50%</h5>
+    <h5 class="mb-2">Calculadora 50%</h5>
     <div class="row g-2 align-items-center">
-      <div class="col-md-4">
+      <div class="col-12 col-md-4">
         <input
           type="number"
           class="form-control"
           placeholder="Ingrese cantidad"
+          inputmode="numeric"
           [(ngModel)]="cantidad"
           (input)="calcular50()"
         />
       </div>
-      <div class="col-md-8">
+      <div class="col-12 col-md-8">
         <strong>Total (cantidad + 50%):</strong>
         <span class="ms-2 text-success">
           {{ resultado50 | number : "1.2-2" }} Bs
@@ -47,51 +48,66 @@
   </div>
 
   <!-- 📋 TABLA -->
-  <table class="table table-bordered table-striped">
-    <thead class="table-info">
-      <tr>
-        <th>ID</th>
-        <th>Número Origen</th>
-        <th>Saldo Total</th>
-        <th>Número Destino</th>
-        <th>Monto</th>
-        <th>Estado</th>
-        <th>Acciones</th>
-      </tr>
-    </thead>
-    <tbody>
-      <tr *ngFor="let rec of recargasFiltradas">
-        <td>{{ rec.id }}</td>
-        <td>{{ rec.numero_origen }}</td>
-        <td>{{ rec.saldo_total | number : "1.2-2" }}</td>
-        <td>{{ rec.numero_destino }}</td>
-        <td>{{ rec.monto_carga | number : "1.2-2" }}</td>
-        <td>{{ rec.estado }}</td>
-        <td>
-          <button
-            class="btn btn-outline-primary btn-sm me-1"
-            (click)="openSaldoModal(rec)"
-          >
-            Editar Saldo
-          </button>
-          <button
-            class="btn btn-outline-success btn-sm"
-            (click)="openCargaModal(rec)"
-          >
-            Vender Credito
-          </button>
-        </td>
-      </tr>
-    </tbody>
-  </table>
+  <div class="table-responsive">
+    <table class="table table-bordered table-striped align-middle">
+      <thead class="table-info">
+        <tr>
+          <th>ID</th>
+          <th>N° Origen</th>
+          <th>Saldo</th>
+          <th class="d-none d-md-table-cell">N° Destino</th>
+          <th class="d-none d-md-table-cell">Monto</th>
+          <th>Estado</th>
+          <th class="text-center">Acciones</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr *ngFor="let rec of recargasFiltradas">
+          <td>{{ rec.id }}</td>
+          <td>{{ rec.numero_origen }}</td>
+          <td>{{ rec.saldo_total | number : "1.2-2" }}</td>
+          <td class="d-none d-md-table-cell">
+            {{ rec.numero_destino }}
+          </td>
+          <td class="d-none d-md-table-cell">
+            {{ rec.monto_carga | number : "1.2-2" }}
+          </td>
+          <td>
+            <span
+              class="badge"
+              [ngClass]="{
+                'bg-warning text-dark': rec.estado === 'PENDIENTE',
+                'bg-success': rec.estado === 'COMPLETADO'
+              }"
+            >
+              {{ rec.estado }}
+            </span>
+          </td>
+          <td class="text-center">
+            <div class="d-flex flex-column flex-md-row gap-1">
+              <button
+                class="btn btn-outline-primary btn-sm w-100"
+                (click)="openSaldoModal(rec)"
+              >
+                Editar Saldo
+              </button>
+              <button
+                class="btn btn-outline-success btn-sm w-100"
+                (click)="openCargaModal(rec)"
+              >
+                Vender Crédito
+              </button>
+            </div>
+          </td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
 </div>
 
-<!-- 🔽 MODALES (sin cambios funcionales) -->
-<!-- (tus modales Registrar, Saldo y Carga van EXACTAMENTE igual que antes) -->
-
-<!-- MODAL REGISTRAR -->
+<!-- ================= MODAL REGISTRAR ================= -->
 <div class="modal fade" id="modalRegistrar" tabindex="-1" aria-hidden="true">
-  <div class="modal-dialog">
+  <div class="modal-dialog modal-dialog-centered modal-fullscreen-sm-down">
     <div class="modal-content">
       <div class="modal-header bg-success text-white">
         <h5 class="modal-title">Registrar Nueva Recarga</h5>
@@ -101,13 +117,14 @@
           data-bs-dismiss="modal"
         ></button>
       </div>
+
       <div class="modal-body">
         <form
           [formGroup]="newRecargaForm"
           (ngSubmit)="registrarRecarga()"
           class="row g-2"
         >
-          <div class="col-6">
+          <div class="col-12 col-md-6">
             <label>Número Origen</label>
             <input
               type="text"
@@ -115,15 +132,18 @@
               class="form-control"
             />
           </div>
-          <div class="col-6">
+
+          <div class="col-12 col-md-6">
             <label>Saldo Total (Bs)</label>
             <input
               type="number"
+              inputmode="numeric"
               formControlName="saldo_total"
               class="form-control"
             />
           </div>
-          <div class="col-6">
+
+          <div class="col-12 col-md-6">
             <label>Número Destino</label>
             <input
               type="text"
@@ -131,25 +151,28 @@
               class="form-control"
             />
           </div>
-          <div class="col-6">
+
+          <div class="col-12 col-md-6">
             <label>Monto Carga (Bs)</label>
             <input
               type="number"
+              inputmode="numeric"
               formControlName="monto_carga"
               class="form-control"
             />
           </div>
-          <div class="col-12 mt-3 text-end">
+
+          <div class="col-12 d-flex flex-column flex-md-row gap-2 mt-3">
             <button
               type="submit"
-              class="btn btn-success"
+              class="btn btn-success w-100"
               [disabled]="newRecargaForm.invalid"
             >
               Registrar
             </button>
             <button
               type="button"
-              class="btn btn-secondary"
+              class="btn btn-secondary w-100"
               data-bs-dismiss="modal"
             >
               Cancelar
@@ -161,18 +184,19 @@
   </div>
 </div>
 
-<!-- MODAL EDITAR SALDO -->
+<!-- ================= MODAL SALDO ================= -->
 <div class="modal fade" id="modalSaldo" tabindex="-1" aria-hidden="true">
-  <div class="modal-dialog">
+  <div class="modal-dialog modal-dialog-centered modal-fullscreen-sm-down">
     <div class="modal-content">
       <div class="modal-header bg-primary text-white">
-        <h5 class="modal-title">Editar Número Origen / Saldo</h5>
+        <h5 class="modal-title">Editar Saldo</h5>
         <button
           type="button"
           class="btn-close"
           data-bs-dismiss="modal"
         ></button>
       </div>
+
       <div class="modal-body" *ngIf="selectedRecarga">
         <form [formGroup]="saldoForm" (ngSubmit)="saveSaldo()">
           <div class="mb-2">
@@ -184,25 +208,28 @@
               readonly
             />
           </div>
-          <div class="mb-2">
+
+          <div class="mb-3">
             <label>Saldo Total (Bs)</label>
             <input
               type="number"
+              inputmode="numeric"
               formControlName="saldo_total"
               class="form-control"
             />
           </div>
-          <div class="text-end">
+
+          <div class="d-flex flex-column flex-md-row gap-2">
             <button
               type="submit"
-              class="btn btn-primary me-2"
+              class="btn btn-primary w-100"
               [disabled]="saldoForm.invalid"
             >
               Guardar
             </button>
             <button
               type="button"
-              class="btn btn-secondary"
+              class="btn btn-secondary w-100"
               data-bs-dismiss="modal"
             >
               Cancelar
@@ -214,18 +241,19 @@
   </div>
 </div>
 
-<!-- MODAL EDITAR CARGA -->
+<!-- ================= MODAL CARGA ================= -->
 <div class="modal fade" id="modalCarga" tabindex="-1" aria-hidden="true">
-  <div class="modal-dialog">
+  <div class="modal-dialog modal-dialog-centered modal-fullscreen-sm-down">
     <div class="modal-content">
       <div class="modal-header bg-success text-white">
-        <h5 class="modal-title">Editar Destino / Monto / Estado</h5>
+        <h5 class="modal-title">Vender Crédito</h5>
         <button
           type="button"
           class="btn-close"
           data-bs-dismiss="modal"
         ></button>
       </div>
+
       <div class="modal-body" *ngIf="selectedRecarga">
         <form [formGroup]="cargaForm" (ngSubmit)="saveCarga()">
           <div class="mb-2">
@@ -236,25 +264,28 @@
               class="form-control"
             />
           </div>
-          <div class="mb-2">
+
+          <div class="mb-3">
             <label>Monto de Carga (Bs)</label>
             <input
               type="number"
+              inputmode="numeric"
               formControlName="monto_carga"
               class="form-control"
             />
           </div>
-          <div class="text-end">
+
+          <div class="d-flex flex-column flex-md-row gap-2">
             <button
               type="submit"
-              class="btn btn-success me-2"
+              class="btn btn-success w-100"
               [disabled]="cargaForm.invalid"
             >
               Guardar
             </button>
             <button
               type="button"
-              class="btn btn-secondary"
+              class="btn btn-secondary w-100"
               data-bs-dismiss="modal"
             >
               Cancelar

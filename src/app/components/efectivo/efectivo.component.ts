@@ -29,6 +29,8 @@ export class EfectivoComponent implements OnInit {
 
   bills: EfectivoKeys[] = ['B200Bs','B100Bs','B50Bs','B20Bs','B10Bs'];
   coins: EfectivoKeys[] = ['M5Bs','M2Bs','M1','M0_50Bs','M0_20Bs','M0_10Bs'];
+mensaje: string = '';
+tipoMensaje: 'success' | 'danger' | '' = '';
 
   constructor(
     private services: ServicesService,
@@ -88,30 +90,35 @@ export class EfectivoComponent implements OnInit {
   }
 
   // -------------------- MÉTODO DE EDICIÓN --------------------
-  editarEfectivo(efectivo: Efectivo) {
-    this.modalTitle = 'Editar Efectivo';
-    this.editingId = efectivo.id;
+editarEfectivo(efectivo: Efectivo) {
+  this.modalTitle = 'Editar Efectivo';
+  this.editingId = efectivo.id;
 
-    [...this.bills, ...this.coins].forEach(key => {
-      const subtotal = efectivo[key] || 0;
-      this.subtotales[key] = subtotal;
+  [...this.bills, ...this.coins].forEach(key => {
+    const subtotal = Number(efectivo[key]) || 0;
+    this.subtotales[key] = subtotal;
 
-      const denom = this.getDenomination(key);
-      const cantidad = denom > 0 ? subtotal / denom : 0;
+    const denom = this.getDenomination(key);
 
-      this.formEfectivo.get(key)?.setValue(cantidad, { emitEvent: false });
-    });
+    // 🔒 SOLUCIÓN: redondear a entero
+    const cantidad = denom > 0
+      ? Math.round(subtotal / denom)
+      : 0;
 
-    this.total = Object.values(this.subtotales).reduce((a, b) => a + b, 0);
-  }
+    this.formEfectivo.get(key)?.setValue(cantidad, { emitEvent: false });
+  });
 
-  calcularSubtotal(fieldKey: EfectivoKeys) {
-    const cantidad = this.formEfectivo.get(fieldKey)?.value || 0;
-    const denominacion = this.getDenomination(fieldKey);
-    this.subtotales[fieldKey] = cantidad * denominacion;
-    this.total = Object.values(this.subtotales).reduce((a,b) => a + b, 0);
-  }
+  this.total = Math.round(
+    Object.values(this.subtotales).reduce((a, b) => a + b, 0) * 100
+  ) / 100;
+}
 
+calcularSubtotal(fieldKey: EfectivoKeys) {
+  const cantidad = Number(this.formEfectivo.get(fieldKey)?.value) || 0;
+  const denominacion = this.getDenomination(fieldKey);
+  this.subtotales[fieldKey] = Math.round((cantidad * denominacion) * 100) / 100;
+  this.total = Math.round(Object.values(this.subtotales).reduce((a, b) => a + b, 0) * 100) / 100;
+}
   getDenomination(fieldKey: EfectivoKeys): number {
     switch(fieldKey) {
       case 'B200Bs': return 200;
@@ -129,24 +136,52 @@ export class EfectivoComponent implements OnInit {
     }
   }
 
-  guardar() {
-    if (this.formEfectivo.invalid) return;
 
-    const data: Partial<Efectivo> = {};
-    [...this.bills, ...this.coins].forEach(key => data[key] = this.subtotales[key]);
-    data.total = this.total;
+guardar() {
+  if (this.formEfectivo.invalid) return;
 
-    if (this.editingId) {
-      this.services.actualizarEfectivo(this.editingId, data as Efectivo).subscribe(() => {
+  const data: any = {};
+  [...this.bills, ...this.coins].forEach(key => {
+    data[key] = this.subtotales[key].toFixed(2);
+  });
+  data.total = this.total.toFixed(2);
+
+  if (this.editingId) {
+    // ✏️ EDITAR
+    this.services.actualizarEfectivo(this.editingId, data).subscribe({
+      next: () => {
         this.cargarEfectivos();
         this.cerrarModal();
-      });
-    } else {
-      this.services.crearEfectivo(data as Efectivo).subscribe(() => {
+        this.mostrarMensaje('Efectivo actualizado correctamente ✔️', 'success');
+      },
+      error: () => {
+        this.mostrarMensaje('Error al actualizar el efectivo ❌', 'danger');
+      }
+    });
+  } else {
+    // ✅ REGISTRAR
+    this.services.crearEfectivo(data).subscribe({
+      next: () => {
         this.cargarEfectivos();
         this.cerrarModal();
-      });
-    }
+        this.mostrarMensaje('Efectivo registrado correctamente ✔️', 'success');
+      },
+      error: () => {
+        this.mostrarMensaje('Error al registrar el efectivo ❌', 'danger');
+      }
+    });
   }
+}
+
+mostrarMensaje(mensaje: string, tipo: 'success' | 'danger') {
+  this.mensaje = mensaje;
+  this.tipoMensaje = tipo;
+
+  // Ocultar mensaje después de 3 segundos
+  setTimeout(() => {
+    this.mensaje = '';
+    this.tipoMensaje = '';
+  }, 3000);
+}
 
 }
