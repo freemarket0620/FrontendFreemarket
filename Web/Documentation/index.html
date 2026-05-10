@@ -1,0 +1,475 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>PiLab Vue SPA Developer Documentation</title>
+  <style>
+    :root{
+      --bg:#020617;--panel:#0f172a;--panel2:#111827;--panel3:#020617;--border:#1e293b;--border2:#334155;
+      --text:#dbeafe;--muted:#94a3b8;--dim:#64748b;--sky:#38bdf8;--emerald:#34d399;--amber:#fbbf24;--red:#fb7185;
+      --code:#07111f;--shadow:0 18px 45px rgba(0,0,0,.35);--radius:14px;
+      --mono:ui-monospace,SFMono-Regular,Menlo,Monaco,Consolas,"Liberation Mono","Courier New",monospace;
+      --sans:ui-sans-serif,system-ui,-apple-system,Segoe UI,Roboto,Arial,"Noto Sans",sans-serif;
+    }
+    *{box-sizing:border-box} html{scroll-behavior:smooth} body{margin:0;background:radial-gradient(1200px 700px at 15% -10%,rgba(56,189,248,.13),transparent 55%),radial-gradient(1000px 650px at 120% 8%,rgba(52,211,153,.09),transparent 55%),var(--bg);color:var(--text);font-family:var(--sans);line-height:1.55}
+    a{color:var(--sky);text-decoration:none} a:hover{text-decoration:underline} code,kbd,pre{font-family:var(--mono)}
+    .shell{display:grid;grid-template-columns:310px 1fr;min-height:100vh}.side{position:sticky;top:0;height:100vh;overflow:auto;border-right:1px solid var(--border);background:linear-gradient(180deg,rgba(15,23,42,.96),rgba(2,6,23,.96));padding:22px 18px}.brand{border-bottom:1px solid var(--border);padding-bottom:18px;margin-bottom:18px}.brand .kicker{font-size:11px;letter-spacing:.18em;text-transform:uppercase;color:var(--sky);font-weight:900}.brand h1{font-size:22px;line-height:1.1;margin:8px 0 8px}.brand p{font-size:13px;color:var(--muted);margin:0}.nav-title{font-size:10px;letter-spacing:.16em;color:var(--dim);text-transform:uppercase;font-weight:900;margin:18px 0 8px}.nav a{display:block;padding:8px 10px;border-radius:10px;color:#cbd5e1;font-size:13px}.nav a:hover{background:#0f253b;text-decoration:none;color:white}.main{min-width:0}.topbar{position:sticky;top:0;z-index:5;border-bottom:1px solid var(--border);background:rgba(2,6,23,.82);backdrop-filter:blur(10px)}.topbar-inner{display:flex;justify-content:space-between;gap:16px;align-items:center;padding:14px 26px}.topbar .title{font-weight:900;color:white}.status{font-size:12px;color:var(--muted);font-family:var(--mono)}
+    .content{max-width:1180px;padding:28px 34px 70px}.hero{background:linear-gradient(180deg,rgba(15,23,42,.72),rgba(15,23,42,.38));border:1px solid var(--border2);border-radius:var(--radius);box-shadow:var(--shadow);padding:24px;margin-bottom:24px}.hero h2{font-size:32px;line-height:1.1;margin:0 0 10px}.hero p{color:#cbd5e1;margin:0;max-width:900px}.badges{display:flex;flex-wrap:wrap;gap:8px;margin-top:18px}.badge{border:1px solid var(--border2);background:rgba(2,6,23,.5);border-radius:999px;padding:5px 10px;font-size:12px;color:#cbd5e1}.badge.good{border-color:rgba(52,211,153,.45);color:var(--emerald)}.badge.warn{border-color:rgba(251,191,36,.45);color:var(--amber)}
+    section{margin:28px 0}.section-title{font-size:23px;margin:0 0 12px;color:white}.section-sub{color:var(--muted);margin-top:-4px}.card{background:rgba(15,23,42,.75);border:1px solid var(--border);border-radius:var(--radius);box-shadow:0 12px 30px rgba(0,0,0,.2);padding:18px;margin:14px 0}.card h3{margin:0 0 10px;color:#e0f2fe}.grid{display:grid;gap:14px}.grid.two{grid-template-columns:repeat(2,minmax(0,1fr))}.grid.three{grid-template-columns:repeat(3,minmax(0,1fr))}.metric{border:1px solid var(--border);border-radius:12px;padding:14px;background:rgba(2,6,23,.45)}.metric .label{font-size:10px;letter-spacing:.14em;text-transform:uppercase;color:var(--dim);font-weight:900}.metric .value{font-size:20px;color:white;font-weight:900;margin-top:5px}.metric p{margin:8px 0 0;color:var(--muted);font-size:13px}.note{border-left:3px solid var(--sky);background:rgba(56,189,248,.08);padding:12px 14px;border-radius:10px;color:#dbeafe}.warnbox{border-left:3px solid var(--amber);background:rgba(251,191,36,.08);padding:12px 14px;border-radius:10px;color:#fde68a}.dangerbox{border-left:3px solid var(--red);background:rgba(251,113,133,.08);padding:12px 14px;border-radius:10px;color:#fecdd3}
+    table{width:100%;border-collapse:collapse;font-size:13px;margin:12px 0;border:1px solid var(--border);border-radius:12px;overflow:hidden}th,td{padding:10px 12px;border-bottom:1px solid var(--border);vertical-align:top}th{background:rgba(2,6,23,.65);text-align:left;color:var(--muted);font-size:10px;letter-spacing:.13em;text-transform:uppercase}tr:last-child td{border-bottom:none}td code{color:#bae6fd}
+    pre{background:var(--code);border:1px solid var(--border);border-radius:12px;padding:14px;overflow:auto;color:#dbeafe;font-size:12px;line-height:1.45}pre .comment{color:#7dd3fc}.small{font-size:12px;color:var(--muted)}.kbd{border:1px solid var(--border2);border-bottom-color:#475569;background:#0f172a;border-radius:6px;padding:1px 6px;color:white;font-size:11px}.toc-line{display:flex;gap:8px;align-items:center}.pill{font-size:10px;text-transform:uppercase;letter-spacing:.12em;border-radius:999px;border:1px solid var(--border2);padding:2px 7px;color:var(--muted)}.flow{display:grid;grid-template-columns:repeat(5,1fr);gap:10px;margin:15px 0}.flow .step{border:1px solid var(--border);background:rgba(2,6,23,.5);border-radius:12px;padding:12px;text-align:center}.flow .step b{display:block;color:white}.flow .step span{font-size:12px;color:var(--muted)}
+    @media(max-width:980px){.shell{grid-template-columns:1fr}.side{position:relative;height:auto}.content{padding:22px 16px}.grid.two,.grid.three,.flow{grid-template-columns:1fr}.topbar-inner{padding:12px 16px;align-items:flex-start;flex-direction:column}}
+    @media print{.side,.topbar{display:none}.shell{display:block}.content{max-width:none;padding:0}.card,.hero{box-shadow:none;break-inside:avoid}body{background:white;color:black}pre{white-space:pre-wrap}}
+  </style>
+</head>
+<body>
+  <div class="shell">
+    <aside class="side">
+      <div class="brand">
+        <div class="kicker">PiLab Coupler</div>
+        <h1>Vue SPA Developer Docs</h1>
+        <p>Documentation package for the current PiLab PLC engineering app.</p>
+      </div>
+      <div class="nav">
+        <div class="nav-title">Overview</div>
+        <a href="#purpose">Purpose & Current State</a>
+        <a href="#architecture">Architecture</a>
+        <a href="#file-map">File Map</a>
+        <a href="#routing">Routing</a>
+        <div class="nav-title">Core Systems</div>
+        <a href="#plc-store">PLC Store</a>
+        <a href="#api-layer">API Layer</a>
+        <a href="#shell-status">Shell & Status Bar</a>
+        <a href="#script-editor">Script Editor</a>
+        <a href="#hmi-designer">HMI Designer</a>
+        <a href="#pages">Pages</a>
+        <div class="nav-title">How To Extend</div>
+        <a href="#add-page">Add a Page</a>
+        <a href="#add-api">Add API Calls</a>
+        <a href="#autocomplete">Extend Autocomplete</a>
+        <a href="#widgets">Add HMI Widgets</a>
+        <a href="#style-guide">Style Guide</a>
+        <div class="nav-title">Build & Deploy</div>
+        <a href="#local-dev">Local Development</a>
+        <a href="#p4-deploy">P4 Deployment</a>
+        <a href="#testing">Testing Checklist</a>
+        <a href="#roadmap">Recommended Roadmap</a>
+      </div>
+    </aside>
+
+    <main class="main">
+      <div class="topbar">
+        <div class="topbar-inner">
+          <div class="title">PiLab PLC Vue SPA · Developer Reference</div>
+          <div class="status">Vue 3 / Vite / Tailwind-style utility CSS / ESP32-P4 API Client</div>
+        </div>
+      </div>
+      <div class="content">
+        <div class="hero" id="purpose">
+          <h2>PiLab PLC Web Engineering App</h2>
+          <p>This document describes the current Vue single-page application that replaced the original standalone HTML pages. It is written for developers who know Vue, JavaScript, and Tailwind-style UI work and need to extend, debug, or deploy the PiLab PLC web interface.</p>
+          <div class="badges">
+            <span class="badge good">Vue 3 SPA</span>
+            <span class="badge good">Central PLC Store</span>
+            <span class="badge good">Integrated Script Editor</span>
+            <span class="badge good">AngelScript Autocomplete</span>
+            <span class="badge good">Live Tags</span>
+            <span class="badge warn">Embedded Deployment Pending</span>
+          </div>
+        </div>
+
+        <section>
+          <h2 class="section-title">Current State</h2>
+          <div class="grid three">
+            <div class="metric"><div class="label">Application Type</div><div class="value">Routed SPA</div><p>One app shell hosts all PLC tools through Vue Router.</p></div>
+            <div class="metric"><div class="label">State Model</div><div class="value">Shared Store</div><p>Runtime PLC data is centralized to avoid duplicate polling.</p></div>
+            <div class="metric"><div class="label">Editor</div><div class="value">Prism Code Editor</div><p>Script editing includes syntax highlighting, snippets, and autocomplete.</p></div>
+          </div>
+          <div class="note">The project is no longer a group of separate web pages. It is now structured as a browser-hosted engineering workstation for the P4 controller.</div>
+        </section>
+
+        <section id="architecture">
+          <h2 class="section-title">Architecture</h2>
+          <p class="section-sub">The app is intentionally simple: Vue Router controls pages, the app shell controls the global frame, API modules wrap HTTP endpoints, and <code>plcStore.js</code> owns runtime polling.</p>
+          <div class="flow">
+            <div class="step"><b>AppShell</b><span>global layout/nav</span></div>
+            <div class="step"><b>Router</b><span>page selection</span></div>
+            <div class="step"><b>Pages</b><span>tools/features</span></div>
+            <div class="step"><b>PLC Store</b><span>runtime state</span></div>
+            <div class="step"><b>API Layer</b><span>P4 endpoints</span></div>
+          </div>
+<pre><code>Browser
+  └─ Vue 3 App
+      ├─ AppShell.vue              global header, nav, status
+      ├─ Vue Router                /, /script, /hmi, /tags, /files
+      ├─ Pages                     command, editor, HMI, tags, files
+      ├─ plcStore.js               shared polling and PLC runtime state
+      └─ api/*.js                  endpoint wrappers for the P4 firmware</code></pre>
+        </section>
+
+        <section id="file-map">
+          <h2 class="section-title">Source File Map</h2>
+          <table>
+            <thead><tr><th>Path</th><th>Purpose</th><th>Developer Notes</th></tr></thead>
+            <tbody>
+              <tr><td><code>src/main.js</code></td><td>Vue application entry point.</td><td>Imports global CSS, installs router, mounts <code>App.vue</code>.</td></tr>
+              <tr><td><code>src/App.vue</code></td><td>Root component.</td><td>Currently only renders <code>AppShell</code>.</td></tr>
+              <tr><td><code>src/router.js</code></td><td>Route definitions.</td><td>Maps URL paths to page components.</td></tr>
+              <tr><td><code>src/style.css</code></td><td>Global application styles.</td><td>Contains shell, page layout, panels, HMI, editor, and status styles.</td></tr>
+              <tr><td><code>src/components/AppShell.vue</code></td><td>Global frame.</td><td>Header, navigation, status bar, and routed page outlet.</td></tr>
+              <tr><td><code>src/components/UnifiedStatusBar.vue</code></td><td>Shared runtime status.</td><td>Reads online/RUN/write-lock/timing values from the PLC store.</td></tr>
+              <tr><td><code>src/stores/plcStore.js</code></td><td>Singleton PLC runtime store.</td><td>Owns command-center polling, PLC data polling, deduping, and visibility throttling.</td></tr>
+              <tr><td><code>src/api/http.js</code></td><td>Common fetch helpers.</td><td>Normalizes JSON/text responses and HTTP errors.</td></tr>
+              <tr><td><code>src/api/plcApi.js</code></td><td>Runtime PLC endpoints.</td><td><code>/api/command_center</code>, <code>/api/plc_data</code>, <code>/api/plc_mode</code>, <code>/api/plc_write</code>.</td></tr>
+              <tr><td><code>src/api/scriptApi.js</code></td><td>Script endpoints.</td><td>Upload and status calls for AngelScript.</td></tr>
+              <tr><td><code>src/api/tagApi.js</code></td><td>Tag registry endpoints.</td><td>Loads/saves user tag definitions.</td></tr>
+              <tr><td><code>src/api/fileApi.js</code></td><td>File Manager endpoints.</td><td>List, view, upload, mkdir, delete, download helpers.</td></tr>
+              <tr><td><code>src/editor/angelscriptCompletions.js</code></td><td>Editor completion source.</td><td>AngelScript keywords/snippets + PLC I/O + live tags.</td></tr>
+              <tr><td><code>src/pages/CommandCenter.vue</code></td><td>Main dashboard.</td><td>Reads shared PLC runtime state and displays metrics/I/O.</td></tr>
+              <tr><td><code>src/pages/ScriptConsole.vue</code></td><td>Script editor.</td><td>Prism editor, diagnostics, upload flow, autocomplete.</td></tr>
+              <tr><td><code>src/pages/HmiDesigner.vue</code></td><td>HMI editor/live view.</td><td>Widget canvas, build/live mode, tag binding, local layout persistence.</td></tr>
+              <tr><td><code>src/pages/TagRegistry.vue</code></td><td>User tags.</td><td>Manage PLC tags and script globals.</td></tr>
+              <tr><td><code>src/pages/FileManager.vue</code></td><td>LittleFS browser.</td><td>File operations gated by PLC RUN/STOP state.</td></tr>
+            </tbody>
+          </table>
+        </section>
+
+        <section id="routing">
+          <h2 class="section-title">Routing</h2>
+          <p>The current router uses <code>createWebHistory()</code> and these routes:</p>
+<pre><code>export const router = createRouter({
+  history: createWebHistory(),
+  routes: [
+    { path: '/', component: CommandCenter },
+    { path: '/script', component: ScriptConsole },
+    { path: '/editor', redirect: '/script' },
+    { path: '/hmi', component: HmiDesigner },
+    { path: '/tags', component: TagRegistry },
+    { path: '/files', component: FileManager },
+  ],
+});</code></pre>
+          <div class="warnbox">For final embedded deployment, hash routing may be easier unless the P4 web server redirects unknown paths back to <code>/index.html</code>. Use <code>createWebHashHistory()</code> if you want routes like <code>/#/hmi</code>.</div>
+        </section>
+
+        <section id="plc-store">
+          <h2 class="section-title">PLC Store</h2>
+          <p><code>src/stores/plcStore.js</code> is the runtime data authority. Pages should read PLC runtime data from this store instead of creating independent pollers.</p>
+          <div class="grid two">
+            <div class="card"><h3>Command Center Polling</h3><p>Polls <code>/api/command_center</code> at the configured cadence. This supplies overview data, script state, PLC mode, timings, masks, ticks, and heap information.</p></div>
+            <div class="card"><h3>PLC Data Polling</h3><p>Polls <code>/api/plc_data</code> only while a page/component has requested live tag data using <code>usePlcData()</code>.</p></div>
+          </div>
+<pre><code>const store = usePlcStore();
+
+// Runtime state
+store.online
+store.plcMode
+store.plcRunning
+store.flashWritesAllowed
+store.overview
+store.script
+store.plcData
+store.pointsByName
+store.tagNames
+
+// Actions
+store.start();
+store.usePlcData();
+store.refreshCommandCenter();
+store.refreshPlcData();
+store.setPlcRun(true);
+store.plcWrite('Q0', true);</code></pre>
+          <h3>Why <code>usePlcData()</code> Exists</h3>
+          <p>Live tag polling is more expensive than high-level status polling. <code>usePlcData()</code> increments a subscriber count. When the last subscriber leaves, polling stops.</p>
+<pre><code>import { onMounted, onBeforeUnmount } from 'vue';
+import { usePlcStore } from '../stores/plcStore';
+
+const store = usePlcStore();
+let releasePlcData = null;
+
+onMounted(() =&gt; {
+  releasePlcData = store.usePlcData();
+});
+
+onBeforeUnmount(() =&gt; {
+  releasePlcData?.();
+});</code></pre>
+          <div class="note">Best practice: any page that needs live point values should use <code>usePlcData()</code>. Pages that only need RUN/STOP/status should use the existing command-center store values.</div>
+        </section>
+
+        <section id="api-layer">
+          <h2 class="section-title">API Layer</h2>
+          <p>The app uses small API modules rather than raw <code>fetch()</code> scattered through components.</p>
+          <table>
+            <thead><tr><th>Module</th><th>Endpoints</th><th>Used By</th></tr></thead>
+            <tbody>
+              <tr><td><code>plcApi.js</code></td><td><code>/api/command_center</code>, <code>/api/plc_data</code>, <code>/api/plc_mode</code>, <code>/api/plc_write</code></td><td>PLC store, HMI toggle writes, command actions.</td></tr>
+              <tr><td><code>scriptApi.js</code></td><td><code>/api/upload_script</code>, <code>/api/script_status</code></td><td>Script editor upload/status flow.</td></tr>
+              <tr><td><code>tagApi.js</code></td><td><code>/api/tags</code></td><td>Tag registry load/save.</td></tr>
+              <tr><td><code>fileApi.js</code></td><td><code>/api/files/*</code></td><td>LittleFS file manager.</td></tr>
+              <tr><td><code>http.js</code></td><td>Shared helper only</td><td>Common response/error handling.</td></tr>
+            </tbody>
+          </table>
+          <h3>Rule for New Endpoints</h3>
+          <div class="note">Add new firmware endpoints to an <code>api/*.js</code> module first, then call that helper from pages or stores. Avoid direct <code>fetch()</code> inside page components unless it is a one-off browser-native operation such as downloading a file.</div>
+        </section>
+
+        <section id="shell-status">
+          <h2 class="section-title">App Shell & Unified Status Bar</h2>
+          <p><code>AppShell.vue</code> owns the global header and navigation. <code>UnifiedStatusBar.vue</code> reads from <code>plcStore</code> and displays a compact runtime summary in the header.</p>
+          <table>
+            <thead><tr><th>Status Item</th><th>Source</th><th>Meaning</th></tr></thead>
+            <tbody>
+              <tr><td>Online/Offline</td><td><code>store.online</code></td><td>Whether <code>/api/command_center</code> is responding.</td></tr>
+              <tr><td>RUN/STOP</td><td><code>store.plcMode</code></td><td>Current PLC runtime mode.</td></tr>
+              <tr><td>Writes Enabled/Locked</td><td><code>store.flashWritesAllowed</code></td><td>Whether filesystem/tag writes are allowed.</td></tr>
+              <tr><td>PLC Work Avg</td><td><code>overview.plc_work_avg_us</code></td><td>PLC loop work timing.</td></tr>
+              <tr><td>Script State</td><td><code>store.scriptState</code></td><td>AngelScript compile/runtime state.</td></tr>
+              <tr><td>Script Avg</td><td><code>script.run_scan_us_window_avg</code></td><td>Script scan cost.</td></tr>
+              <tr><td>Cache Age</td><td><code>overview.cache_age_ms</code></td><td>Age of cached PLC data.</td></tr>
+              <tr><td>Tags</td><td><code>store.pointCount</code></td><td>Known live points/tags.</td></tr>
+            </tbody>
+          </table>
+        </section>
+
+        <section id="script-editor">
+          <h2 class="section-title">Script Editor</h2>
+          <p>The script editor is now a real Vue page using <code>prism-code-editor-lightweight</code>. It replaced the legacy standalone Prism textarea/layer editor.</p>
+          <div class="grid two">
+            <div class="card"><h3>Editor Features</h3><ul><li>Syntax-highlighted editing</li><li>Line numbers and keyboard editing behavior</li><li>Autocomplete popup</li><li>Snippets for common control blocks</li><li>Upload/status console</li><li>AngelScript diagnostics parser</li></ul></div>
+            <div class="card"><h3>Completion Sources</h3><ul><li>AngelScript keywords and types</li><li>Common snippets</li><li>Physical I/O names: <code>I*</code>, <code>Q*</code>, <code>AI*</code>, <code>AO*</code></li><li>Live tags from <code>plcStore.tagNames</code></li></ul></div>
+          </div>
+          <h3>Completion Module</h3>
+          <p><code>src/editor/angelscriptCompletions.js</code> keeps language and PLC suggestions separate from the editor component. Extend this file when adding new language features or PiLab built-ins.</p>
+<pre><code>// Example concept: add PiLab API symbols to the completion list
+export function createAngelScriptCompletions({ liveTags = [] } = {}) {
+  return [
+    ...ANGELSCRIPT_KEYWORDS,
+    ...PLC_IO_COMPLETIONS,
+    ...liveTags.map(name =&gt; ({ label: name, type: 'variable' })),
+  ];
+}</code></pre>
+          <h3>Future: Firmware Symbol Manifest</h3>
+          <p>The best professional extension is a controller endpoint that exposes registered AngelScript classes/functions:</p>
+<pre><code>GET /api/script_symbols
+
+{
+  "functions": [
+    { "name": "millis", "signature": "uint millis()", "description": "PLC uptime" }
+  ],
+  "classes": [
+    { "name": "Timer", "methods": [{ "name": "done", "signature": "bool done()" }] }
+  ],
+  "constants": [
+    { "name": "PLC_SCAN_MS", "type": "uint", "value": 5 }
+  ]
+}</code></pre>
+        </section>
+
+        <section id="hmi-designer">
+          <h2 class="section-title">HMI Designer</h2>
+          <p>The HMI page is both a screen builder and a live operator screen. It uses local state for widget layout and shared PLC state for live values.</p>
+          <table>
+            <thead><tr><th>Feature</th><th>Behavior</th></tr></thead>
+            <tbody>
+              <tr><td>Build/Live Mode</td><td>Persisted in local storage so route changes do not reset the mode.</td></tr>
+              <tr><td>Widget Layout</td><td>Auto-saved to local storage; defaults are only seeded when no saved layout exists.</td></tr>
+              <tr><td>Tag Picker</td><td>Uses live tags from <code>/api/plc_data</code> through the PLC store.</td></tr>
+              <tr><td>Toggle Writes</td><td>Writes through <code>store.plcWrite()</code> / <code>/api/plc_write</code>.</td></tr>
+              <tr><td>Canvas Layout</td><td>Full-width engineering layout, not centered marketing layout.</td></tr>
+            </tbody>
+          </table>
+          <div class="warnbox">Important: route changes unmount page components. Anything that must survive navigation should be kept in local storage, the PLC store, or a future dedicated HMI store.</div>
+        </section>
+
+        <section id="pages">
+          <h2 class="section-title">Page Responsibilities</h2>
+          <div class="grid two">
+            <div class="card"><h3>Command Center</h3><p>Dashboard for controller state, runtime metrics, I/O masks, trend graphics, and RUN/STOP actions. It should not poll directly; it reads from <code>plcStore</code>.</p></div>
+            <div class="card"><h3>Script Console</h3><p>Editor, upload, diagnostics, and script status. It owns editor UI state but should reuse API wrappers and shared tag completions.</p></div>
+            <div class="card"><h3>HMI Designer</h3><p>Visual widget canvas. It consumes live tag data and persists design state locally until a firmware-backed save format is added.</p></div>
+            <div class="card"><h3>Tag Registry</h3><p>Loads/saves user-defined tags. These tags become available in PLC data and editor autocomplete.</p></div>
+            <div class="card"><h3>File Manager</h3><p>Manages LittleFS files. It uses shared PLC RUN/STOP/write-lock state to prevent writes during RUN mode.</p></div>
+          </div>
+        </section>
+
+        <section id="add-page">
+          <h2 class="section-title">How to Add a Page</h2>
+          <ol>
+            <li>Create a page component in <code>src/pages/NewTool.vue</code>.</li>
+            <li>Add a route in <code>src/router.js</code>.</li>
+            <li>Add a navigation link in <code>AppShell.vue</code>.</li>
+            <li>Use shared styles from <code>style.css</code> instead of creating a new visual system.</li>
+          </ol>
+<pre><code>// src/router.js
+import NewTool from './pages/NewTool.vue';
+
+routes: [
+  // ...existing routes
+  { path: '/new-tool', component: NewTool },
+]</code></pre>
+<pre><code>&lt;!-- AppShell.vue --&gt;
+&lt;RouterLink to="/new-tool"&gt;New Tool&lt;/RouterLink&gt;</code></pre>
+        </section>
+
+        <section id="add-api">
+          <h2 class="section-title">How to Add API Calls</h2>
+          <p>Keep firmware calls in <code>src/api</code>. Put shared runtime calls in <code>plcStore</code> only if multiple pages need them or if polling/caching/deduping is required.</p>
+<pre><code>// src/api/alarmApi.js
+import { apiJson, apiPostJson } from './http';
+
+export function loadAlarms() {
+  return apiJson('/api/alarms');
+}
+
+export function acknowledgeAlarm(id) {
+  return apiPostJson('/api/alarms/ack', { id });
+}</code></pre>
+          <div class="note">If the endpoint is a live runtime stream or repeated poll, centralize it in a store. If it is a page-specific user action, a simple API helper is enough.</div>
+        </section>
+
+        <section id="autocomplete">
+          <h2 class="section-title">How to Extend Autocomplete</h2>
+          <p>Autocomplete should be layered so PLC-specific suggestions stay useful and not noisy.</p>
+          <table>
+            <thead><tr><th>Layer</th><th>Source</th><th>Examples</th></tr></thead>
+            <tbody>
+              <tr><td>Language</td><td><code>angelscriptCompletions.js</code></td><td><code>if</code>, <code>for</code>, <code>bool</code>, <code>float</code>, <code>class</code></td></tr>
+              <tr><td>PLC I/O</td><td>Static completion list</td><td><code>I0</code>, <code>Q0</code>, <code>AI0</code>, <code>AO0</code></td></tr>
+              <tr><td>User Tags</td><td><code>plcStore.tagNames</code></td><td><code>PumpStart</code>, <code>TankSetpoint</code></td></tr>
+              <tr><td>Firmware API</td><td>Future <code>/api/script_symbols</code></td><td><code>millis()</code>, <code>Timer.done()</code></td></tr>
+            </tbody>
+          </table>
+          <h3>Recommended Symbol Manifest Wrapper</h3>
+<pre><code>// C++ concept: register with AngelScript and metadata at the same time
+RegisterFunction(
+  "uint millis()",
+  asFUNCTION(Millis),
+  asCALL_CDECL,
+  "Returns PLC uptime in milliseconds"
+);</code></pre>
+          <p>The web editor can then fetch <code>/api/script_symbols</code> and merge firmware API suggestions with language, I/O, and tags.</p>
+        </section>
+
+        <section id="widgets">
+          <h2 class="section-title">How to Add an HMI Widget</h2>
+          <p>HMI widgets currently live inside <code>HmiDesigner.vue</code>. For now, add widget behavior there. Later, split each widget into a separate component.</p>
+          <ol>
+            <li>Add the widget type to <code>controlTypes</code>.</li>
+            <li>Add default properties in <code>defaults</code>.</li>
+            <li>Add render logic in the widget template.</li>
+            <li>Add any inspector controls needed for the widget.</li>
+            <li>Make sure values are persisted through the existing layout save format.</li>
+          </ol>
+<pre><code>// Example concept
+const controlTypes = ['gauge', 'readout', 'tank', 'led', 'trend', 'thermometer', 'toggle', 'valve'];
+
+defaults.valve = baseProps({
+  label: 'Valve',
+  color: '#38bdf8',
+  pin: 'Q0',
+  active: false,
+});</code></pre>
+          <div class="note">Long term, create <code>src/hmi/widgets</code> and register widget definitions instead of keeping all widget logic in one page.</div>
+        </section>
+
+        <section id="style-guide">
+          <h2 class="section-title">Style Guide</h2>
+          <p>The current visual direction is an engineering workstation, not a centered marketing page.</p>
+          <table>
+            <thead><tr><th>Do</th><th>Avoid</th></tr></thead>
+            <tbody>
+              <tr><td>Use full-width page layouts with shared left/right margins.</td><td>Do not center large pages with boutique <code>max-width</code> layouts.</td></tr>
+              <tr><td>Use one global header and per-page local toolbars.</td><td>Do not add extra page headers duplicating the global nav/status.</td></tr>
+              <tr><td>Use compact text links for navigation and secondary actions.</td><td>Do not make every nav item a large button.</td></tr>
+              <tr><td>Use color for state and important actions.</td><td>Do not color every element equally; it creates noise.</td></tr>
+              <tr><td>Keep industrial dark theme consistent.</td><td>Do not introduce unrelated fonts, colors, or shadows per page.</td></tr>
+            </tbody>
+          </table>
+          <div class="note">Good rule: the header should almost disappear. The editor, HMI canvas, and runtime data should be the visual focus.</div>
+        </section>
+
+        <section id="local-dev">
+          <h2 class="section-title">Local Development</h2>
+          <p>Normal development uses Vite. The dev server can proxy/connect to the P4 depending on your environment configuration.</p>
+<pre><code>npm install
+npm run dev</code></pre>
+          <p>Build a production bundle:</p>
+<pre><code>npm run build</code></pre>
+          <p>Preview the production build locally:</p>
+<pre><code>npm run preview</code></pre>
+          <div class="warnbox">If npm hangs, check <code>npm config get registry</code>. It should use <code>https://registry.npmjs.org/</code>, not an internal or stale registry URL.</div>
+        </section>
+
+        <section id="p4-deploy">
+          <h2 class="section-title">ESP32-P4 Deployment Notes</h2>
+          <p>After <code>npm run build</code>, Vite creates a <code>dist</code> folder. Upload the contents of <code>dist</code>, not the folder itself, to the P4 web root.</p>
+<pre><code>dist/
+  index.html
+  assets/
+    index-xxxx.js
+    index-xxxx.css</code></pre>
+          <h3>Recommended Vite Setting</h3>
+<pre><code>// vite.config.js
+import { defineConfig } from 'vite';
+import vue from '@vitejs/plugin-vue';
+
+export default defineConfig({
+  plugins: [vue()],
+  base: './',
+});</code></pre>
+          <h3>Routing Options</h3>
+          <table>
+            <thead><tr><th>Router Mode</th><th>Pros</th><th>Firmware Requirement</th></tr></thead>
+            <tbody>
+              <tr><td><code>createWebHistory()</code></td><td>Clean URLs like <code>/hmi</code>.</td><td>P4 server must fallback unknown paths to <code>/index.html</code>.</td></tr>
+              <tr><td><code>createWebHashHistory()</code></td><td>Safest for embedded static servers.</td><td>No fallback needed; URLs look like <code>/#/hmi</code>.</td></tr>
+            </tbody>
+          </table>
+          <div class="note">For initial P4 deployment, hash routing is usually the lowest-risk option unless the firmware already has SPA fallback routing.</div>
+        </section>
+
+        <section id="testing">
+          <h2 class="section-title">Testing Checklist</h2>
+          <div class="grid two">
+            <div class="card"><h3>App Navigation</h3><ul><li>Command → Script → HMI → Tags → Files</li><li>HMI Build/Live mode persists</li><li>HMI widgets persist after navigation</li><li>No duplicate page headers appear</li></ul></div>
+            <div class="card"><h3>Network / Determinism</h3><ul><li>Only one <code>/api/command_center</code> cadence</li><li><code>/api/plc_data</code> only active when needed</li><li>No duplicate polling after route changes</li><li>Polling slows when tab hidden</li></ul></div>
+            <div class="card"><h3>Script Editor</h3><ul><li>Autocomplete appears at cursor</li><li><code>Ctrl+Space</code> works</li><li>I/O and user tags appear</li><li>Upload and diagnostics work</li></ul></div>
+            <div class="card"><h3>P4 Static Hosting</h3><ul><li>JS served as JavaScript</li><li>CSS served as text/css</li><li>Assets load with correct paths</li><li>Routes refresh correctly or use hash mode</li></ul></div>
+          </div>
+        </section>
+
+        <section id="roadmap">
+          <h2 class="section-title">Recommended Roadmap</h2>
+          <table>
+            <thead><tr><th>Priority</th><th>Item</th><th>Why It Matters</th></tr></thead>
+            <tbody>
+              <tr><td>High</td><td><code>/api/script_symbols</code></td><td>Turns autocomplete into firmware-aware IDE intelligence.</td></tr>
+              <tr><td>High</td><td>Embedded-safe build settings</td><td>Makes P4 deployment predictable.</td></tr>
+              <tr><td>High</td><td>HMI layout save/load to controller</td><td>Moves HMI from browser-local to project-level persistence.</td></tr>
+              <tr><td>Medium</td><td>Split HMI widgets into components</td><td>Improves maintainability as widgets grow.</td></tr>
+              <tr><td>Medium</td><td>Shared component library</td><td>Panels, buttons, status pills, tag selectors, and metrics become reusable.</td></tr>
+              <tr><td>Medium</td><td>Alarm/event system</td><td>Adds industrial value and operator visibility.</td></tr>
+              <tr><td>Later</td><td>WebSocket/SSE runtime stream</td><td>Could reduce polling and improve live updates.</td></tr>
+            </tbody>
+          </table>
+        </section>
+
+        <section>
+          <h2 class="section-title">Developer Principles</h2>
+          <div class="card">
+            <ol>
+              <li><b>One runtime truth:</b> PLC state should come from the store, not random page pollers.</li>
+              <li><b>Pages stay isolated:</b> use routed pages, not one giant conditional component.</li>
+              <li><b>API calls are wrapped:</b> endpoints belong in <code>src/api</code>.</li>
+              <li><b>Embedded constraints matter:</b> avoid unnecessary polling, large dependencies, and excessive bundle size.</li>
+              <li><b>Industrial UI over decorative UI:</b> clarity, alignment, and state visibility beat visual novelty.</li>
+            </ol>
+          </div>
+          <p class="small">Generated documentation package for the current PiLab Vue SPA architecture. Update this document when routes, API contracts, or store behavior changes.</p>
+        </section>
+      </div>
+    </main>
+  </div>
+</body>
+</html>

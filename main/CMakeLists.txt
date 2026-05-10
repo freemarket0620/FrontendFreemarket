@@ -1,0 +1,27 @@
+idf_component_register(
+    SRCS
+        "main.cpp"
+        "perf_test.cpp"
+        "plc_io.cpp"
+        "ethernet_web.c"
+        "udp_server.c"
+        "script_engine.cpp"
+        "plc_tags.cpp"
+    INCLUDE_DIRS "."
+    EMBED_FILES
+        "web/index.html"
+        "web/assets/index.css"
+        "web/assets/app.js"
+    REQUIRES
+        esp_driver_gptimer
+        esp_driver_gpio
+        esp_timer
+        esp_eth
+        esp_netif
+        esp_event
+        esp_http_server
+        ip101
+        nvs_flash
+        littlefs
+        angelscript
+)

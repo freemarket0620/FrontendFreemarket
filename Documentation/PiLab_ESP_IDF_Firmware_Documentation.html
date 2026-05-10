@@ -1,0 +1,501 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>PiLab ESP-IDF Firmware Documentation</title>
+  <style>
+    :root {
+      --bg: #0f172a;
+      --panel: #111827;
+      --panel2: #1f2937;
+      --text: #e5e7eb;
+      --muted: #9ca3af;
+      --accent: #38bdf8;
+      --accent2: #22c55e;
+      --warn: #f59e0b;
+      --danger: #ef4444;
+      --code: #020617;
+      --border: #334155;
+    }
+    * { box-sizing: border-box; }
+    body {
+      margin: 0;
+      font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+      line-height: 1.55;
+      background: linear-gradient(135deg, #020617 0%, #0f172a 45%, #111827 100%);
+      color: var(--text);
+    }
+    header {
+      padding: 48px 32px 32px;
+      border-bottom: 1px solid var(--border);
+      background: radial-gradient(circle at top left, rgba(56,189,248,0.18), transparent 35%);
+    }
+    header h1 { margin: 0 0 12px; font-size: clamp(2rem, 5vw, 3.5rem); line-height: 1.05; }
+    header p { max-width: 980px; color: var(--muted); font-size: 1.1rem; margin: 0; }
+    main { max-width: 1180px; margin: 0 auto; padding: 32px; }
+    section {
+      background: rgba(17,24,39,0.82);
+      border: 1px solid var(--border);
+      border-radius: 18px;
+      padding: 26px;
+      margin: 0 0 24px;
+      box-shadow: 0 20px 60px rgba(0,0,0,0.25);
+    }
+    h2 { margin-top: 0; font-size: 1.65rem; border-bottom: 1px solid var(--border); padding-bottom: 10px; }
+    h3 { margin-top: 26px; color: #bfdbfe; }
+    h4 { margin-bottom: 8px; color: #bae6fd; }
+    p, li { color: #d1d5db; }
+    .grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(260px, 1fr)); gap: 16px; }
+    .card { background: rgba(31,41,55,0.74); border: 1px solid var(--border); border-radius: 14px; padding: 18px; }
+    .card h3 { margin-top: 0; }
+    code, pre { font-family: ui-monospace, SFMono-Regular, Menlo, Consolas, "Liberation Mono", monospace; }
+    code { background: rgba(2,6,23,0.8); padding: 2px 6px; border-radius: 6px; color: #e0f2fe; }
+    pre {
+      background: var(--code);
+      border: 1px solid #1e293b;
+      color: #e2e8f0;
+      padding: 16px;
+      overflow-x: auto;
+      border-radius: 12px;
+      font-size: 0.92rem;
+    }
+    table { width: 100%; border-collapse: collapse; margin: 16px 0; overflow: hidden; border-radius: 12px; }
+    th, td { border: 1px solid var(--border); padding: 10px 12px; text-align: left; vertical-align: top; }
+    th { background: #1e293b; color: #f8fafc; }
+    td { background: rgba(15,23,42,0.55); }
+    .ok { color: var(--accent2); font-weight: 700; }
+    .warn { color: var(--warn); font-weight: 700; }
+    .danger { color: var(--danger); font-weight: 700; }
+    .note { border-left: 4px solid var(--accent); background: rgba(56,189,248,0.08); padding: 14px 16px; border-radius: 10px; margin: 16px 0; }
+    .toc a { color: #93c5fd; text-decoration: none; }
+    .toc a:hover { text-decoration: underline; }
+    footer { color: var(--muted); text-align: center; padding: 24px; }
+  </style>
+</head>
+<body>
+<header>
+  <h1>PiLab ESP-IDF Firmware Documentation</h1>
+  <p>Developer documentation for the current ESP32-P4 based PiLab firmware: embedded Vue SPA, HTTP API server, AngelScript PLC runtime, process image, tag registry, file manager, UDP test server, and LittleFS storage.</p>
+</header>
+<main>
+  <section class="toc">
+    <h2>Contents</h2>
+    <div class="grid">
+      <div class="card"><a href="#overview">1. Project overview</a></div>
+      <div class="card"><a href="#layout">2. Source layout</a></div>
+      <div class="card"><a href="#build">3. Build and flash process</a></div>
+      <div class="card"><a href="#boot">4. Boot sequence</a></div>
+      <div class="card"><a href="#web">5. Web server and Vue SPA</a></div>
+      <div class="card"><a href="#api">6. HTTP API reference</a></div>
+      <div class="card"><a href="#runtime">7. PLC runtime</a></div>
+      <div class="card"><a href="#tags">8. Tag system</a></div>
+      <div class="card"><a href="#files">9. File storage</a></div>
+      <div class="card"><a href="#extension">10. Extension guide</a></div>
+      <div class="card"><a href="#tests">11. Test checklist</a></div>
+      <div class="card"><a href="#troubleshooting">12. Troubleshooting</a></div>
+    </div>
+  </section>
+
+  <section id="overview">
+    <h2>1. Project overview</h2>
+    <p>This firmware turns an ESP32-P4 board into a small web-hosted PLC-style controller. It serves a Vue single-page application directly from firmware, exposes HTTP API endpoints for the UI, runs a deterministic PLC scan loop, compiles and executes AngelScript machine logic, manages a process image for I/O, persists tags in NVS, and stores user files in LittleFS.</p>
+    <div class="grid">
+      <div class="card"><h3>Target</h3><p>ESP32-P4 using ESP-IDF 6.x, Ethernet networking, LittleFS storage, and an embedded Vue production build.</p></div>
+      <div class="card"><h3>Frontend</h3><p>The old separate HTML pages have been replaced by one Vue SPA embedded into firmware as <code>index.html</code>, <code>index.css</code>, and <code>app.js</code>.</p></div>
+      <div class="card"><h3>Runtime</h3><p>A 1 ms hardware timer drives the PLC timing path. AngelScript <code>scan()</code> currently runs every 5th tick, giving a nominal 5 ms script scan period.</p></div>
+      <div class="card"><h3>Storage</h3><p>LittleFS is mounted at <code>/littlefs</code> for file management. PLC tags are persisted separately in NVS under the <code>plc_tags</code> namespace.</p></div>
+    </div>
+  </section>
+
+  <section id="layout">
+    <h2>2. Source layout</h2>
+    <table>
+      <thead><tr><th>Path</th><th>Purpose</th></tr></thead>
+      <tbody>
+        <tr><td><code>CMakeLists.txt</code></td><td>Top-level ESP-IDF project file.</td></tr>
+        <tr><td><code>main/CMakeLists.txt</code></td><td>Main component definition. Lists source files, include directory, required ESP-IDF components, and embedded Vue SPA files.</td></tr>
+        <tr><td><code>main/main.cpp</code></td><td>Application entry point. Initializes NVS, mounts LittleFS, logs heap status, starts Ethernet/web, UDP server, and PLC runtime.</td></tr>
+        <tr><td><code>main/ethernet_web.c</code></td><td>Ethernet initialization, HTTP server, Vue SPA handlers, API handlers, file manager handlers, script upload/status endpoints.</td></tr>
+        <tr><td><code>main/perf_test.cpp</code></td><td>PLC timing engine, 1 ms hardware timer task, script scan scheduling, runtime RUN/STOP mode, performance diagnostics.</td></tr>
+        <tr><td><code>main/plc_io.cpp/.hpp</code></td><td>PLC process image for DI, DO, AI, AO, debouncing, snapshots, and JSON status helpers.</td></tr>
+        <tr><td><code>main/script_engine.cpp/.hpp</code></td><td>AngelScript runtime host, asynchronous compile queue, scan execution, compile status reporting.</td></tr>
+        <tr><td><code>main/plc_tags.cpp/.hpp</code></td><td>Tag registry, tag validation, NVS persistence, JSON load/save, runtime tag writes, AngelScript global registration.</td></tr>
+        <tr><td><code>main/udp_server.c/.hpp</code></td><td>UDP latency/test server.</td></tr>
+        <tr><td><code>main/web/index.html</code></td><td>Embedded Vue SPA entry page.</td></tr>
+        <tr><td><code>main/web/assets/index.css</code></td><td>Embedded production CSS bundle.</td></tr>
+        <tr><td><code>main/web/assets/app.js</code></td><td>Embedded production JavaScript bundle.</td></tr>
+        <tr><td><code>components/angelscript/</code></td><td>Local AngelScript component source and headers.</td></tr>
+        <tr><td><code>partitions.csv</code></td><td>Partition table, including the LittleFS storage partition.</td></tr>
+        <tr><td><code>sdkconfig.defaults</code></td><td>Tracked default ESP-IDF configuration values.</td></tr>
+      </tbody>
+    </table>
+
+    <h3>Current embedded Vue files</h3>
+    <pre><code>main/web/index.html
+main/web/assets/index.css
+main/web/assets/app.js</code></pre>
+
+    <h3>Main component registration</h3>
+    <pre><code>idf_component_register(
+    SRCS
+        "main.cpp"
+        "perf_test.cpp"
+        "plc_io.cpp"
+        "ethernet_web.c"
+        "udp_server.c"
+        "script_engine.cpp"
+        "plc_tags.cpp"
+    INCLUDE_DIRS "."
+    EMBED_FILES
+        "web/index.html"
+        "web/assets/index.css"
+        "web/assets/app.js"
+    REQUIRES
+        esp_driver_gptimer
+        esp_driver_gpio
+        esp_timer
+        esp_eth
+        esp_netif
+        esp_event
+        esp_http_server
+        ip101
+        nvs_flash
+        littlefs
+        angelscript
+)</code></pre>
+  </section>
+
+  <section id="build">
+    <h2>3. Build and flash process</h2>
+    <h3>Prerequisites</h3>
+    <ul>
+      <li>ESP-IDF 6.x command environment configured.</li>
+      <li>Target set to <code>esp32p4</code>.</li>
+      <li>The Vue production build copied into <code>main/web/</code>.</li>
+      <li>USB/JTAG or serial flashing connection to the ESP32-P4 board.</li>
+    </ul>
+
+    <h3>Normal build</h3>
+    <pre><code>idf.py set-target esp32p4
+idf.py build
+idf.py flash monitor</code></pre>
+
+    <h3>Clean rebuild</h3>
+    <pre><code>idf.py fullclean
+idf.py build
+idf.py flash monitor</code></pre>
+
+    <h3>Updating the Vue SPA</h3>
+    <p>Build the Vue app on the PC, then copy the three production files into the ESP-IDF project.</p>
+    <pre><code># In the Vue project
+npm install
+npm run build
+
+# Copy output into the ESP-IDF project
+copy dist\index.html              ..\P4_PLC_Base\main\web\index.html
+copy dist\assets\index.css        ..\P4_PLC_Base\main\web\assets\index.css
+copy dist\assets\app.js           ..\P4_PLC_Base\main\web\assets\app.js
+
+# Then rebuild firmware
+idf.py build
+idf.py flash monitor</code></pre>
+
+    <div class="note"><strong>Important:</strong> the firmware expects stable Vue output names: <code>assets/app.js</code> and <code>assets/index.css</code>. Keep the Vite config fixed-output setup, otherwise hashed filenames will require changing <code>main/CMakeLists.txt</code> and HTTP handlers.</div>
+  </section>
+
+  <section id="boot">
+    <h2>4. Boot sequence</h2>
+    <ol>
+      <li><code>app_main()</code> logs startup.</li>
+      <li>NVS is initialized. If NVS pages are invalid or version-mismatched, NVS is erased and re-initialized.</li>
+      <li>LittleFS is mounted at <code>/littlefs</code> using partition label <code>storage</code>.</li>
+      <li>Heap status is logged for 8-bit heap, internal heap, and PSRAM.</li>
+      <li><code>ethernet_web_start()</code> starts networking and the HTTP server.</li>
+      <li><code>udp_server_start()</code> starts the UDP test server.</li>
+      <li><code>perf_test_start()</code> starts PLC I/O, AngelScript runtime support, and the hardware-timer-driven scan loop.</li>
+    </ol>
+    <pre><code>extern "C" void app_main(void)
+{
+    nvs_flash_init();
+    mount_littlefs();
+    ethernet_web_start();
+    udp_server_start();
+    perf_test_start();
+}</code></pre>
+  </section>
+
+  <section id="web">
+    <h2>5. Web server and Vue SPA</h2>
+    <p>The firmware now serves a Vue single-page application instead of five independent HTML pages. The browser always loads the same <code>index.html</code> for frontend routes. Vue Router then chooses the visible page.</p>
+
+    <h3>Embedded linker symbols</h3>
+    <p>ESP-IDF creates linker symbols from embedded file basenames. The current handlers use:</p>
+    <pre><code>extern const uint8_t index_html_start[] asm("_binary_index_html_start");
+extern const uint8_t index_html_end[]   asm("_binary_index_html_end");
+
+extern const uint8_t index_css_start[] asm("_binary_index_css_start");
+extern const uint8_t index_css_end[]   asm("_binary_index_css_end");
+
+extern const uint8_t app_js_start[] asm("_binary_app_js_start");
+extern const uint8_t app_js_end[]   asm("_binary_app_js_end");</code></pre>
+
+    <h3>Frontend routes</h3>
+    <table>
+      <thead><tr><th>Route</th><th>Served by</th><th>Behavior</th></tr></thead>
+      <tbody>
+        <tr><td><code>/</code></td><td><code>spa_index_get_handler</code></td><td>Loads Vue SPA.</td></tr>
+        <tr><td><code>/hmi</code></td><td><code>spa_index_get_handler</code></td><td>Hard refresh works; Vue shows HMI route.</td></tr>
+        <tr><td><code>/tags</code></td><td><code>spa_index_get_handler</code></td><td>Hard refresh works; Vue shows tag route.</td></tr>
+        <tr><td><code>/files</code></td><td><code>spa_index_get_handler</code></td><td>Hard refresh works; Vue shows file manager route.</td></tr>
+        <tr><td><code>/script</code></td><td><code>spa_index_get_handler</code></td><td>Hard refresh works; Vue shows script editor.</td></tr>
+        <tr><td><code>/editor</code></td><td><code>spa_index_get_handler</code></td><td>Alias route for script editor.</td></tr>
+        <tr><td><code>/assets/app.js</code></td><td><code>spa_js_get_handler</code></td><td>Serves JavaScript bundle.</td></tr>
+        <tr><td><code>/assets/index.css</code></td><td><code>spa_css_get_handler</code></td><td>Serves CSS bundle.</td></tr>
+      </tbody>
+    </table>
+
+    <h3>Content types</h3>
+    <ul>
+      <li><code>index.html</code>: <code>text/html</code></li>
+      <li><code>index.css</code>: <code>text/css</code></li>
+      <li><code>app.js</code>: <code>application/javascript</code></li>
+      <li>JSON APIs: <code>application/json</code></li>
+    </ul>
+  </section>
+
+  <section id="api">
+    <h2>6. HTTP API reference</h2>
+    <p>The Vue SPA uses these API endpoints. Keep <code>/api/...</code> endpoints separate from frontend routes.</p>
+    <table>
+      <thead><tr><th>Endpoint</th><th>Method</th><th>Purpose</th></tr></thead>
+      <tbody>
+        <tr><td><code>/api/status</code></td><td>GET</td><td>Basic runtime/server status.</td></tr>
+        <tr><td><code>/api/system_overview</code></td><td>GET</td><td>System overview for dashboard style views.</td></tr>
+        <tr><td><code>/api/command_center</code></td><td>GET</td><td>Primary command-center status used by the Vue app shell/store.</td></tr>
+        <tr><td><code>/api/large_status</code></td><td>GET</td><td>Large/status diagnostic endpoint retained from earlier testing.</td></tr>
+        <tr><td><code>/api/upload_script</code></td><td>POST</td><td>Uploads AngelScript source text and submits asynchronous compilation.</td></tr>
+        <tr><td><code>/api/script_status</code></td><td>GET</td><td>Returns AngelScript compile/runtime status JSON.</td></tr>
+        <tr><td><code>/api/plc_io</code></td><td>GET</td><td>Process image status and I/O diagnostics.</td></tr>
+        <tr><td><code>/api/plc_data</code></td><td>GET</td><td>HMI-facing PLC data payload.</td></tr>
+        <tr><td><code>/api/tags</code></td><td>GET</td><td>Returns current tag registry JSON.</td></tr>
+        <tr><td><code>/api/tags</code></td><td>POST</td><td>Replaces/updates tag registry from JSON.</td></tr>
+        <tr><td><code>/api/plc_write</code></td><td>POST</td><td>Writes a tag/value from HMI or web UI.</td></tr>
+        <tr><td><code>/api/plc_mode</code></td><td>GET</td><td>Returns RUN/STOP state.</td></tr>
+        <tr><td><code>/api/plc_mode</code></td><td>POST</td><td>Changes RUN/STOP state.</td></tr>
+        <tr><td><code>/api/files/list</code></td><td>GET</td><td>Lists files/directories from LittleFS.</td></tr>
+        <tr><td><code>/api/files/upload</code></td><td>POST</td><td>Uploads a file to LittleFS. Should be allowed only when PLC is stopped.</td></tr>
+        <tr><td><code>/api/files/download</code></td><td>GET</td><td>Sends a LittleFS file as attachment/download.</td></tr>
+        <tr><td><code>/api/files/view</code></td><td>GET</td><td>Sends a LittleFS file inline for viewing.</td></tr>
+        <tr><td><code>/api/files/delete</code></td><td>POST</td><td>Deletes a LittleFS file.</td></tr>
+        <tr><td><code>/api/files/mkdir</code></td><td>POST</td><td>Creates a LittleFS directory.</td></tr>
+      </tbody>
+    </table>
+
+    <h3>Adding a new API endpoint</h3>
+    <ol>
+      <li>Add a static handler function in <code>ethernet_web.c</code>.</li>
+      <li>Set the response content type correctly.</li>
+      <li>Validate request body length before reading POST data.</li>
+      <li>Register the handler in <code>start_webserver()</code>.</li>
+      <li>Make sure the route begins with <code>/api/</code> so it cannot conflict with Vue SPA routes.</li>
+    </ol>
+  </section>
+
+  <section id="runtime">
+    <h2>7. PLC runtime</h2>
+    <p>The PLC timing path is implemented in <code>perf_test.cpp</code>. The current configuration is:</p>
+    <table>
+      <thead><tr><th>Setting</th><th>Value</th><th>Meaning</th></tr></thead>
+      <tbody>
+        <tr><td><code>IO_TICK_PERIOD_US</code></td><td><code>1000</code></td><td>1 ms base I/O tick.</td></tr>
+        <tr><td><code>SCRIPT_SCAN_DIVIDER</code></td><td><code>5</code></td><td>Run script every 5 ticks.</td></tr>
+        <tr><td><code>SCRIPT_SCAN_PERIOD_US</code></td><td><code>5000</code></td><td>Nominal 5 ms AngelScript scan period.</td></tr>
+        <tr><td><code>REPORT_PERIOD_MS</code></td><td><code>5000</code></td><td>Performance report interval.</td></tr>
+      </tbody>
+    </table>
+
+    <h3>Runtime cycle</h3>
+    <ol>
+      <li>Hardware timer fires at 1 ms.</li>
+      <li>PLC task receives notification.</li>
+      <li><code>plc_io_tick_1ms()</code> updates input/debounce/process-image timing.</li>
+      <li>Every 5th tick, if PLC mode is RUN, <code>script_engine_run_scan()</code> executes the active AngelScript <code>scan()</code> function.</li>
+      <li><code>plc_io_apply_outputs()</code> applies output state.</li>
+      <li>Performance statistics are collected and periodically logged.</li>
+    </ol>
+
+    <h3>RUN/STOP mode</h3>
+    <p><code>perf_test_is_plc_running()</code> and <code>perf_test_set_plc_running()</code> control the runtime state. The web API exposes this through <code>/api/plc_mode</code>. File upload and other storage-heavy operations should be kept disabled while the PLC is running to protect scan timing.</p>
+  </section>
+
+  <section id="tags">
+    <h2>8. Tag system</h2>
+    <p>The tag registry is implemented by <code>plc_tags.cpp/.hpp</code>. Tags are runtime variables that can be visible to the HMI, writable through the web UI, and optionally exposed to AngelScript.</p>
+
+    <h3>Tag limits and fields</h3>
+    <table>
+      <thead><tr><th>Symbol/Field</th><th>Meaning</th></tr></thead>
+      <tbody>
+        <tr><td><code>PLC_TAG_MAX_COUNT = 64</code></td><td>Maximum number of registered tags.</td></tr>
+        <tr><td><code>PLC_TAG_NAME_MAX = 32</code></td><td>Maximum tag name buffer length.</td></tr>
+        <tr><td><code>PLC_TAG_DESC_MAX = 64</code></td><td>Maximum description buffer length.</td></tr>
+        <tr><td><code>type</code></td><td><code>bool</code>, <code>int</code>, or <code>float</code>.</td></tr>
+        <tr><td><code>writable</code></td><td>Allows writes from the HMI/API.</td></tr>
+        <tr><td><code>retentive</code></td><td>Design intent for values that should survive restart.</td></tr>
+        <tr><td><code>hmi_visible</code></td><td>Controls visibility to HMI tooling.</td></tr>
+        <tr><td><code>script_visible</code></td><td>Controls AngelScript global registration.</td></tr>
+        <tr><td><code>min_value/max_value/units</code></td><td>Metadata for UI validation/display.</td></tr>
+      </tbody>
+    </table>
+
+    <h3>Persistence</h3>
+    <p>Tags are stored in NVS using namespace <code>plc_tags</code> and key <code>tags_json</code>. This is separate from LittleFS file storage.</p>
+
+    <h3>Name rules</h3>
+    <ul>
+      <li>Names must start with a letter or underscore.</li>
+      <li>Names may contain letters, numbers, and underscores.</li>
+      <li>Names may not collide with reserved words such as <code>scan</code>, <code>true</code>, <code>false</code>, <code>bool</code>, <code>int</code>, <code>float</code>, control keywords, or built-in I/O names such as <code>I0</code>, <code>Q0</code>, <code>AI0</code>, <code>AO0</code>.</li>
+    </ul>
+  </section>
+
+  <section id="files">
+    <h2>9. File storage</h2>
+    <p>LittleFS is mounted at <code>/littlefs</code> using the partition label <code>storage</code>. The file manager API exposes list, upload, download, view, delete, and mkdir operations.</p>
+
+    <div class="note"><strong>Latency rule:</strong> file uploads and directory creation should be disabled while the PLC is running. This matches the current design decision to avoid storage operations damaging PLC scan latency.</div>
+
+    <h3>Recommended storage use</h3>
+    <ul>
+      <li>User scripts.</li>
+      <li>HMI layouts or JSON configuration.</li>
+      <li>Exported logs or captured diagnostic files.</li>
+    </ul>
+
+    <h3>Do not store the Vue app in LittleFS yet</h3>
+    <p>The current best design is to keep the Vue SPA embedded in firmware. It is only three files and avoids LittleFS read-path overhead for the application shell. LittleFS should remain focused on user-managed files.</p>
+  </section>
+
+  <section id="extension">
+    <h2>10. Extension guide</h2>
+
+    <h3>Adding a new Vue page</h3>
+    <ol>
+      <li>Add the Vue route/component in the Vue source project.</li>
+      <li>Rebuild with <code>npm run build</code>.</li>
+      <li>Copy <code>dist/index.html</code>, <code>dist/assets/index.css</code>, and <code>dist/assets/app.js</code> to <code>main/web</code>.</li>
+      <li>If the new page must support hard refresh at a new top-level path, register that path in <code>ethernet_web.c</code> to use <code>spa_index_get_handler</code>.</li>
+      <li>Rebuild and flash firmware.</li>
+    </ol>
+
+    <h3>Adding a new frontend route on the firmware side</h3>
+    <pre><code>httpd_uri_t new_page_uri = {
+    .uri = "/newpage",
+    .method = HTTP_GET,
+    .handler = spa_index_get_handler,
+    .user_ctx = NULL
+};
+register_uri_checked(g_http_server, &new_page_uri);</code></pre>
+
+    <h3>Adding a new API route</h3>
+    <pre><code>static esp_err_t my_api_get_handler(httpd_req_t *req)
+{
+    httpd_resp_set_type(req, "application/json");
+    return httpd_resp_sendstr(req, "{\"ok\":true}");
+}
+
+httpd_uri_t my_api_uri = {
+    .uri = "/api/my_feature",
+    .method = HTTP_GET,
+    .handler = my_api_get_handler,
+    .user_ctx = NULL
+};
+register_uri_checked(g_http_server, &my_api_uri);</code></pre>
+
+    <h3>Adding a new source file</h3>
+    <p>Add the file to <code>main/CMakeLists.txt</code> under <code>SRCS</code>. If it needs a new ESP-IDF component, add that component under <code>REQUIRES</code>.</p>
+
+    <h3>Changing scan timing</h3>
+    <p>Edit the constants in <code>perf_test.cpp</code>. Be careful: lowering the script scan period increases CPU load and reduces headroom for web/API work.</p>
+    <pre><code>static constexpr uint32_t IO_TICK_PERIOD_US = 1000;
+static constexpr uint32_t SCRIPT_SCAN_DIVIDER = 5;</code></pre>
+
+    <h3>Adding physical I/O</h3>
+    <p>The current process image abstracts I/O as arrays of DI, DO, AI, and AO values. Add physical GPIO or ADC handling inside <code>plc_io.cpp</code>, keeping the public interface stable where possible.</p>
+  </section>
+
+  <section id="tests">
+    <h2>11. Test checklist</h2>
+    <h3>Firmware build</h3>
+    <ul>
+      <li><span class="ok">Pass:</span> <code>idf.py build</code> completes with no linker errors.</li>
+      <li><span class="ok">Pass:</span> <code>idf.py flash monitor</code> boots and logs LittleFS mount success.</li>
+      <li><span class="ok">Pass:</span> monitor shows Ethernet/web server startup.</li>
+    </ul>
+
+    <h3>SPA routing</h3>
+    <ul>
+      <li>Hard refresh <code>/</code>.</li>
+      <li>Hard refresh <code>/hmi</code>.</li>
+      <li>Hard refresh <code>/tags</code>.</li>
+      <li>Hard refresh <code>/files</code>.</li>
+      <li>Hard refresh <code>/script</code>.</li>
+      <li>Hard refresh <code>/editor</code>.</li>
+    </ul>
+
+    <h3>Browser DevTools</h3>
+    <ul>
+      <li>No failed requests for <code>/assets/app.js</code>.</li>
+      <li>No failed requests for <code>/assets/index.css</code>.</li>
+      <li>No failed API calls for <code>/api/command_center</code>, <code>/api/plc_data</code>, <code>/api/script_status</code>, <code>/api/tags</code>, or <code>/api/files/list</code>.</li>
+      <li>No requests for removed old pages such as <code>indexFiles.html</code>, <code>indexTags.html</code>, <code>index23_plc_data.html</code>, or <code>indexPrism_p4_api.html</code>.</li>
+    </ul>
+
+    <h3>Functional tests</h3>
+    <ul>
+      <li>Command Center updates without duplicate polling storms.</li>
+      <li>HMI view survives route switching.</li>
+      <li>HMI button/write controls call <code>/api/plc_write</code>.</li>
+      <li>Tag page can read/write tag definitions.</li>
+      <li>Script page can upload, compile, and report errors with line numbers.</li>
+      <li>File Manager can list/view/download/delete files.</li>
+      <li>Upload and mkdir controls are disabled or rejected when PLC is running.</li>
+    </ul>
+  </section>
+
+  <section id="troubleshooting">
+    <h2>12. Troubleshooting</h2>
+    <table>
+      <thead><tr><th>Symptom</th><th>Likely cause</th><th>Fix</th></tr></thead>
+      <tbody>
+        <tr><td>Linker error for <code>_binary_web_index_html_start</code></td><td>Wrong embedded linker symbol names.</td><td>Use basename symbols: <code>_binary_index_html_start</code>, <code>_binary_index_css_start</code>, <code>_binary_app_js_start</code>.</td></tr>
+        <tr><td>Browser shows blank page</td><td><code>app.js</code> or <code>index.css</code> failed to load, or wrong MIME type.</td><td>Check DevTools Network. Confirm <code>/assets/app.js</code> is HTTP 200 and <code>application/javascript</code>.</td></tr>
+        <tr><td>Click navigation works, hard refresh 404s</td><td>Missing SPA fallback route registration.</td><td>Register the route to <code>spa_index_get_handler</code>.</td></tr>
+        <tr><td>API calls return HTML instead of JSON</td><td>Frontend fallback is catching API route.</td><td>Make sure explicit <code>/api/...</code> handlers are registered and not shadowed.</td></tr>
+        <tr><td>Old page request fails</td><td>Vue app still has hardcoded old <code>.html</code> links.</td><td>Replace links with Vue Router links or current routes.</td></tr>
+        <tr><td>File upload causes scan jitter</td><td>LittleFS write operation while PLC runtime is active.</td><td>Stop PLC before file writes; keep UI buttons disabled in RUN mode.</td></tr>
+        <tr><td>Script compile blocks UI</td><td>Compile performed synchronously from HTTP callback.</td><td>Use <code>script_engine_submit_compile_text()</code> and poll <code>/api/script_status</code>.</td></tr>
+        <tr><td>Tag write fails</td><td>Invalid name, non-writable tag, type mismatch, or out-of-range value.</td><td>Check tag metadata and API error message.</td></tr>
+      </tbody>
+    </table>
+  </section>
+
+  <section>
+    <h2>Current status summary</h2>
+    <ul>
+      <li><span class="ok">Working:</span> Vue SPA embedded as three firmware files.</li>
+      <li><span class="ok">Working:</span> Hard refresh on <code>/hmi</code>, <code>/tags</code>, <code>/files</code>, and <code>/script</code>.</li>
+      <li><span class="ok">Working:</span> <code>/editor</code> and <code>/script</code> both open the script editor route.</li>
+      <li><span class="ok">Working:</span> HMI retains state while switching routes.</li>
+      <li><span class="ok">Working:</span> HAR inspection showed successful SPA assets and API calls.</li>
+      <li><span class="warn">Watch:</span> keep file operations gated by PLC STOP mode.</li>
+      <li><span class="warn">Watch:</span> keep Vite output filenames stable.</li>
+    </ul>
+  </section>
+</main>
+<footer>
+  PiLab ESP-IDF Firmware Documentation — generated for the current Vue SPA embedded firmware version.
+</footer>
+</body>
+</html>

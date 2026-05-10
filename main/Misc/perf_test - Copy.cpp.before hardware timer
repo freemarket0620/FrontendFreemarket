@@ -1,0 +1,255 @@
+#include "perf_test.hpp"
+
+#include <cstdint>
+#include <climits>
+
+#include "freertos/FreeRTOS.h"
+#include "freertos/task.h"
+#include "freertos/portmacro.h"
+
+#include "esp_log.h"
+#include "esp_timer.h"
+#include "esp_heap_caps.h"
+
+static const char* TAG = "PERF_TEST";
+
+// PLC scan settings
+static constexpr uint32_t PLC_SCAN_PERIOD_MS = 10;
+static constexpr uint32_t PLC_SCAN_PERIOD_US = PLC_SCAN_PERIOD_MS * 1000;
+static constexpr uint32_t REPORT_PERIOD_MS = 5000;
+
+// Artificial CPU load settings
+static constexpr bool ENABLE_BACKGROUND_LOAD_TASK = true;
+static constexpr uint32_t BACKGROUND_LOAD_WORK_US = 250;
+static constexpr uint32_t BACKGROUND_LOAD_PERIOD_MS = 10;
+
+struct PerfStats
+{
+    uint64_t samples = 0;
+
+    int64_t min_period_us = INT64_MAX;
+    int64_t max_period_us = 0;
+    int64_t sum_period_us = 0;
+
+    int64_t max_late_us = 0;
+    int64_t max_early_us = 0;
+
+    uint64_t over_10us = 0;
+    uint64_t over_50us = 0;
+    uint64_t over_100us = 0;
+
+    void reset()
+    {
+        samples = 0;
+        min_period_us = INT64_MAX;
+        max_period_us = 0;
+        sum_period_us = 0;
+        max_late_us = 0;
+        max_early_us = 0;
+        over_10us = 0;
+        over_50us = 0;
+        over_100us = 0;
+    }
+
+    void add_sample(int64_t period_us)
+    {
+        samples++;
+
+        if (period_us < min_period_us) min_period_us = period_us;
+        if (period_us > max_period_us) max_period_us = period_us;
+
+        sum_period_us += period_us;
+
+        const int64_t error_us = period_us - PLC_SCAN_PERIOD_US;
+
+        if (error_us > max_late_us)
+            max_late_us = error_us;
+
+        if (-error_us > max_early_us)
+            max_early_us = -error_us;
+
+        const int64_t abs_error = error_us >= 0 ? error_us : -error_us;
+
+        if (abs_error > 10)  over_10us++;
+        if (abs_error > 50)  over_50us++;
+        if (abs_error > 100) over_100us++;
+    }
+
+    double average_period_us() const
+    {
+        if (samples == 0)
+            return 0.0;
+
+        return static_cast<double>(sum_period_us) / static_cast<double>(samples);
+    }
+};
+
+static PerfStats g_active_stats;
+static portMUX_TYPE g_stats_lock = portMUX_INITIALIZER_UNLOCKED;
+
+static TaskHandle_t g_plc_task_handle = nullptr;
+
+static void fake_plc_scan_work()
+{
+    // Put future PLC logic here.
+}
+
+static void plc_scan_task(void* arg)
+{
+    (void)arg;
+
+    ESP_LOGI(TAG, "PLC scan task started");
+    ESP_LOGI(TAG, "esp_timer_get_time at PLC task start: %lld us",
+             static_cast<long long>(esp_timer_get_time()));
+
+    const TickType_t scan_period_ticks = pdMS_TO_TICKS(PLC_SCAN_PERIOD_MS);
+
+    if (scan_period_ticks == 0)
+    {
+        ESP_LOGE(TAG, "FreeRTOS tick rate too low for selected scan period");
+        vTaskDelete(nullptr);
+    }
+
+    ESP_LOGI(TAG, "PLC scan period: %u ms = %u FreeRTOS ticks",
+             PLC_SCAN_PERIOD_MS,
+             static_cast<unsigned>(scan_period_ticks));
+
+    TickType_t last_wake_time = xTaskGetTickCount();
+    int64_t last_time_us = esp_timer_get_time();
+    uint32_t scan_counter = 0;
+
+    while (true)
+    {
+        vTaskDelayUntil(&last_wake_time, scan_period_ticks);
+
+        const int64_t now_us = esp_timer_get_time();
+        const int64_t period_us = now_us - last_time_us;
+        last_time_us = now_us;
+
+        if (scan_counter > 0)
+        {
+            taskENTER_CRITICAL(&g_stats_lock);
+            g_active_stats.add_sample(period_us);
+            taskEXIT_CRITICAL(&g_stats_lock);
+        }
+
+        fake_plc_scan_work();
+        scan_counter++;
+    }
+}
+
+static void report_task(void* arg)
+{
+    (void)arg;
+
+    ESP_LOGI(TAG, "Report task started");
+
+    while (true)
+    {
+        vTaskDelay(pdMS_TO_TICKS(REPORT_PERIOD_MS));
+
+        PerfStats snapshot;
+
+        taskENTER_CRITICAL(&g_stats_lock);
+        snapshot = g_active_stats;
+        g_active_stats.reset();
+        taskEXIT_CRITICAL(&g_stats_lock);
+
+        const size_t free_8bit = heap_caps_get_free_size(MALLOC_CAP_8BIT);
+        const size_t min_free_8bit = heap_caps_get_minimum_free_size(MALLOC_CAP_8BIT);
+        const size_t free_internal = heap_caps_get_free_size(MALLOC_CAP_INTERNAL);
+
+        ESP_LOGI(TAG, "---------------- Performance Report ----------------");
+        ESP_LOGI(TAG, "PLC scan target period: %u us", PLC_SCAN_PERIOD_US);
+        ESP_LOGI(TAG, "Samples: %llu", static_cast<unsigned long long>(snapshot.samples));
+
+        ESP_LOGI(TAG, "Period min: %lld us", static_cast<long long>(snapshot.min_period_us));
+        ESP_LOGI(TAG, "Period max: %lld us", static_cast<long long>(snapshot.max_period_us));
+        ESP_LOGI(TAG, "Period avg: %.2f us", snapshot.average_period_us());
+
+        ESP_LOGI(TAG, "Worst late jitter:  +%lld us", static_cast<long long>(snapshot.max_late_us));
+        ESP_LOGI(TAG, "Worst early jitter: -%lld us", static_cast<long long>(snapshot.max_early_us));
+
+        ESP_LOGI(TAG, "Samples >10 us error:  %llu", static_cast<unsigned long long>(snapshot.over_10us));
+        ESP_LOGI(TAG, "Samples >50 us error:  %llu", static_cast<unsigned long long>(snapshot.over_50us));
+        ESP_LOGI(TAG, "Samples >100 us error: %llu", static_cast<unsigned long long>(snapshot.over_100us));
+
+        ESP_LOGI(TAG, "Heap free 8-bit: %u bytes", static_cast<unsigned>(free_8bit));
+        ESP_LOGI(TAG, "Heap minimum free 8-bit: %u bytes", static_cast<unsigned>(min_free_8bit));
+        ESP_LOGI(TAG, "Heap free internal: %u bytes", static_cast<unsigned>(free_internal));
+
+        if (g_plc_task_handle != nullptr)
+        {
+            ESP_LOGI(TAG, "PLC task stack high water mark: %u words",
+                     static_cast<unsigned>(uxTaskGetStackHighWaterMark(g_plc_task_handle)));
+        }
+
+        ESP_LOGI(TAG, "----------------------------------------------------");
+    }
+}
+
+static void background_load_task(void* arg)
+{
+    (void)arg;
+
+    ESP_LOGI(TAG, "Background load task started");
+
+    while (true)
+    {
+        const int64_t start_us = esp_timer_get_time();
+
+        uint32_t dummy = 0;
+
+        while ((esp_timer_get_time() - start_us) < BACKGROUND_LOAD_WORK_US)
+        {
+            dummy = dummy + 1;
+        }
+
+        asm volatile("" : : "r"(dummy) : "memory");
+
+        vTaskDelay(pdMS_TO_TICKS(BACKGROUND_LOAD_PERIOD_MS));
+    }
+}
+
+void perf_test_start()
+{
+    ESP_LOGI(TAG, "ESP32-P4 performance test starting");
+    ESP_LOGI(TAG, "esp_timer_get_time at app_main: %lld us",
+             static_cast<long long>(esp_timer_get_time()));
+
+    ESP_LOGI(TAG, "Heap free 8-bit: %u bytes",
+             static_cast<unsigned>(heap_caps_get_free_size(MALLOC_CAP_8BIT)));
+
+    xTaskCreatePinnedToCore(
+        plc_scan_task,
+        "plc_scan",
+        4096,
+        nullptr,
+        20,
+        &g_plc_task_handle,
+        0
+    );
+
+    xTaskCreatePinnedToCore(
+        report_task,
+        "report",
+        4096,
+        nullptr,
+        5,
+        nullptr,
+        1
+    );
+
+    if constexpr (ENABLE_BACKGROUND_LOAD_TASK)
+    {
+        xTaskCreatePinnedToCore(
+            background_load_task,
+            "background_load",
+            4096,
+            nullptr,
+            4,
+            nullptr,
+            1
+        );
+    }
+}

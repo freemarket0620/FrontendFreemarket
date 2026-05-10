@@ -1,0 +1,6 @@
+# Name,   Type, SubType, Offset,   Size,     Flags
+nvs,      data, nvs,      0x9000,   0x20000,
+otadata,  data, ota,      0x29000,  0x2000,
+ota_0,    app,  ota_0,    0x40000,  0x400000,
+ota_1,    app,  ota_1,    0x440000, 0x400000,
+storage,  data, littlefs,   0x840000, 0x780000,
