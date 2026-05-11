@@ -10,6 +10,8 @@
               <span class="led" :class="scriptRunning ? 'led-on' : 'led-warn'"></span>
               <span class="lcd text-2xl font-black" :class="scriptRunning ? 'text-emerald-300' : 'text-amber-300'">{{ controllerMode }}</span>
             </div>
+            <div class="mt-2 text-[10px] text-slate-500 font-black tracking-widest uppercase">Active Script</div>
+            <div class="lcd mt-1 text-sm text-sky-200 truncate max-w-[260px]" :title="activeScriptPath || activeScriptName || 'No active script'">{{ activeScriptName || '—' }}</div>
           </div>
           <div class="text-right lcd text-xs text-slate-400">
             <div>UPTIME</div>
@@ -168,6 +170,8 @@ const online = store.online;
 const scriptState = store.scriptState;
 const plcRunning = store.plcRunning;
 const flashWritesAllowed = store.flashWritesAllowed;
+const activeScriptName = store.activeScriptName;
+const activeScriptPath = store.activeScriptPath;
 
 const events=ref([]); let eid=0;
 const trendMode=ref('script'); const trends=ref({cache:[],script:[],scriptPeak:[],heap:[],poll:[]});

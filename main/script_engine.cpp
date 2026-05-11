@@ -1,10 +1,16 @@
 #include "script_engine.hpp"
+#include "plc_filesystem.hpp"
 
 #include <atomic>
 #include <cstring>
 #include <memory>
 #include <new>
 #include <string>
+
+#include <errno.h>
+#include <stdio.h>
+#include <sys/stat.h>
+#include <unistd.h>
 
 #include "freertos/FreeRTOS.h"
 #include "freertos/queue.h"
@@ -123,6 +129,7 @@ static void AS_SetDO_Generic(asIScriptGeneric* gen)
 struct ScriptCompileJob {
     char* source = nullptr;
     size_t length = 0;
+    char filename[96] = {};
 };
 
 static constexpr size_t SCRIPT_MAX_BYTES = 128 * 1024;
@@ -141,6 +148,8 @@ static SemaphoreHandle_t g_status_mutex = nullptr;
 static QueueHandle_t g_compile_queue = nullptr;
 static QueueHandle_t g_retired_queue = nullptr;
 static TaskHandle_t g_compile_task_handle = nullptr;
+static char g_pending_script_name[96] = {};
+static char g_active_script_name[96] = {};
 static TaskHandle_t g_cleanup_task_handle = nullptr;
 
 static std::atomic<uint32_t> g_generation{0};
@@ -160,6 +169,7 @@ static std::atomic<uint32_t> g_total_compile_requests{0};
 static std::atomic<uint32_t> g_total_compile_ok{0};
 static std::atomic<uint32_t> g_total_compile_failed{0};
 static std::atomic<uint32_t> g_total_compile_rejected{0};
+static std::atomic<bool> g_save_after_compile_busy{false};
 static std::atomic<bool> g_compile_busy{false};
 static std::atomic<uint32_t> g_activations{0};
 static std::atomic<uint32_t> g_script_scans_completed{0};
@@ -568,6 +578,64 @@ static void script_cleanup_task(void*)
     }
 }
 
+
+static bool script_engine_save_compiled_script_to_filesystem(const char* filename,
+                                                             const char* script,
+                                                             size_t script_len,
+                                                             char* saved_rel_path,
+                                                             size_t saved_rel_path_len,
+                                                             char* err,
+                                                             size_t err_len)
+{
+    if (!filename || !filename[0] || !script || !saved_rel_path || saved_rel_path_len == 0) {
+        if (err && err_len) snprintf(err, err_len, "Invalid compiled script save request");
+        return false;
+    }
+
+    // The upload handler has already sanitized this, but keep this guard here so
+    // future callers cannot accidentally turn the script name into a path write.
+    if (strstr(filename, "..") || strchr(filename, '/') || strchr(filename, '\\') || filename[0] == '.') {
+        if (err && err_len) snprintf(err, err_len, "Invalid compiled script filename");
+        return false;
+    }
+
+    char dir_path[128] = {0};
+    snprintf(dir_path, sizeof(dir_path), "%s/scripts", PLC_FS_MOUNT_POINT);
+    mkdir(dir_path, 0755); // harmless if it already exists
+
+    char fs_path[192] = {0};
+    int n = snprintf(fs_path, sizeof(fs_path), "%s/scripts/%s", PLC_FS_MOUNT_POINT, filename);
+    if (n < 0 || (size_t)n >= sizeof(fs_path)) {
+        if (err && err_len) snprintf(err, err_len, "Compiled script path is too long");
+        return false;
+    }
+
+    FILE* f = fopen(fs_path, "wb");
+    if (!f) {
+        if (err && err_len) snprintf(err, err_len, "Failed to open /scripts/%s for write", filename);
+        return false;
+    }
+
+    bool ok = true;
+    if (script_len > 0 && fwrite(script, 1, script_len, f) != script_len) {
+        if (err && err_len) snprintf(err, err_len, "Failed to write /scripts/%s", filename);
+        ok = false;
+    }
+
+    if (fclose(f) != 0 && ok) {
+        if (err && err_len) snprintf(err, err_len, "Failed to close /scripts/%s", filename);
+        ok = false;
+    }
+
+    if (!ok) {
+        unlink(fs_path);
+        return false;
+    }
+
+    snprintf(saved_rel_path, saved_rel_path_len, "/scripts/%s", filename);
+    return true;
+}
+
 static void script_compile_task(void*)
 {
     ScriptCompileJob job{};
@@ -589,7 +657,48 @@ static void script_compile_task(void*)
                      (unsigned)uxTaskPriorityGet(nullptr));
 
             char err[1024] = {};
+            g_save_after_compile_busy.store(job.filename[0] != 0);
             bool ok = compile_to_pending(job.source, job.length, err, sizeof(err));
+
+            if (ok && job.filename[0]) {
+                char saved_rel_path[128] = {};
+                char save_err[192] = {};
+                const int64_t save_start_us = esp_timer_get_time();
+                if (!script_engine_save_compiled_script_to_filesystem(job.filename,
+                                                                      job.source,
+                                                                      job.length,
+                                                                      saved_rel_path,
+                                                                      sizeof(saved_rel_path),
+                                                                      save_err,
+                                                                      sizeof(save_err))) {
+                    ok = false;
+                    if (g_program_mutex && xSemaphoreTake(g_program_mutex, pdMS_TO_TICKS(20)) == pdTRUE) {
+                        g_pending_program.reset();
+                        xSemaphoreGive(g_program_mutex);
+                    }
+                    if (err[0] == 0) {
+                        snprintf(err, sizeof(err), "Compile OK but save failed: %s", save_err);
+                    }
+                    ESP_LOGE(TAG, "Compiled script save failed; pending program discarded: %s", save_err);
+                } else {
+                    const int64_t save_us = esp_timer_get_time() - save_start_us;
+                    ESP_LOGI(TAG, "Saved compiled script to %s (%u bytes, %lld us)",
+                             saved_rel_path,
+                             (unsigned)job.length,
+                             (long long)save_us);
+                    if (g_program_mutex && xSemaphoreTake(g_program_mutex, pdMS_TO_TICKS(20)) == pdTRUE) {
+                        snprintf(g_pending_script_name, sizeof(g_pending_script_name), "%s", job.filename);
+                        xSemaphoreGive(g_program_mutex);
+                    }
+                }
+            } else if (ok) {
+                if (g_program_mutex && xSemaphoreTake(g_program_mutex, pdMS_TO_TICKS(20)) == pdTRUE) {
+                    g_pending_script_name[0] = 0;
+                    xSemaphoreGive(g_program_mutex);
+                }
+            }
+
+            g_save_after_compile_busy.store(false);
 
             heap_caps_free(job.source);
             job.source = nullptr;
@@ -720,6 +829,7 @@ bool script_engine_can_accept_upload(char* response_buf, size_t response_buf_len
 }
 
 bool script_engine_submit_compile_text(const char* script_text, size_t script_len,
+                                       const char* script_filename,
                                        char* response_buf, size_t response_buf_len)
 {
     if (!script_text || script_len == 0 || script_len > SCRIPT_MAX_BYTES) {
@@ -762,7 +872,12 @@ bool script_engine_submit_compile_text(const char* script_text, size_t script_le
     }
     memcpy(copy, script_text, script_len);
 
-    ScriptCompileJob job{copy, script_len};
+    ScriptCompileJob job{};
+    job.source = copy;
+    job.length = script_len;
+    if (script_filename && script_filename[0]) {
+        snprintf(job.filename, sizeof(job.filename), "%s", script_filename);
+    }
     if (xQueueSend(g_compile_queue, &job, 0) != pdTRUE) {
         heap_caps_free(copy);
         g_compile_busy.store(false);
@@ -865,9 +980,11 @@ bool script_engine_run_scan(void)
     // Activate pending program at scan boundary. This still runs while paused,
     // so successful compile causes a clean swap and then unpauses execution.
     if (xSemaphoreTake(g_program_mutex, 0) == pdTRUE) {
-        if (g_pending_program) {
+        if (g_pending_program && !g_save_after_compile_busy.load()) {
             std::unique_ptr<ScriptProgram> retired_program = std::move(g_active_program);
             g_active_program = std::move(g_pending_program);
+            snprintf(g_active_script_name, sizeof(g_active_script_name), "%s", g_pending_script_name);
+            g_pending_script_name[0] = 0;
 
             uint32_t new_generation = g_generation.fetch_add(1) + 1;
             g_activations.fetch_add(1);
@@ -904,6 +1021,28 @@ bool script_engine_run_scan(void)
     }
 
     return ran;
+}
+
+void script_engine_get_active_script_name(char* out, size_t out_len)
+{
+    if (!out || out_len == 0) return;
+    out[0] = '\0';
+
+    if (g_program_mutex && xSemaphoreTake(g_program_mutex, pdMS_TO_TICKS(2)) == pdTRUE) {
+        snprintf(out, out_len, "%s", g_active_script_name[0] ? g_active_script_name : "");
+        xSemaphoreGive(g_program_mutex);
+    }
+}
+
+void script_engine_get_pending_script_name(char* out, size_t out_len)
+{
+    if (!out || out_len == 0) return;
+    out[0] = '\0';
+
+    if (g_program_mutex && xSemaphoreTake(g_program_mutex, pdMS_TO_TICKS(2)) == pdTRUE) {
+        snprintf(out, out_len, "%s", g_pending_script_name[0] ? g_pending_script_name : "");
+        xSemaphoreGive(g_program_mutex);
+    }
 }
 
 uint32_t script_engine_get_generation(void)
@@ -958,14 +1097,18 @@ void script_engine_get_status_json(char* out, size_t out_len)
 
     ScriptCompileState state = script_engine_get_state();
     bool busy = g_compile_busy.load();
+    char active_script_name[96] = {};
+    char pending_script_name[96] = {};
     bool pending = false;
     if (g_program_mutex && xSemaphoreTake(g_program_mutex, pdMS_TO_TICKS(10)) == pdTRUE) {
         pending = (g_pending_program != nullptr);
+        snprintf(active_script_name, sizeof(active_script_name), "%s", g_active_script_name);
+        snprintf(pending_script_name, sizeof(pending_script_name), "%s", g_pending_script_name);
         xSemaphoreGive(g_program_mutex);
     }
 
     snprintf(out, out_len,
-             "{\"state\":\"%s\",\"generation\":%lu,\"pending\":%s,\"compile_busy\":%s,"
+             "{\"state\":\"%s\",\"generation\":%lu,\"active_script_name\":\"%s\",\"active_script_path\":\"%s%s\",\"pending_script_name\":\"%s\",\"pending\":%s,\"compile_busy\":%s,"
              "\"pause_during_compile_experiment\":true,\"activations\":%lu,\"script_scans_completed\":%lu,"
              "\"compile_execute_overlap_scans\":%lu,\"script_scan_paused\":%s,"
              "\"paused_scan_skips\":%lu,\"pause_windows\":%lu,\"last_pause_us\":%llu,"
@@ -982,6 +1125,10 @@ void script_engine_get_status_json(char* out, size_t out_len)
              "\"last_result\":\"%s\"}",
              state_to_string(state),
              (unsigned long)g_generation.load(),
+             active_script_name,
+             active_script_name[0] ? "/scripts/" : "",
+             active_script_name,
+             pending_script_name,
              pending ? "true" : "false",
              busy ? "true" : "false",
              (unsigned long)g_activations.load(),

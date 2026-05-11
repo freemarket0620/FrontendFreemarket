@@ -33,6 +33,33 @@
       </section>
 
       <aside class="script-side">
+        <section class="script-panel panel rounded-md script-library-panel">
+          <div class="script-panel-head">
+            <div>Saved Scripts</div>
+            <div class="script-library-actions">
+              <button class="script-clear-log" :disabled="scriptsLoading" @click="refreshScriptLibrary">Refresh</button>
+              <button class="script-clear-log" :disabled="!selectedScriptPath || scriptDownloadBusy" @click="downloadSelectedScript">
+                {{ scriptDownloadBusy ? 'Loading' : 'Download' }}
+              </button>
+            </div>
+          </div>
+          <div class="script-library-body">
+            <button
+              v-for="file in scriptFiles"
+              :key="file.path"
+              class="script-file-item"
+              :class="{ selected: selectedScriptPath === file.path }"
+              @click="selectedScriptPath = file.path"
+              @dblclick="downloadScript(file)"
+            >
+              <div class="script-file-name">{{ file.name }}</div>
+              <div class="script-file-meta">{{ formatBytes(file.size || 0) }}</div>
+            </button>
+            <div v-if="scriptsLoading" class="script-empty">Loading scripts…</div>
+            <div v-else-if="scriptFiles.length === 0" class="script-empty">No scripts saved in /scripts yet.</div>
+          </div>
+        </section>
+
         <section class="script-panel panel rounded-md">
           <div class="script-panel-head">
             <div>Diagnostics</div>
@@ -95,11 +122,12 @@ import autocompleteCss from 'prism-code-editor-lightweight/autocomplete.css?raw'
 import autocompleteIconsCss from 'prism-code-editor-lightweight/autocomplete-icons.css?raw';
 import 'prism-code-editor-lightweight/prism/languages/cpp';
 import 'prism-code-editor-lightweight/languages/clike';
-import { getScriptStatus, uploadScriptText } from '../api/scriptApi';
+import { getScriptStatus, loadSavedScript, listSavedScripts, uploadScriptText } from '../api/scriptApi';
 import { usePlcStore } from '../stores/plcStore';
 import { ANGELSCRIPT_COMPLETIONS, makeTagCompletions, mergeCompletions } from '../editor/angelscriptCompletions';
 
 const SCRIPT_SOURCE_KEY = 'pilab_script_source_v2';
+const SCRIPT_NAME_KEY = 'pilab_script_name';
 
 const DEFAULT_SCRIPT = `// PiLab default demo program
 // Upload this script, set PLC mode to RUN, then open the HMI page.
@@ -137,7 +165,11 @@ void scan()
 const editorHost = ref(null);
 const editorReady = ref(false);
 const uploading = ref(false);
-const scriptName = ref(localStorage.getItem('pilab_script_name') || 'main.as');
+const scriptsLoading = ref(false);
+const scriptDownloadBusy = ref(false);
+const scriptFiles = ref([]);
+const selectedScriptPath = ref('');
+const scriptName = ref(localStorage.getItem(SCRIPT_NAME_KEY) || 'main.as');
 const status = ref({});
 const events = ref([]);
 const diagnostics = ref({ errors: [], warnings: [] });
@@ -218,6 +250,86 @@ function getSource() {
 function persistSource() {
   if (!editor) return;
   localStorage.setItem(SCRIPT_SOURCE_KEY, getSource());
+}
+function basename(path) {
+  const text = String(path || '');
+  const idx = text.lastIndexOf('/');
+  return idx >= 0 ? text.slice(idx + 1) : text;
+}
+function formatBytes(bytes) {
+  const n = Number(bytes || 0);
+  if (n < 1024) return `${n} B`;
+  if (n < 1024 * 1024) return `${(n / 1024).toFixed(1)} KB`;
+  return `${(n / (1024 * 1024)).toFixed(1)} MB`;
+}
+function setEditorSource(source) {
+  const text = String(source ?? '');
+  let updated = false;
+  try {
+    if (editor && typeof editor.setValue === 'function') {
+      editor.setValue(text);
+      updated = true;
+    }
+  } catch {}
+  try {
+    if (!updated && editor && typeof editor.update === 'function') {
+      editor.update(text);
+      updated = true;
+    }
+  } catch {}
+  try {
+    if (editor && 'value' in editor) editor.value = text;
+  } catch {}
+  if (editor?.textarea) {
+    editor.textarea.value = text;
+    editor.textarea.dispatchEvent(new Event('input', { bubbles: true }));
+    editor.textarea.focus();
+  }
+  localStorage.setItem(SCRIPT_SOURCE_KEY, text);
+  nextTick(renderDiagnosticLines);
+}
+async function refreshScriptLibrary() {
+  scriptsLoading.value = true;
+  try {
+    const data = await listSavedScripts();
+    const files = Array.isArray(data?.entries) ? data.entries : [];
+    scriptFiles.value = files
+      .filter(f => !f.dir)
+      .map(f => ({ ...f, name: f.name || basename(f.path), path: f.path || `/scripts/${f.name || ''}` }))
+      .sort((a, b) => String(a.name).localeCompare(String(b.name)));
+
+    if (!scriptFiles.value.some(f => f.path === selectedScriptPath.value)) {
+      selectedScriptPath.value = scriptFiles.value[0]?.path || '';
+    }
+  } catch (e) {
+    scriptFiles.value = [];
+    selectedScriptPath.value = '';
+    addLog(`script list failed: ${e?.message || e}`, 'err');
+  } finally {
+    scriptsLoading.value = false;
+  }
+}
+async function downloadScript(file) {
+  const target = file?.path || selectedScriptPath.value;
+  if (!target) return;
+  scriptDownloadBusy.value = true;
+  try {
+    const source = await loadSavedScript(target);
+    const name = file?.name || basename(target) || 'main.as';
+    scriptName.value = name;
+    localStorage.setItem(SCRIPT_NAME_KEY, name);
+    setEditorSource(source);
+    clearDiagnostics();
+    addLog(`Loaded ${name} from ${target}`, 'ok');
+  } catch (e) {
+    addLog(`script download failed: ${e?.message || e}`, 'err');
+  } finally {
+    scriptDownloadBusy.value = false;
+  }
+}
+function downloadSelectedScript() {
+  const file = scriptFiles.value.find(f => f.path === selectedScriptPath.value);
+  return downloadScript(file || { path: selectedScriptPath.value, name: basename(selectedScriptPath.value) });
 }
 function parseAngelScriptDiagnostics(text) {
   const errors = [];
@@ -329,10 +441,10 @@ async function uploadScript() {
   uploading.value = true;
   clearDiagnostics();
   persistSource();
-  localStorage.setItem('pilab_script_name', scriptName.value || 'main.as');
+  localStorage.setItem(SCRIPT_NAME_KEY, scriptName.value || 'main.as');
   try {
     addLog(`Uploading ${scriptName.value || 'main.as'}...`, 'dim');
-    const result = await uploadScriptText(getSource());
+    const result = await uploadScriptText(getSource(), scriptName.value || 'main.as');
     if (!result.ok) {
       diagnostics.value = parseAngelScriptDiagnostics(result.text);
       nextTick(renderDiagnosticLines);
@@ -341,8 +453,10 @@ async function uploadScript() {
       return;
     }
     const msg = result.json?.message || result.text || 'Upload accepted; compile pending';
-    addLog(msg, 'ok');
+    const savedPath = result.json?.saved_path;
+    addLog(savedPath ? `${msg} Will save ${savedPath} after successful compile.` : msg, 'ok');
     await waitForCompileResult();
+    await refreshScriptLibrary();
   } catch (e) {
     addLog(`upload failed: ${e?.message || e}`, 'err');
   } finally {
@@ -416,6 +530,7 @@ onMounted(() => {
   editorCleanup.push(() => editor?.textarea?.removeEventListener('keydown', handleEditorKeydown));
   statusTimer = setInterval(() => pollStatusOnce(false), 2500);
   pollStatusOnce(true);
+  refreshScriptLibrary();
 });
 
 onBeforeUnmount(() => {

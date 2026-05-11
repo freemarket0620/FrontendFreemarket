@@ -2,6 +2,7 @@
 #include "script_engine.hpp"
 #include "plc_io.hpp"
 #include "plc_tags.hpp"
+#include "plc_filesystem.hpp"
 #include "perf_test.hpp"
 
 #include "esp_log.h"
@@ -319,7 +320,10 @@ static esp_err_t system_overview_get_handler(httpd_req_t *req)
         xSemaphoreGive(g_plc_data_cache_mutex);
     }
 
-    char json[1536];
+    char active_script_name[96] = {0};
+    script_engine_get_active_script_name(active_script_name, sizeof(active_script_name));
+
+    char json[1664];
     snprintf(json, sizeof(json),
         "{"
         "\"device\":\"ESP32-P4\","
@@ -331,6 +335,8 @@ static esp_err_t system_overview_get_handler(httpd_req_t *req)
         "\"ip\":\"%s\","
         "\"uptime_ms\":%llu,"
         "\"script_generation\":%lu,"
+        "\"active_script_name\":\"%s\","
+        "\"active_script_path\":\"%s%s\","
         "\"script_state\":%d,"
         "\"tag_count\":%lu,"
         "\"tick_count\":%lu,"
@@ -356,6 +362,9 @@ static esp_err_t system_overview_get_handler(httpd_req_t *req)
         STATIC_IP_ADDR,
         (unsigned long long)(now_us / 1000),
         (unsigned long)script_engine_get_generation(),
+        active_script_name,
+        active_script_name[0] ? "/scripts/" : "",
+        active_script_name,
         (int)script_engine_get_state(),
         (unsigned long)plc_tags_get_count(),
         (unsigned long)snap.tick_count,
@@ -405,6 +414,9 @@ static esp_err_t command_center_get_handler(httpd_req_t *req)
         xSemaphoreGive(g_plc_data_cache_mutex);
     }
 
+    char active_script_name[96] = {0};
+    script_engine_get_active_script_name(active_script_name, sizeof(active_script_name));
+
     // Do not place these large JSON buffers on the httpd task stack.
     // The ESP-IDF httpd task stack is limited; stack buffers here caused
     // Stack protection faults when /api/command_center was requested.
@@ -441,6 +453,8 @@ static esp_err_t command_center_get_handler(httpd_req_t *req)
         "\"ip\":\"%s\","
         "\"uptime_ms\":%llu,"
         "\"script_generation\":%lu,"
+        "\"active_script_name\":\"%s\","
+        "\"active_script_path\":\"%s%s\","
         "\"script_state\":%d,"
         "\"tag_count\":%lu,"
         "\"tick_count\":%lu,"
@@ -477,6 +491,9 @@ static esp_err_t command_center_get_handler(httpd_req_t *req)
         STATIC_IP_ADDR,
         (unsigned long long)(now_us / 1000),
         (unsigned long)script_engine_get_generation(),
+        active_script_name,
+        active_script_name[0] ? "/scripts/" : "",
+        active_script_name,
         (int)script_engine_get_state(),
         (unsigned long)plc_tags_get_count(),
         (unsigned long)snap.tick_count,
@@ -693,6 +710,9 @@ static bool plc_data_build_json_into(char *json,
     PlcIoSnapshot snap;
     plc_io_get_snapshot(&snap);
 
+    char active_script_name[96] = {0};
+    script_engine_get_active_script_name(active_script_name, sizeof(active_script_name));
+
     size_t user_tag_count = 0;
     size_t visible_user_tag_count = 0;
     if (user_tags && user_tags_cap > 0) {
@@ -720,6 +740,8 @@ static bool plc_data_build_json_into(char *json,
         "\"raw_di_mask\":%lu,"
         "\"di_mask\":%lu,"
         "\"do_mask\":%lu,"
+        "\"active_script_name\":\"%s\","
+        "\"active_script_path\":\"%s%s\","
         "\"points\":[",
         (unsigned)PLC_DATA_CACHE_PERIOD_MS,
         (unsigned long long)start_us,
@@ -728,7 +750,10 @@ static bool plc_data_build_json_into(char *json,
         (unsigned long)snap.output_write_count,
         (unsigned long)snap.raw_di_mask,
         (unsigned long)snap.di_mask,
-        (unsigned long)snap.do_mask);
+        (unsigned long)snap.do_mask,
+        active_script_name,
+        active_script_name[0] ? "/scripts/" : "",
+        active_script_name);
 
     bool first = true;
 
@@ -1423,6 +1448,109 @@ static esp_err_t plc_write_post_handler(httpd_req_t *req)
     return ESP_OK;
 }
 
+
+static int script_hex_digit_to_int(char c)
+{
+    if (c >= '0' && c <= '9') return c - '0';
+    if (c >= 'a' && c <= 'f') return 10 + c - 'a';
+    if (c >= 'A' && c <= 'F') return 10 + c - 'A';
+    return -1;
+}
+
+static void script_url_decode_inplace(char *s)
+{
+    if (!s) return;
+    char *d = s;
+    for (char *p = s; *p; ++p) {
+        if (*p == '%' && p[1] && p[2]) {
+            int hi = script_hex_digit_to_int(p[1]);
+            int lo = script_hex_digit_to_int(p[2]);
+            if (hi >= 0 && lo >= 0) {
+                *d++ = (char)((hi << 4) | lo);
+                p += 2;
+                continue;
+            }
+        }
+        *d++ = (*p == '+') ? ' ' : *p;
+    }
+    *d = 0;
+}
+
+static bool upload_script_get_query_name(httpd_req_t *req, char *out_name, size_t out_len)
+{
+    if (!out_name || out_len == 0) return false;
+    strlcpy(out_name, "main.as", out_len);
+
+    char query[256] = {0};
+    if (httpd_req_get_url_query_str(req, query, sizeof(query)) != ESP_OK) {
+        return true;
+    }
+
+    char value[96] = {0};
+    if (httpd_query_key_value(query, "name", value, sizeof(value)) != ESP_OK) {
+        return true;
+    }
+
+    script_url_decode_inplace(value);
+    if (value[0] != 0) {
+        strlcpy(out_name, value, out_len);
+    }
+    return true;
+}
+
+static bool upload_script_sanitize_filename(const char *input, char *out_name, size_t out_len, char *err, size_t err_len)
+{
+    if (!input || !out_name || out_len < 2) {
+        snprintf(err, err_len, "Invalid script filename");
+        return false;
+    }
+
+    while (*input == ' ' || *input == '\t') input++;
+
+    char tmp[96] = {0};
+    strlcpy(tmp, *input ? input : "main.as", sizeof(tmp));
+
+    size_t len = strlen(tmp);
+    while (len > 0 && (tmp[len - 1] == ' ' || tmp[len - 1] == '\t' || tmp[len - 1] == '\r' || tmp[len - 1] == '\n')) {
+        tmp[--len] = 0;
+    }
+
+    if (len == 0) {
+        strlcpy(tmp, "main.as", sizeof(tmp));
+        len = strlen(tmp);
+    }
+
+    if (strstr(tmp, "..") || strchr(tmp, '/') || strchr(tmp, '\\')) {
+        snprintf(err, err_len, "Script name must be a filename only, not a path");
+        return false;
+    }
+
+    for (size_t i = 0; tmp[i]; ++i) {
+        unsigned char c = (unsigned char)tmp[i];
+        const bool ok = (c >= 'A' && c <= 'Z') ||
+                        (c >= 'a' && c <= 'z') ||
+                        (c >= '0' && c <= '9') ||
+                        c == '_' || c == '-' || c == '.';
+        if (!ok) {
+            snprintf(err, err_len, "Script name may only contain letters, numbers, dot, dash, and underscore");
+            return false;
+        }
+    }
+
+    if (strcmp(tmp, ".") == 0 || tmp[0] == '.') {
+        snprintf(err, err_len, "Script name must not start with a dot");
+        return false;
+    }
+
+    if (strlen(tmp) >= out_len) {
+        snprintf(err, err_len, "Script name is too long");
+        return false;
+    }
+
+    strlcpy(out_name, tmp, out_len);
+    return true;
+}
+
 static esp_err_t upload_script_post_handler(httpd_req_t *req)
 {
     const size_t max_script_size = 128 * 1024;
@@ -1493,9 +1621,25 @@ static esp_err_t upload_script_post_handler(httpd_req_t *req)
              (unsigned)recv_chunks,
              (unsigned)WEB_RECV_CHUNK_SIZE);
 
+    char requested_name[96] = {0};
+    char script_filename[96] = {0};
+    char save_err[160] = {0};
+    char saved_rel_path[128] = {0};
+
+    upload_script_get_query_name(req, requested_name, sizeof(requested_name));
+    if (!upload_script_sanitize_filename(requested_name, script_filename, sizeof(script_filename), save_err, sizeof(save_err))) {
+        heap_caps_free(script);
+        httpd_resp_set_status(req, "400 Bad Request");
+        httpd_resp_set_type(req, "text/plain");
+        httpd_resp_send(req, save_err, HTTPD_RESP_USE_STRLEN);
+        return ESP_OK;
+    }
+
+    snprintf(saved_rel_path, sizeof(saved_rel_path), "/scripts/%s", script_filename);
+
     const int64_t submit_start_us = esp_timer_get_time();
     char response[256] = {0};
-    bool accepted = script_engine_submit_compile_text(script, received, response, sizeof(response));
+    bool accepted = script_engine_submit_compile_text(script, received, script_filename, response, sizeof(response));
     const int64_t submit_us = esp_timer_get_time() - submit_start_us;
     ESP_LOGI(TAG, "Script upload submit result: accepted=%d, submit_us=%lld", accepted ? 1 : 0, (long long)submit_us);
     heap_caps_free(script);
@@ -1509,8 +1653,9 @@ static esp_err_t upload_script_post_handler(httpd_req_t *req)
 
     char json[384];
     snprintf(json, sizeof(json),
-        "{\"accepted\":true,\"message\":\"%s\",\"status_url\":\"/api/script_status\"}",
-        response);
+        "{\"accepted\":true,\"message\":\"%s\",\"save_after_compile\":true,\"saved_path\":\"%s\",\"status_url\":\"/api/script_status\"}",
+        response,
+        saved_rel_path);
 
     httpd_resp_set_type(req, "application/json");
     httpd_resp_send(req, json, HTTPD_RESP_USE_STRLEN);

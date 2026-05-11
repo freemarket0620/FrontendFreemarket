@@ -27,6 +27,7 @@ bool script_engine_compile_text(const char* script_text, size_t script_len,
 // Async compile request used by HTTP upload. This function copies the script text
 // into heap memory and returns quickly. The dedicated compiler task does the build.
 bool script_engine_submit_compile_text(const char* script_text, size_t script_len,
+                                       const char* script_filename,
                                        char* response_buf, size_t response_buf_len);
 
 // Fast preflight check used by HTTP upload handler before reading the request body.
@@ -40,6 +41,10 @@ bool script_engine_run_scan(void);
 uint32_t script_engine_get_generation(void);
 const char* script_engine_get_last_error(void);
 ScriptCompileState script_engine_get_state(void);
+
+// Runtime script metadata. Names are filenames from /scripts when available.
+void script_engine_get_active_script_name(char* out, size_t out_len);
+void script_engine_get_pending_script_name(char* out, size_t out_len);
 
 // JSON status helper for /api/script_status.
 void script_engine_get_status_json(char* out, size_t out_len);

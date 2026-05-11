@@ -29,6 +29,8 @@ const scriptState = computed(() => stateName(script.value.state ?? overview.valu
 const plcRunning = computed(() => overview.value.plc_running !== undefined ? !!overview.value.plc_running : overview.value.plc_mode === 'RUN');
 const flashWritesAllowed = computed(() => overview.value.flash_writes_allowed !== undefined ? !!overview.value.flash_writes_allowed : !plcRunning.value);
 const plcMode = computed(() => overview.value.plc_mode || (plcRunning.value ? 'RUN' : 'STOP'));
+const activeScriptName = computed(() => overview.value.active_script_name || script.value.active_script_name || plcData.value.active_script_name || '');
+const activeScriptPath = computed(() => overview.value.active_script_path || script.value.active_script_path || plcData.value.active_script_path || (activeScriptName.value ? `/scripts/${activeScriptName.value}` : ''));
 const pointCount = computed(() => Number(plcData.value.point_count ?? tagNames.value.length ?? overview.value.cache_points ?? 0));
 
 function currentCommandInterval() {
@@ -147,7 +149,7 @@ export function usePlcStore() {
     overview, plc, script, plcData, pointsByName, tagNames,
     online, plcDataOnline, lastError, commandLastUpdated, dataLastUpdated,
     commandPollMs, dataPollMs,
-    scriptState, plcRunning, flashWritesAllowed, plcMode, pointCount,
+    scriptState, plcRunning, flashWritesAllowed, plcMode, activeScriptName, activeScriptPath, pointCount,
     start, usePlcData, refreshCommandCenter, refreshPlcData, setPlcRun, plcWrite,
   };
 }
