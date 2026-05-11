@@ -3,6 +3,11 @@ build/
 **/build/
 sdkconfig.old
 
+# Local/private development files
+Support/
+Private/
+Scratch/
+
 # CMake generated files
 CMakeFiles/
 cmake_install.cmake
@@ -29,6 +34,9 @@ yarn-error.log*
 .idea/
 .DS_Store
 Thumbs.db
+
+#Build support
+*.ps1
 
 # Logs
 *.log

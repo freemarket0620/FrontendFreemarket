@@ -7,6 +7,7 @@ idf_component_register(
         "udp_server.c"
         "script_engine.cpp"
         "plc_tags.cpp"
+        "plc_filesystem.cpp"
     INCLUDE_DIRS "."
     EMBED_FILES
         "web/index.html"
