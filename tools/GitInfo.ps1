@@ -1,5 +1,27 @@
-# GitInfo.ps1 - tools-folder safe Git diagnostics for PiLab
+param(
+    [switch]$Help
+)
+
 $ErrorActionPreference = "Stop"
+
+function Show-Help {
+    Write-Host ""
+    Write-Host "GitInfo.ps1"
+    Write-Host "==========="
+    Write-Host "Prints Git/repo diagnostics for the PiLab project."
+    Write-Host ""
+    Write-Host "Usage:"
+    Write-Host "  .\GitInfo.ps1"
+    Write-Host ""
+    Write-Host "Output includes:"
+    Write-Host "  Project root, Git executable, Git version, branch, short hash, full hash, latest commit, and git status."
+    Write-Host ""
+    Write-Host "Parameters:"
+    Write-Host "  -Help   Show this help."
+    Write-Host ""
+}
+
+if ($Help) { Show-Help; exit 0 }
 
 function Find-ProjectRoot {
     $start = $PSScriptRoot

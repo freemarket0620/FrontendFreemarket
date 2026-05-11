@@ -1,8 +1,34 @@
 param(
-    [switch]$IncludeWebDist
+    [switch]$IncludeWebDist,
+    [switch]$Help
 )
 
 $ErrorActionPreference = "Stop"
+
+function Show-Help {
+    Write-Host ""
+    Write-Host "PiLabZips.ps1"
+    Write-Host "============="
+    Write-Host "Creates Git/date-named PiLab firmware and web snapshot zip files."
+    Write-Host ""
+    Write-Host "Usage:"
+    Write-Host "  .\PiLabZips.ps1 [options]"
+    Write-Host ""
+    Write-Host "Examples:"
+    Write-Host "  .\PiLabZips.ps1"
+    Write-Host "  .\PiLabZips.ps1 -IncludeWebDist"
+    Write-Host ""
+    Write-Host "Output:"
+    Write-Host "  Private\snapshots\main_YYYY-MM-DD_<branch>_<hash>.zip"
+    Write-Host "  Private\snapshots\web_YYYY-MM-DD_<branch>_<hash>.zip"
+    Write-Host ""
+    Write-Host "Parameters:"
+    Write-Host "  -IncludeWebDist   Include Web\dist in web snapshot. Default excludes generated Vite output."
+    Write-Host "  -Help             Show this help."
+    Write-Host ""
+}
+
+if ($Help) { Show-Help; exit 0 }
 
 function Write-Step($Message) {
     Write-Host "==> $Message"

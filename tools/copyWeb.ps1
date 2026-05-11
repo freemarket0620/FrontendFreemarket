@@ -1,7 +1,30 @@
-# copyWeb.ps1 - builds the Vue web app and copies dist files into main\web.
-# Safe to store in Tools\ and run from either the repo root or Tools\.
+param(
+    [switch]$Help
+)
 
 $ErrorActionPreference = "Stop"
+
+function Show-Help {
+    Write-Host ""
+    Write-Host "copyWeb.ps1"
+    Write-Host "==========="
+    Write-Host "Builds the Vue web app and copies Vite dist output into firmware embedded web assets."
+    Write-Host ""
+    Write-Host "Usage:"
+    Write-Host "  .\copyWeb.ps1"
+    Write-Host ""
+    Write-Host "What it does:"
+    Write-Host "  1. Auto-detects the PiLab repo root."
+    Write-Host "  2. Runs npm run build in Web\."
+    Write-Host "  3. Copies dist\index.html to main\web\index.html."
+    Write-Host "  4. Copies app.js and index.css to main\web\assets\."
+    Write-Host ""
+    Write-Host "Parameters:"
+    Write-Host "  -Help   Show this help."
+    Write-Host ""
+}
+
+if ($Help) { Show-Help; exit 0 }
 
 function Find-ProjectRoot {
     $start = $PSScriptRoot

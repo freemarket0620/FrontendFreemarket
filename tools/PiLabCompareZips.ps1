@@ -1,309 +1,358 @@
 <#
 PiLabCompareZips.ps1
-Compares two PiLab snapshot zip files from anywhere in the repo.
-Safe to store in Tools\ and run from either the repo root or Tools\.
 
-Default report output:
-  Private\compare_reports\PiLabZipCompare_YYYY-MM-DD_HH-mm-ss\
+Compare two PiLab snapshot zip files and write a detailed report.
+
+Usage:
+  .\PiLabCompareZips.ps1 -OldZip main_old.zip -NewZip main_new.zip
+  .\PiLabCompareZips.ps1 -OldZip .\Private\snapshots\main_old.zip -NewZip .\Private\snapshots\main_new.zip -OpenReport
+  .\PiLabCompareZips.ps1 -OldZip web_old.zip -NewZip web_new.zip -KeepExtracted
+  .\PiLabCompareZips.ps1 -Help
+
+Notes:
+  - Can be run from repo root or tools\.
+  - If only a filename is supplied, the script searches:
+      current directory
+      repo root
+      Private\snapshots
+      Private
+  - Reports are written under Private\compare_reports by default.
 #>
 
 param(
-    [Parameter(Mandatory=$true)][string]$OldZip,
-    [Parameter(Mandatory=$true)][string]$NewZip,
-    [string]$ReportRoot = "",
+    [string]$OldZip = "",
+    [string]$NewZip = "",
+    [string]$ReportDir = "",
     [switch]$KeepExtracted,
     [switch]$OpenReport,
-    [switch]$OpenFolder
+    [switch]$Help
 )
 
+Set-StrictMode -Version Latest
 $ErrorActionPreference = "Stop"
 
-function Find-ProjectRoot {
-    $start = $PSScriptRoot
-    if ([string]::IsNullOrWhiteSpace($start)) { $start = (Get-Location).Path }
-
-    $git = Get-Command git -ErrorAction SilentlyContinue
-    if ($git) {
-        $root = (& $git.Source -C $start rev-parse --show-toplevel 2>$null)
-        if ($LASTEXITCODE -eq 0 -and -not [string]::IsNullOrWhiteSpace($root)) {
-            return (Get-Item -LiteralPath $root.Trim()).FullName
-        }
-    }
-
-    $dir = Get-Item -LiteralPath $start
-    while ($null -ne $dir) {
-        if ((Test-Path (Join-Path $dir.FullName "CMakeLists.txt")) -and (Test-Path (Join-Path $dir.FullName "main"))) {
-            return $dir.FullName
-        }
-        $dir = $dir.Parent
-    }
-
-    throw "Could not find the PiLab project root. Run this from inside the repo or keep it under Tools\."
+function Show-Help {
+    Write-Host ""
+    Write-Host "PiLabCompareZips.ps1" -ForegroundColor Cyan
+    Write-Host "===================="
+    Write-Host ""
+    Write-Host "Compare two PiLab snapshot zip files."
+    Write-Host ""
+    Write-Host "Usage:"
+    Write-Host "  .\PiLabCompareZips.ps1 -OldZip <old.zip> -NewZip <new.zip>"
+    Write-Host ""
+    Write-Host "Examples:"
+    Write-Host "  .\PiLabCompareZips.ps1 -OldZip main_2026-05-10_main_abc1234.zip -NewZip main_2026-05-11_main_def5678.zip"
+    Write-Host "  .\PiLabCompareZips.ps1 -OldZip ..\Private\snapshots\main_old.zip -NewZip ..\Private\snapshots\main_new.zip"
+    Write-Host "  .\PiLabCompareZips.ps1 -OldZip web_old.zip -NewZip web_new.zip -OpenReport"
+    Write-Host ""
+    Write-Host "Options:"
+    Write-Host "  -OldZip <path/name>     Old snapshot zip. Required."
+    Write-Host "  -NewZip <path/name>     New snapshot zip. Required."
+    Write-Host "  -ReportDir <path>       Optional custom report folder."
+    Write-Host "  -KeepExtracted          Keep extracted old/new folders in the report."
+    Write-Host "  -OpenReport             Open the text report when finished."
+    Write-Host "  -Help                   Show this help."
+    Write-Host ""
+    Write-Host "Filename lookup:"
+    Write-Host "  If you pass only a filename, this script searches current directory, repo root,"
+    Write-Host "  Private\snapshots, and Private."
+    Write-Host ""
 }
 
-function Resolve-ZipPath {
+function Write-Step { param([string]$Message) Write-Host "==> $Message" -ForegroundColor Cyan }
+function Write-Ok { param([string]$Message) Write-Host "    $Message" -ForegroundColor Green }
+function Write-WarnLine { param([string]$Message) Write-Host "    WARNING: $Message" -ForegroundColor Yellow }
+
+function Find-ProjectRoot {
+    $candidates = @()
+    $candidates += (Get-Location).Path
+    $candidates += $PSScriptRoot
+    $candidates += (Split-Path -Parent $PSScriptRoot)
+
+    foreach ($base in $candidates) {
+        if ([string]::IsNullOrWhiteSpace($base)) { continue }
+        $cur = [System.IO.Path]::GetFullPath($base)
+        while ($true) {
+            if ((Test-Path -LiteralPath (Join-Path $cur ".git")) -or
+                ((Test-Path -LiteralPath (Join-Path $cur "main")) -and (Test-Path -LiteralPath (Join-Path $cur "CMakeLists.txt")))) {
+                return $cur
+            }
+            $parent = Split-Path -Parent $cur
+            if ([string]::IsNullOrWhiteSpace($parent) -or $parent -eq $cur) { break }
+            $cur = $parent
+        }
+    }
+
+    return (Get-Location).Path
+}
+
+function Resolve-SnapshotPath {
     param(
-        [string]$ZipValue,
+        [string]$PathOrName,
         [string]$ProjectRoot
     )
 
-    $candidates = @()
-
-    if ([System.IO.Path]::IsPathRooted($ZipValue)) {
-        $candidates += $ZipValue
-    } else {
-        $candidates += (Join-Path (Get-Location).Path $ZipValue)
-        $candidates += (Join-Path $ProjectRoot $ZipValue)
-        $candidates += (Join-Path $ProjectRoot (Join-Path "Private\snapshots" $ZipValue))
-        $candidates += (Join-Path $ProjectRoot (Join-Path "Private" $ZipValue))
+    if ([string]::IsNullOrWhiteSpace($PathOrName)) {
+        throw "Snapshot path/name is empty."
     }
 
-    foreach ($candidate in $candidates) {
+    # Direct path first: absolute or relative to current directory.
+    if (Test-Path -LiteralPath $PathOrName) {
+        return (Resolve-Path -LiteralPath $PathOrName).Path
+    }
+
+    $searchDirs = @(
+        (Get-Location).Path,
+        $ProjectRoot,
+        (Join-Path $ProjectRoot "Private\snapshots"),
+        (Join-Path $ProjectRoot "Private")
+    )
+
+    foreach ($dir in $searchDirs) {
+        if (-not (Test-Path -LiteralPath $dir)) { continue }
+        $candidate = Join-Path $dir $PathOrName
         if (Test-Path -LiteralPath $candidate) {
-            return (Get-Item -LiteralPath $candidate).FullName
+            return (Resolve-Path -LiteralPath $candidate).Path
         }
     }
 
-    throw "Could not find zip file '$ZipValue'. Tried current folder, project root, Private\snapshots, and Private."
+    $msg = "Could not find snapshot '$PathOrName'. Searched:`n"
+    foreach ($dir in $searchDirs) { $msg += "  $dir`n" }
+    throw $msg
 }
+
+function Get-SafeName { param([string]$Name) return ($Name -replace '[^a-zA-Z0-9._-]', '_') }
 
 function Get-RelativePathCompat {
-    param([string]$BasePath, [string]$FullPath)
+    param(
+        [string]$Root,
+        [string]$FullPath
+    )
 
-    $base = [System.IO.Path]::GetFullPath($BasePath)
-    $full = [System.IO.Path]::GetFullPath($FullPath)
+    $rootFull = [System.IO.Path]::GetFullPath($Root).TrimEnd('\','/') + [System.IO.Path]::DirectorySeparatorChar
+    $fileFull = [System.IO.Path]::GetFullPath($FullPath)
 
-    if (-not $base.EndsWith([System.IO.Path]::DirectorySeparatorChar)) {
-        $base += [System.IO.Path]::DirectorySeparatorChar
-    }
-
-    $baseUri = New-Object System.Uri($base)
-    $fullUri = New-Object System.Uri($full)
-    $relativeUri = $baseUri.MakeRelativeUri($fullUri)
-    return ([System.Uri]::UnescapeDataString($relativeUri.ToString()) -replace '/', '\')
+    $rootUri = New-Object System.Uri($rootFull)
+    $fileUri = New-Object System.Uri($fileFull)
+    $relUri = $rootUri.MakeRelativeUri($fileUri)
+    $rel = [System.Uri]::UnescapeDataString($relUri.ToString())
+    return ($rel -replace '/', [System.IO.Path]::DirectorySeparatorChar)
 }
 
-function Get-FileIndex {
-    param([string]$RootPath)
+function Get-RelativeFileMap {
+    param([string]$Root)
 
-    $index = @{}
-    Get-ChildItem -LiteralPath $RootPath -Recurse -File -Force | ForEach-Object {
-        $rel = Get-RelativePathCompat -BasePath $RootPath -FullPath $_.FullName
-        $hash = Get-FileHash -LiteralPath $_.FullName -Algorithm SHA256
+    $map = @{}
+    $files = Get-ChildItem -LiteralPath $Root -File -Recurse -Force
 
-        $index[$rel] = [PSCustomObject]@{
+    foreach ($file in $files) {
+        $rel = Get-RelativePathCompat -Root $Root -FullPath $file.FullName
+        $rel = $rel -replace '\\', '/'
+        $hash = Get-FileHash -Algorithm SHA256 -LiteralPath $file.FullName
+
+        $map[$rel] = [PSCustomObject]@{
             RelativePath = $rel
-            FullPath     = $_.FullName
-            Hash         = $hash.Hash
-            SizeBytes    = $_.Length
+            FullPath     = $file.FullName
+            Length       = $file.Length
+            Sha256       = $hash.Hash.ToLowerInvariant()
+            LastWrite    = $file.LastWriteTime
         }
     }
-    return $index
+
+    return $map
 }
 
 function Write-ListFile {
-    param([string]$PathValue, [object[]]$Items)
-
-    if ($null -eq $Items -or $Items.Count -eq 0) {
-        Set-Content -LiteralPath $PathValue -Value "(none)" -Encoding UTF8
-    } else {
-        $Items | Sort-Object | Set-Content -LiteralPath $PathValue -Encoding UTF8
-    }
+    param([string]$Path, [object[]]$Items)
+    if ($Items.Count -eq 0) { "<none>" | Set-Content -LiteralPath $Path -Encoding UTF8 }
+    else { $Items | Set-Content -LiteralPath $Path -Encoding UTF8 }
 }
 
-function Get-Megabytes([long]$Bytes) { return [math]::Round($Bytes / 1MB, 3) }
-
-function Get-DirectorySizeBytes {
-    param([string]$PathValue)
-    $total = 0L
-    Get-ChildItem -LiteralPath $PathValue -Recurse -File -Force | ForEach-Object { $total += $_.Length }
-    return $total
+if ($Help) {
+    Show-Help
+    exit 0
 }
 
-try {
-    $ProjectRoot = Find-ProjectRoot
-    $OldZipFull = Resolve-ZipPath -ZipValue $OldZip -ProjectRoot $ProjectRoot
-    $NewZipFull = Resolve-ZipPath -ZipValue $NewZip -ProjectRoot $ProjectRoot
+if ([string]::IsNullOrWhiteSpace($OldZip) -or [string]::IsNullOrWhiteSpace($NewZip)) {
+    Show-Help
+    Write-Host "ERROR: -OldZip and -NewZip are required." -ForegroundColor Red
+    exit 2
+}
 
-    if ([string]::IsNullOrWhiteSpace($ReportRoot)) {
-        $ReportRoot = Join-Path $ProjectRoot "Private\compare_reports"
-    } elseif (-not [System.IO.Path]::IsPathRooted($ReportRoot)) {
-        $ReportRoot = Join-Path $ProjectRoot $ReportRoot
-    }
+$ProjectRoot = Find-ProjectRoot
+$OldZipPath = Resolve-SnapshotPath -PathOrName $OldZip -ProjectRoot $ProjectRoot
+$NewZipPath = Resolve-SnapshotPath -PathOrName $NewZip -ProjectRoot $ProjectRoot
 
-    New-Item -ItemType Directory -Path $ReportRoot -Force | Out-Null
+$OldInfo = Get-Item -LiteralPath $OldZipPath
+$NewInfo = Get-Item -LiteralPath $NewZipPath
 
-    $timestamp = Get-Date -Format "yyyy-MM-dd_HH-mm-ss"
-    $ReportDir = Join-Path $ReportRoot "PiLabZipCompare_$timestamp"
-    $ExtractDir = Join-Path $ReportDir "extracted"
-    $OldExtract = Join-Path $ExtractDir "old"
-    $NewExtract = Join-Path $ExtractDir "new"
+$TimeStamp = Get-Date -Format "yyyy-MM-dd_HH-mm-ss"
+$OldBase = Get-SafeName ([System.IO.Path]::GetFileNameWithoutExtension($OldZipPath))
+$NewBase = Get-SafeName ([System.IO.Path]::GetFileNameWithoutExtension($NewZipPath))
 
-    New-Item -ItemType Directory -Path $OldExtract -Force | Out-Null
-    New-Item -ItemType Directory -Path $NewExtract -Force | Out-Null
+if ([string]::IsNullOrWhiteSpace($ReportDir)) {
+    $ReportDir = Join-Path $ProjectRoot "Private\compare_reports\PiLabZipCompare_$TimeStamp"
+}
 
-    Write-Host ""
-    Write-Host "PiLab Zip Compare"
-    Write-Host "================="
-    Write-Host ""
-    Write-Host "Project root:  $ProjectRoot"
-    Write-Host "Old:           $OldZipFull"
-    Write-Host "New:           $NewZipFull"
-    Write-Host "Report folder: $ReportDir"
-    Write-Host ""
+$ReportDir = [System.IO.Path]::GetFullPath($ReportDir)
+$ExtractRoot = Join-Path $ReportDir "extracted"
+$OldExtract = Join-Path $ExtractRoot "old"
+$NewExtract = Join-Path $ExtractRoot "new"
 
-    Write-Host "==> Extracting old snapshot"
-    Expand-Archive -LiteralPath $OldZipFull -DestinationPath $OldExtract -Force
+if (Test-Path -LiteralPath $ReportDir) { Remove-Item -LiteralPath $ReportDir -Recurse -Force }
+New-Item -ItemType Directory -Path $OldExtract -Force | Out-Null
+New-Item -ItemType Directory -Path $NewExtract -Force | Out-Null
 
-    Write-Host "==> Extracting new snapshot"
-    Expand-Archive -LiteralPath $NewZipFull -DestinationPath $NewExtract -Force
+Write-Host ""
+Write-Host "PiLab Zip Compare" -ForegroundColor Cyan
+Write-Host "=================" -ForegroundColor Cyan
+Write-Host ""
+Write-Host "Project root:  $ProjectRoot"
+Write-Host "Old:           $OldZipPath"
+Write-Host "New:           $NewZipPath"
+Write-Host "Report folder: $ReportDir"
+Write-Host ""
 
-    Write-Host "==> Indexing files and computing SHA256 hashes"
-    $OldIndex = Get-FileIndex -RootPath $OldExtract
-    $NewIndex = Get-FileIndex -RootPath $NewExtract
+Write-Step "Extracting old snapshot"
+Expand-Archive -LiteralPath $OldZipPath -DestinationPath $OldExtract -Force
 
-    $OldPaths = @($OldIndex.Keys)
-    $NewPaths = @($NewIndex.Keys)
+Write-Step "Extracting new snapshot"
+Expand-Archive -LiteralPath $NewZipPath -DestinationPath $NewExtract -Force
 
-    $Added = @($NewPaths | Where-Object { -not $OldIndex.ContainsKey($_) } | Sort-Object)
-    $Removed = @($OldPaths | Where-Object { -not $NewIndex.ContainsKey($_) } | Sort-Object)
-    $Common = @($OldPaths | Where-Object { $NewIndex.ContainsKey($_) } | Sort-Object)
+Write-Step "Indexing files and computing SHA256 hashes"
+$OldMap = Get-RelativeFileMap -Root $OldExtract
+$NewMap = Get-RelativeFileMap -Root $NewExtract
 
-    $Modified = @()
-    $Unchanged = @()
-    foreach ($path in $Common) {
-        if ($OldIndex[$path].Hash -ne $NewIndex[$path].Hash) { $Modified += $path } else { $Unchanged += $path }
-    }
+$OldKeys = @($OldMap.Keys | Sort-Object)
+$NewKeys = @($NewMap.Keys | Sort-Object)
 
-    $OldZipSize = (Get-Item -LiteralPath $OldZipFull).Length
-    $NewZipSize = (Get-Item -LiteralPath $NewZipFull).Length
-    $OldExtractedSize = Get-DirectorySizeBytes -PathValue $OldExtract
-    $NewExtractedSize = Get-DirectorySizeBytes -PathValue $NewExtract
+$Added = @($NewKeys | Where-Object { -not $OldMap.ContainsKey($_) } | Sort-Object)
+$Removed = @($OldKeys | Where-Object { -not $NewMap.ContainsKey($_) } | Sort-Object)
+$Common = @($OldKeys | Where-Object { $NewMap.ContainsKey($_) } | Sort-Object)
+$Modified = @($Common | Where-Object { $OldMap[$_].Sha256 -ne $NewMap[$_].Sha256 } | Sort-Object)
+$Unchanged = @($Common | Where-Object { $OldMap[$_].Sha256 -eq $NewMap[$_].Sha256 } | Sort-Object)
 
-    $ReportFile = Join-Path $ReportDir "PiLabZipCompareReport.txt"
-    $AddedFile = Join-Path $ReportDir "added_files.txt"
-    $RemovedFile = Join-Path $ReportDir "removed_files.txt"
-    $ModifiedFile = Join-Path $ReportDir "modified_files.txt"
-    $UnchangedFile = Join-Path $ReportDir "unchanged_files.txt"
-    $DiffFile = Join-Path $ReportDir "unified_diff.patch"
+$OldExtractedSize = 0
+foreach ($k in $OldKeys) { $OldExtractedSize += [int64]$OldMap[$k].Length }
+$NewExtractedSize = 0
+foreach ($k in $NewKeys) { $NewExtractedSize += [int64]$NewMap[$k].Length }
 
-    Write-Host "==> Summary"
-    Write-Host ("    Old files:      {0}" -f $OldPaths.Count)
-    Write-Host ("    New files:      {0}" -f $NewPaths.Count)
-    Write-Host ("    Added:          {0}" -f $Added.Count)
-    Write-Host ("    Removed:        {0}" -f $Removed.Count)
-    Write-Host ("    Modified:       {0}" -f $Modified.Count)
-    Write-Host ("    Unchanged:      {0}" -f $Unchanged.Count)
-    Write-Host ("    Old zip size:   {0} MB" -f (Get-Megabytes $OldZipSize))
-    Write-Host ("    New zip size:   {0} MB" -f (Get-Megabytes $NewZipSize))
-    Write-Host ("    Old files size: {0} MB extracted" -f (Get-Megabytes $OldExtractedSize))
-    Write-Host ("    New files size: {0} MB extracted" -f (Get-Megabytes $NewExtractedSize))
-    Write-Host ""
+$OldZipMB = [math]::Round($OldInfo.Length / 1MB, 3)
+$NewZipMB = [math]::Round($NewInfo.Length / 1MB, 3)
+$OldFilesMB = [math]::Round($OldExtractedSize / 1MB, 3)
+$NewFilesMB = [math]::Round($NewExtractedSize / 1MB, 3)
 
-    Write-ListFile -PathValue $AddedFile -Items $Added
-    Write-ListFile -PathValue $RemovedFile -Items $Removed
-    Write-ListFile -PathValue $ModifiedFile -Items $Modified
-    Write-ListFile -PathValue $UnchangedFile -Items $Unchanged
+Write-Step "Summary"
+Write-Host ("    Old files:      {0}" -f $OldKeys.Count)
+Write-Host ("    New files:      {0}" -f $NewKeys.Count)
+Write-Host ("    Added:          {0}" -f $Added.Count)
+Write-Host ("    Removed:        {0}" -f $Removed.Count)
+Write-Host ("    Modified:       {0}" -f $Modified.Count)
+Write-Host ("    Unchanged:      {0}" -f $Unchanged.Count)
+Write-Host ("    Old zip size:   {0} MB" -f $OldZipMB)
+Write-Host ("    New zip size:   {0} MB" -f $NewZipMB)
+Write-Host ("    Old files size: {0} MB extracted" -f $OldFilesMB)
+Write-Host ("    New files size: {0} MB extracted" -f $NewFilesMB)
+Write-Host ""
 
-    $gitCommand = Get-Command git -ErrorAction SilentlyContinue
-    $GitDiffStatus = "Git not found; unified diff was not generated."
+$AddedPath = Join-Path $ReportDir "added_files.txt"
+$RemovedPath = Join-Path $ReportDir "removed_files.txt"
+$ModifiedPath = Join-Path $ReportDir "modified_files.txt"
+$UnchangedPath = Join-Path $ReportDir "unchanged_files.txt"
+$PatchPath = Join-Path $ReportDir "unified_diff.patch"
+$ReportPath = Join-Path $ReportDir "PiLabZipCompareReport.txt"
 
-    if ($gitCommand) {
-        Write-Host "==> Creating unified diff with git diff --no-index"
-        $gitArgs = @(
-            "-c", "core.autocrlf=false",
-            "-c", "core.safecrlf=false",
-            "diff", "--no-index",
-            "--binary",
-            "--",
-            $OldExtract,
-            $NewExtract
-        )
+Write-ListFile -Path $AddedPath -Items $Added
+Write-ListFile -Path $RemovedPath -Items $Removed
+Write-ListFile -Path $ModifiedPath -Items $Modified
+Write-ListFile -Path $UnchangedPath -Items $Unchanged
 
-        $diffText = & $gitCommand.Source @gitArgs 2>&1
-        $gitExit = $LASTEXITCODE
-        $diffText | Set-Content -LiteralPath $DiffFile -Encoding UTF8
-
-        if ($gitExit -eq 0) { $GitDiffStatus = "No text differences detected by git diff." }
-        elseif ($gitExit -eq 1) { $GitDiffStatus = "Unified diff generated successfully." }
-        else { $GitDiffStatus = "git diff returned exit code $gitExit. Output was still written." }
-
-        Write-Host "    $GitDiffStatus"
-        Write-Host "    Unified diff written: $DiffFile"
-        Write-Host ""
-    } else {
-        Set-Content -LiteralPath $DiffFile -Value $GitDiffStatus -Encoding UTF8
-        Write-Host "==> Git not found; skipping unified diff"
-        Write-Host ""
-    }
-
-    $reportLines = @(
-        "PiLab Zip Compare Report",
-        "========================",
-        "",
-        "Generated: $(Get-Date -Format 'yyyy-MM-dd HH:mm:ss')",
-        "Project root: $ProjectRoot",
-        "Old zip:      $OldZipFull",
-        "New zip:      $NewZipFull",
-        "Report:       $ReportDir",
-        "",
-        "Summary",
-        "-------",
-        "Old files:       $($OldPaths.Count)",
-        "New files:       $($NewPaths.Count)",
-        "Added:           $($Added.Count)",
-        "Removed:         $($Removed.Count)",
-        "Modified:        $($Modified.Count)",
-        "Unchanged:       $($Unchanged.Count)",
-        "Old zip size:    $(Get-Megabytes $OldZipSize) MB",
-        "New zip size:    $(Get-Megabytes $NewZipSize) MB",
-        "Old extracted:   $(Get-Megabytes $OldExtractedSize) MB",
-        "New extracted:   $(Get-Megabytes $NewExtractedSize) MB",
-        "Git diff status: $GitDiffStatus",
-        "",
-        "Report Files",
-        "------------",
-        "Added list:     $AddedFile",
-        "Removed list:   $RemovedFile",
-        "Modified list:  $ModifiedFile",
-        "Unchanged list: $UnchangedFile",
-        "Unified diff:   $DiffFile",
-        "",
-        "Notes",
-        "-----",
-        "Zip file sizes can differ because of compression, metadata, file order, or timestamps.",
-        "The SHA256 file comparison above is the reliable indicator of changed contents.",
-        "The unified diff is best for source text. Binary files may appear as binary differences only."
+$GitCmd = Get-Command git -ErrorAction SilentlyContinue
+$DiffCreated = $false
+if ($GitCmd) {
+    Write-Step "Creating unified diff with git diff --no-index"
+    $gitArgs = @(
+        "-c", "core.autocrlf=false",
+        "-c", "core.safecrlf=false",
+        "diff", "--no-index", "--no-ext-diff", "--", $OldExtract, $NewExtract
     )
-
-    $reportLines | Set-Content -LiteralPath $ReportFile -Encoding UTF8
-
-    Write-Host "==> Report written"
-    Write-Host "    $ReportFile"
-    Write-Host "    $AddedFile"
-    Write-Host "    $RemovedFile"
-    Write-Host "    $ModifiedFile"
-    Write-Host "    $UnchangedFile"
-    Write-Host "    $DiffFile"
-
-    if (-not $KeepExtracted) {
-        Write-Host "==> Cleaning extracted temp files"
-        Remove-Item -LiteralPath $ExtractDir -Recurse -Force -ErrorAction SilentlyContinue
+    $diffOutput = & $GitCmd.Source @gitArgs 2>&1
+    $exitCode = $LASTEXITCODE
+    $diffOutput | Set-Content -LiteralPath $PatchPath -Encoding UTF8
+    if ($exitCode -eq 0 -or $exitCode -eq 1) {
+        $DiffCreated = $true
+        Write-Ok "Unified diff generated successfully."
+        Write-Ok "Unified diff written: $PatchPath"
     } else {
-        Write-Host "==> Extracted files kept at: $ExtractDir"
+        Write-WarnLine "git diff returned exit code $exitCode. Output was still written to unified_diff.patch."
     }
-
-    Write-Host ""
-    Write-Host "Done."
-    Write-Host "Report folder: $ReportDir"
-    Write-Host ""
-
-    if ($OpenReport) { Start-Process notepad.exe $ReportFile }
-    if ($OpenFolder) { Start-Process explorer.exe $ReportDir }
+} else {
+    Write-WarnLine "Git not found; skipping unified diff."
+    "Git not found; unified diff was not generated." | Set-Content -LiteralPath $PatchPath -Encoding UTF8
 }
-catch {
-    Write-Host ""
-    Write-Host "ERROR: $($_.Exception.Message)" -ForegroundColor Red
-    Write-Host ""
-    exit 1
+
+$ReportLines = New-Object System.Collections.Generic.List[string]
+$ReportLines.Add("PiLab Zip Compare Report")
+$ReportLines.Add("========================")
+$ReportLines.Add("")
+$ReportLines.Add("Generated:    $(Get-Date -Format s)")
+$ReportLines.Add("Project root: $ProjectRoot")
+$ReportLines.Add("Old zip:      $OldZipPath")
+$ReportLines.Add("New zip:      $NewZipPath")
+$ReportLines.Add("Old size:     $OldZipMB MB zip / $OldFilesMB MB extracted")
+$ReportLines.Add("New size:     $NewZipMB MB zip / $NewFilesMB MB extracted")
+$ReportLines.Add("")
+$ReportLines.Add("Summary")
+$ReportLines.Add("-------")
+$ReportLines.Add("Old files: $($OldKeys.Count)")
+$ReportLines.Add("New files: $($NewKeys.Count)")
+$ReportLines.Add("Added:     $($Added.Count)")
+$ReportLines.Add("Removed:   $($Removed.Count)")
+$ReportLines.Add("Modified:  $($Modified.Count)")
+$ReportLines.Add("Unchanged: $($Unchanged.Count)")
+$ReportLines.Add("")
+$ReportLines.Add("Added Files")
+$ReportLines.Add("-----------")
+if ($Added.Count -eq 0) { $ReportLines.Add("<none>") } else { foreach ($i in $Added) { $ReportLines.Add($i) } }
+$ReportLines.Add("")
+$ReportLines.Add("Removed Files")
+$ReportLines.Add("-------------")
+if ($Removed.Count -eq 0) { $ReportLines.Add("<none>") } else { foreach ($i in $Removed) { $ReportLines.Add($i) } }
+$ReportLines.Add("")
+$ReportLines.Add("Modified Files")
+$ReportLines.Add("--------------")
+if ($Modified.Count -eq 0) { $ReportLines.Add("<none>") } else { foreach ($i in $Modified) { $ReportLines.Add($i) } }
+$ReportLines.Add("")
+$ReportLines.Add("Report Files")
+$ReportLines.Add("------------")
+$ReportLines.Add("added_files.txt")
+$ReportLines.Add("removed_files.txt")
+$ReportLines.Add("modified_files.txt")
+$ReportLines.Add("unchanged_files.txt")
+$ReportLines.Add("unified_diff.patch")
+$ReportLines | Set-Content -LiteralPath $ReportPath -Encoding UTF8
+
+Write-Host ""
+Write-Step "Report written"
+Write-Host "    $ReportPath"
+Write-Host "    $AddedPath"
+Write-Host "    $RemovedPath"
+Write-Host "    $ModifiedPath"
+Write-Host "    $UnchangedPath"
+Write-Host "    $PatchPath"
+
+if (-not $KeepExtracted) {
+    Write-Step "Cleaning extracted temp files"
+    Remove-Item -LiteralPath $ExtractRoot -Recurse -Force -ErrorAction SilentlyContinue
+} else {
+    Write-Ok "Keeping extracted folders: $ExtractRoot"
 }
+
+if ($OpenReport) {
+    Invoke-Item -LiteralPath $ReportPath
+}
+
+Write-Host ""
+Write-Host "Done." -ForegroundColor Green
+Write-Host "Report folder: $ReportDir"
