@@ -3,7 +3,7 @@ build/
 **/build/
 sdkconfig.old
 
-# Local/private development files
+# Local/private development files and generated artifacts
 Support/
 Private/
 Scratch/
@@ -35,8 +35,13 @@ yarn-error.log*
 .DS_Store
 Thumbs.db
 
-#Build support
+# PowerShell scripts
+# Ignore local/private .ps1 helpers by default...
 *.ps1
+
+# Keep official project tools tracked.
+!tools/
+!tools/*.ps1
 
 # Logs
 *.log
