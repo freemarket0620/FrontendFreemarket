@@ -22,6 +22,9 @@
 #include "esp_timer.h"
 
 #include <angelscript.h>
+#include <scriptarray.h>
+#include <scriptmath.h>
+#include <scriptstdstring.h>
 
 #include "plc_io.hpp"
 #include "plc_tags.hpp"
@@ -326,6 +329,14 @@ public:
 
         int r = engine->SetMessageCallback(asFUNCTION(ASMessageCallback), &errors, asCALL_CDECL);
         if (r < 0) return fail(errors, "SetMessageCallback failed\n");
+
+        // Standard AngelScript add-ons. AS_MAX_PORTABILITY is enabled in the
+        // angelscript component, so these register through the generic calling
+        // convention instead of native RISC-V function bindings.
+        RegisterStdString(engine);
+        RegisterScriptArray(engine, true);
+        RegisterStdStringUtils(engine);
+        RegisterScriptMath(engine);
 
         r = engine->RegisterGlobalFunction("void logInt(uint)", asFUNCTION(AS_LogInt_Generic), asCALL_GENERIC);
         if (r < 0) return fail(errors, "Register logInt() failed\n");

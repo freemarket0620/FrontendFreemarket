@@ -2,9 +2,21 @@ file(GLOB ANGELSCRIPT_SOURCES
     "source/*.cpp"
 )
 
+set(ANGELSCRIPT_ADDON_SOURCES
+    "add_on/scriptstdstring/scriptstdstring.cpp"
+    "add_on/scriptstdstring/scriptstdstring_utils.cpp"
+    "add_on/scriptarray/scriptarray.cpp"
+    "add_on/scriptmath/scriptmath.cpp"
+)
+
 idf_component_register(
-    SRCS ${ANGELSCRIPT_SOURCES}
-    INCLUDE_DIRS "include" "source"
+    SRCS ${ANGELSCRIPT_SOURCES} ${ANGELSCRIPT_ADDON_SOURCES}
+    INCLUDE_DIRS
+        "include"
+        "source"
+        "add_on/scriptstdstring"
+        "add_on/scriptarray"
+        "add_on/scriptmath"
 )
 
 target_compile_options(${COMPONENT_LIB} PRIVATE
@@ -21,7 +33,10 @@ target_compile_options(${COMPONENT_LIB} PRIVATE
 
     -Wno-error=attributes
     -Wno-attributes
+)
 
-    -DAS_NO_EXCEPTIONS
-    -DAS_POSIX_THREADS
+target_compile_definitions(${COMPONENT_LIB} PUBLIC
+    AS_NO_EXCEPTIONS
+    AS_POSIX_THREADS
+    AS_MAX_PORTABILITY
 )
