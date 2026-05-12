@@ -69,6 +69,224 @@ The goal is to create a lightweight, modern, browser-first automation platform w
 
 ---
 
+# Example PLC / Edge Scripts
+
+## Analog Signal Processing + Heartbeat
+
+Example script showing:
+
+- cyclic PLC scan logic
+- array usage
+- floating point math
+- string handling
+- edge-style sensor processing
+
+```cpp
+array<float> samples;
+uint counter = 0;
+
+void scan()
+{
+    samples.resize(32);
+
+    float average = 0.0f;
+
+    for (uint i = 0; i < samples.length(); i++)
+    {
+        float phase = float((counter + i) % 628) * 0.01f;
+
+        samples[i] = 50.0f + sin(phase) * 10.0f;
+
+        average += samples[i];
+    }
+
+    average /= samples.length();
+
+    string status = "RUNNING";
+
+    if (average > 55.0f)
+        status = "HIGH";
+
+    if (average < 45.0f)
+        status = "LOW";
+
+    // Example PLC outputs
+    Q0 = average > 52.0f;
+    Q1 = average < 48.0f;
+
+    counter++;
+}
+```
+
+## Simple Edge Vibration Monitor
+
+Example script simulating vibration monitoring and alarm detection.
+
+```cpp
+array<float> vibration;
+float rms = 0.0f;
+bool alarm = false;
+
+void scan()
+{
+    vibration.resize(64);
+
+    float acc = 0.0f;
+
+    for (uint i = 0; i < vibration.length(); i++)
+    {
+        float noise =
+            sin(float(i) * 0.21f) * 2.0f +
+            cos(float(i) * 0.07f) * 1.5f;
+
+        vibration[i] = noise;
+
+        acc += vibration[i] * vibration[i];
+    }
+
+    rms = sqrt(acc / vibration.length());
+
+    // Alarm threshold
+    alarm = rms > 2.2f;
+
+    // PLC outputs
+    Q0 = alarm;
+    Q1 = !alarm;
+}
+```
+
+
+## PLC-Style Timer Logic (TON)
+
+Example showing IEC-style PLC timer logic implemented directly in AngelScript.
+
+```cpp
+class TON
+{
+    uint preset_ms;
+    uint elapsed_ms;
+
+    bool input;
+    bool output;
+
+    TON(uint preset)
+    {
+        preset_ms = preset;
+        elapsed_ms = 0;
+        input = false;
+        output = false;
+    }
+
+    void update(bool in, uint scan_ms)
+    {
+        input = in;
+
+        if (input)
+        {
+            if (elapsed_ms < preset_ms)
+                elapsed_ms += scan_ms;
+
+            if (elapsed_ms >= preset_ms)
+                output = true;
+        }
+        else
+        {
+            elapsed_ms = 0;
+            output = false;
+        }
+    }
+
+    bool Q()
+    {
+        return output;
+    }
+
+    uint ET()
+    {
+        return elapsed_ms;
+    }
+};
+
+TON motorStartDelay(2000);
+
+void scan()
+{
+    // Start motor 2 seconds after input turns on
+    motorStartDelay.update(I0, 5);
+
+    Q0 = motorStartDelay.Q();
+}
+```
+
+## Rising Edge Trigger + Alarm Latch
+
+Example showing PLC-style edge detection and alarm latching.
+
+```cpp
+class RisingEdge
+{
+    bool last = false;
+
+    bool update(bool input)
+    {
+        bool edge = input && !last;
+        last = input;
+        return edge;
+    }
+};
+
+class AlarmLatch
+{
+    bool latched = false;
+
+    void trigger()
+    {
+        latched = true;
+    }
+
+    void reset()
+    {
+        latched = false;
+    }
+
+    bool active()
+    {
+        return latched;
+    }
+};
+
+RisingEdge startEdge;
+AlarmLatch alarm;
+
+void scan()
+{
+    // Detect rising edge
+    if (startEdge.update(I0))
+    {
+        Q0 = true;
+    }
+
+    // Example alarm condition
+    if (AI0 > 85.0f)
+    {
+        alarm.trigger();
+    }
+
+    // Reset alarm
+    if (I1)
+    {
+        alarm.reset();
+    }
+
+    Q1 = alarm.active();
+}
+```
+
+
+---
+
+
+
 # Development Approach
 
 This project was developed using a combination of:
