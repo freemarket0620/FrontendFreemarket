@@ -141,6 +141,7 @@ pilab-esp32-p4-plc/
 ├── web/
 │   └── WebProject2/
 ├── docs/
+│   └── images/
 ├── examples/
 └── README.md
 ```
@@ -326,45 +327,55 @@ This is currently an experimental development platform.
 
 ---
 
-# Screenshots / GIFs
+# Screenshots
+
+The screenshots below show the current browser-based PiLab PLC interface running against the ESP32-P4 controller.
 
 ## Command Center
 
-_Add screenshot here_
+Live PLC status, scan timing, memory, script state, digital I/O, run/stop control, and system pulse history.
 
-```text
-docs/images/command-center.png
-```
+![PiLab PLC Command Center](docs/images/command-center.png)
 
 ---
 
 ## Script Editor
 
-_Add screenshot here_
+Browser-based AngelScript editor with upload, compile status, saved scripts, diagnostics, console output, and keyboard shortcuts.
 
-```text
-docs/images/script-editor.png
-```
+![PiLab PLC Script Editor](docs/images/script-editor.png)
 
 ---
 
-## HMI
+## HMI Builder
 
-_Add screenshot here_
+Browser-based HMI design mode with draggable widgets, tag-bound controls, live preview support, and an inspector panel.
 
-```text
-docs/images/hmi.png
-```
+![PiLab PLC HMI Builder](docs/images/hmi-build.png)
+
+---
+
+## HMI Live Operator View
+
+Runtime HMI operator screen showing live toggles and output indicators driven by PLC tags.
+
+![PiLab PLC HMI Live View](docs/images/hmi-live.png)
+
+---
+
+## Tag Registry
+
+PLC tag editor for user tags, AngelScript globals, type selection, writable/retentive/HMI flags, and descriptions.
+
+![PiLab PLC Tag Registry](docs/images/tag-registry.png)
 
 ---
 
 ## File Manager
 
-_Add screenshot here_
+LittleFS file browser with folders, upload controls, and write-lock protection while the PLC scan is running.
 
-```text
-docs/images/files.png
-```
+![PiLab PLC File Manager](docs/images/file-manager.png)
 
 ---
 
