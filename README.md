@@ -4,6 +4,42 @@ PiLab P4 is an experimental browser-first PLC/HMI platform running directly on t
 # Web App
 ![PiLab PLC Command Center](docs/images/command-center.png)
 
+# System Architecture
+
+```mermaid
+flowchart TD
+    A[Browser<br/>Vue.js SPA] --> B[ESP32-P4 Embedded Web Server]
+
+    A1[Command Center] --> A
+    A2[Script Editor] --> A
+    A3[HMI Builder / Runtime] --> A
+    A4[Tag Editor] --> A
+    A5[File Manager] --> A
+    A6[Settings] --> A
+
+    B --> C[REST API]
+    B --> D[Static Web App Hosting]
+
+    C --> E[Shared Runtime Services]
+
+    E --> F[Tag Database]
+    E --> G[Script Manager]
+    E --> H[LittleFS File Manager]
+    E --> I[PLC State / Run-Stop Control]
+
+    F --> J[PLC Runtime]
+    G --> J
+    I --> J
+
+    J --> K[5 ms PLC Scan Loop]
+    K --> L[AngelScript VM]
+    K --> M[I/O Update Layer]
+
+    M --> N[ESP32-P4 GPIO]
+    M --> O[Future I/O Expansion]
+    M --> P[Field Devices]
+```
+
 # Video Demo
 https://www.youtube.com/watch?v=MBs3DlIrDFY
 
